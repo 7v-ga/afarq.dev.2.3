@@ -1,0 +1,43 @@
+# WordPress specific
+wp-config.php
+
+# Ignore the /wp-content directory, except for what's inside
+!/wp-content/
+wp-content/cache/
+wp-content/backups/
+wp-content/upgrade/
+wp-content/uploads/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/db.php
+
+# Ignore these file types across the entire repository
+*.log
+*.sql
+*.sqlite
+*.env
+
+# Vendor and dependencies
+node_modules/
+vendor/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE or editor specific files
+*.sublime-project
+*.sublime-workspace
+*.codekit-cache
+*.idea/
+*.vscode/
+*.komodoproject
+*.tmproj
+*.swp
+
+# Miscellaneous
+*.bak
+*.orig
+*.tmp
+*.sass-cache/
+*.htaccess

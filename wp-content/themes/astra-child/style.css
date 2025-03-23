@@ -1,0 +1,419 @@
+/*
+Theme Name: AFARQ
+Template: astra
+Version: 1.0.4
+*/
+
+body,
+.entry-content h1,
+h1,
+.entry-content h2,
+h2,
+.entry-content h3,
+h3,
+.entry-content h4,
+h4,
+.entry-content h5,
+h5,
+.entry-content h6,
+h6 {
+  color: var(--ast-global-color-3) !important;
+}
+
+header.main-header-bar-wrap {
+  width: 100%; /* Asegurar que el contenedor principal del encabezado ocupe todo el ancho */
+  position: fixed; /* Mantener fijo en la parte superior al hacer scroll */
+  margin: 0; /* Eliminar márgenes que puedan estar restringiendo el ancho */
+  padding: 0; /* Eliminar cualquier padding si es necesario */
+  width: 100%; /* Asegurar que el header sea de ancho completo */
+  z-index: 8;
+}
+
+.main-header-bar {
+  background-color: rgba(255, 255, 255, 1); /* Inicialmente transparente */
+  transition: background-color 1s ease; /* Transición suave para el fondo */
+  border-bottom: none;
+  padding: 4px 0;
+}
+
+.site-branding {
+  position: relative; /* Necesario para la animación del logo */
+  top: -100px; /* Inicialmente fuera de la vista */
+  transition: top 1s ease; /* Transición para el movimiento del logo */
+}
+
+.header-fade {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.6
+  ); /* Fondo del header con opacidad al hacer scroll */
+}
+
+.main-menu {
+  margin-left: auto; /* Forzar el menú principal a la derecha */
+}
+
+.social-icons {
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+.social-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.social-menu li {
+  margin: 0 8px;
+}
+
+.social-menu a {
+  text-decoration: none;
+  color: #555;
+  transition: color 0.3s;
+}
+
+.social-menu a:hover {
+  color: #d05c49;
+}
+
+.scroll-logo {
+  top: 0; /* La posición final del logo */
+}
+
+.main-header-container {
+  display: flex; /* Usar Flexbox para el diseño */
+  justify-content: space-between; /* Espacio entre elementos */
+  align-items: center; /* Centrar verticalmente */
+}
+
+.ast-logo {
+  flex: 1; /* Permitir que el logotipo ocupe espacio proporcionalmente */
+  text-align: center; /* Centrar horizontalmente el logotipo */
+}
+
+.ast-flex.main-header-container {
+  display: flex; /* Asegúrate de que es flex */
+  justify-content: space-between; /* Espacio entre el contenido */
+  align-items: center; /* Centrar verticalmente */
+}
+
+.ast-grid-right-center-section {
+  display: flex; /* Convertir en flex para que los íconos sociales y menú se alineen correctamente */
+  justify-content: flex-end; /* Alinear el contenido del lado derecho */
+  align-items: center; /* Centrar verticalmente */
+}
+
+/* Menú hamburguesa */
+.menu-toggle {
+  display: flex; /* Mostrar siempre el menú hamburguesa */
+  flex-direction: column;
+  cursor: pointer;
+  position: relative; /* Necesario para el posicionamiento de la X */
+  z-index: 20; /* Mantener el botón sobre otros elementos */
+  background-color: transparent;
+}
+
+/* Al pasar el ratón sobre el botón de hamburguesa, no cambiar el fondo */
+.menu-toggle:hover {
+  background-color: transparent; /* Mantener el fondo transparente en hover */
+}
+
+.bar {
+  height: 2px; /* Altura de las barras */
+  width: 30px; /* Ancho de las barras */
+  background-color: var(
+    --ast-global-color-8
+  ); /* Color más oscuro para las barras */
+  margin: 3px 0; /* Espaciado entre las barras */
+  transition: all 0.3s ease; /* Transiciones suaves */
+}
+
+/* Transformar las barras a una X */
+.menu-toggle.open .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+  width: 32px;
+}
+
+.menu-toggle.open .bar:nth-child(2) {
+  opacity: 0; /* Hacer desaparecer la barra del medio */
+}
+
+.menu-toggle.open .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+  width: 32px;
+}
+
+/* Estilo del menú */
+.nav {
+  display: none; /* Ocultar el menú por defecto */
+  position: fixed; /* Permitir que cubra completamente la ventana */
+  top: 0;
+  left: 0;
+  width: 100%; /* Cubrir toda la ventana */
+  height: 100%; /* Hacer que el menú cubra toda la ventana */
+  background: var(--ast-global-color-5);
+  justify-content: center; /* Centrar el contenido */
+  align-items: center; /* Centrar verticalmente */
+  opacity: 0; /* Inicialmente oculto */
+  transition: opacity 0.5s ease-in; /* Efecto de transición para la opacidad */
+  z-index: 10; /* Cambia este valor para asegurarte de que el menú esté encima */
+}
+
+.nav.active {
+  display: flex; /* Mostrar el menú al ser activado */
+  flex-direction: column; /* Orientar el menú verticalmente */
+  opacity: 0.9; /* Opacidad máxima al mostrar el menú */
+}
+
+/* Lista de navegación */
+.nav-list {
+  list-style: none; /* Eliminar el estilo de lista */
+  padding: 0;
+  margin: 0; /* Asegurar que no haya margen */
+  text-align: center; /* Centrar el texto de los enlaces */
+}
+
+.nav-list li {
+  margin: 20px 0; /* Espacio entre los elementos del menú */
+}
+
+.nav-list li a {
+  text-decoration: none; /* Eliminación del subrayado */
+  font-size: 2rem; /* Tamaño de fuente actualizado */
+}
+
+/* Swiper.js */
+/* Contenedor del slider */
+.full-slider {
+  position: relative; /* No fijado para permitir el scroll */
+  width: 100vw; /* Ancho completo de la ventana */
+  height: 100vh; /* Altura completa de la ventana */
+  overflow: hidden; /* Evitar desbordamiento */
+}
+
+/* Swiper Container */
+.swiper-container {
+  width: 100%; /* Asegura que ocupe todo el ancho */
+  height: 100%; /* Asegura que ocupe toda la altura */
+}
+
+/* Barra de navegación vertical */
+.vertical-navigation {
+  display: flex; /* Usar flexbox para alinear los nav-items uno debajo del otro */
+  flex-direction: column; /* Alinear verticalmente los elementos */
+  align-items: center; /* Centrar los botones horizontalmente */
+  position: absolute;
+  top: 50%; /* Centrar verticalmente */
+  left: 20px; /* Separación del borde izquierdo de la ventana */
+  height: 50%; /* Mitad de la altura del slider */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.4
+  ); /* Fondo blanco con opacidad del 80% */
+  width: 4px; /* Grosor de la barra de navegación */
+  z-index: 5; /* Asegúrate de que este valor sea menor que el del menú */
+  transform: translateY(-50%); /* Centrar verticalmente */
+}
+
+/* Estilos para los elementos de navegación (botones) */
+.nav-item {
+  height: 30px; /* Altura de los botones */
+  width: 4px; /* Grosor de los botones */
+  border: none; /* Sin bordes */
+  cursor: pointer; /* Cambia el cursor al pasar sobre la barra */
+  transition: background-color 0.3s; /* Transición para el hover */
+  display: block; /* Mantener el display block */
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Estilo del botón activo visible */
+.nav-item.active {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    1
+  ); /* Fondo oscuro cuando el slider está activo */
+}
+
+/* Estilo para el hover */
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* Fondo al pasar el cursor */
+}
+
+/* Estilos para las imágenes y el overlay */
+.swiper-slide img {
+  transition: transform 7s ease; /* Suave transición para el zoom */
+}
+
+.swiper-slide-active img {
+  transform: scale(1.018); /* Aumentar levemente el tamaño de la imagen */
+}
+
+.swiper-slide img {
+  display: block; /* Eliminar espacio en línea */
+  width: 100%; /* Asegura que las imágenes ocupen todo el ancho */
+  height: 100%; /* Asegura que las imágenes ocupen toda la altura */
+  object-fit: cover; /* Asegura que la imagen cubra el área sin deformarse */
+}
+
+.row-flex-half > * {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+/* Estilo del overlay */
+.overlay {
+  position: absolute; /* Para superponer sobre la imagen */
+  bottom: 40px; /* Alineación hacia la parte inferior */
+  right: 40px; /* Ajustando la posición */
+  color: #fff; /* Color del texto */
+  text-align: right; /* Justificar el texto a la izquierda */
+  font-weight: 400; /* Peso menor para el texto */
+  padding: 10px; /* Espaciado alrededor del texto */
+}
+
+.overlay h2 {
+  font-size: 1.6rem; /* Un tamaño más razonable para el título */
+  margin: 0; /* Sin márgenes adicionales */
+}
+
+/* Estilo para el contenido adicional */
+/* Este código se puede eliminar si no hay contenido adicional. */
+.content {
+  padding: 20px; /* Espaciado alrededor del contenido */
+  background-color: white; /* Fondo blanco para el contenido */
+  z-index: 1; /* Asegúrate de que esté frente al slider */
+  position: relative; /* Para permitir el flujo normal del contenido */
+}
+
+/* Metric Widget */
+.metric-container {
+  display: flex; /* Usar flexbox para disposición horizontal */
+  justify-content: space-between; /* Espacio entre columnas */
+  max-width: 770px !important; /* Ancho máximo total */
+  margin: 0 auto; /* Centrar el contenedor */
+  padding: 20px; /* Espaciado interno */
+}
+
+.metric {
+  text-align: center; /* Centrar texto en cada columna */
+  flex: 1; /* Permitir que las columnas tengan el mismo ancho */
+  margin: 0 10px; /* Espacio entre columnas */
+}
+
+.metric-count {
+  font-size: 2.5rem; /* Tamaño grande para los contadores */
+  margin-bottom: 10px !important;
+  font-weight: 400 !important;
+}
+
+/* Layout */
+
+.home h1 {
+  text-align: center !important;
+  font-weight: 400 !important;
+  font-size: 1.6rem !important;
+}
+
+h2 {
+  font-size: 1.6rem !important;
+}
+
+h3 {
+  font-size: 1.4rem !important;
+}
+
+.inner-width {
+  max-width: 750px !important;
+}
+
+.flex-vert {
+  align-content: center;
+  align-items: center;
+}
+
+/* Forms */
+form.init input:not([type="submit"]),
+form.init textarea {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid var(--ast-global-color-2);
+  border-radius: 0;
+  background-color: transparent;
+  padding: 8px 0 !important;
+  line-height: 1.1em;
+}
+
+form.init input:not([type="submit"]) {
+  height: 30px;
+}
+
+/* Proyectos destacados */
+.outstanding-projects {
+  overflow: hidden; /* Ocultar el desbordamiento */
+  width: 100%; /* Asegurar que ocupe todo el ancho */
+  position: relative; /* Para permitir el desplazamiento del contenedor interno */
+}
+
+.projects-grid {
+  display: flex; /* Usar Flexbox para disposición horizontal */
+  transition: transform 1s ease; /* Transiciones suaves para la animación */
+  will-change: transform; /* Mejora rendimiento para animaciones */
+  margin-left: 0; /* Asegurarse de que no haya margen izquierdo */
+}
+
+.project-item {
+  flex: 0 0 auto; /* Mantener el ancho de cada elemento */
+  margin-right: 16px; /* Espacio entre los elementos */
+  display: flex; /* Usar flex para centrar el contenido */
+  flex-direction: column; /* Organizar los ítems en columna */
+  align-items: center; /* Centrar items horizontalmente */
+}
+
+.project-item .thumbnail {
+  height: 300px; /* Asegurar que los elementos tengan la misma altura */
+  width: 300px; /* Asegurar que los elementos tengan la misma anchura */
+}
+
+.project-item img {
+  height: 300px; /* Asegurar que los elementos tengan la misma altura */
+  width: 300px; /* Asegurar que los elementos tengan la misma anchura */
+  object-fit: cover; /* Recortar para ajustar la imagen al área */
+  border-radius: 8px; /* Opcional: para esquinas redondeadas */
+  display: block;
+}
+
+.project-item h3 {
+  margin-top: 8px; /* Espacio entre la imagen y el código */
+  font-size: 1.2rem; /* Ajusta el tamaño del texto según el gusto */
+  text-align: center; /* Centrar el texto */
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .vertical-navigation {
+    width: 50px; /* Reducir el ancho en pantallas más pequeñas */
+  }
+}
+
+@media (max-width: 480px) {
+  .vertical-navigation {
+    width: 40px; /* Menos ancho en dispositivos muy pequeños */
+  }
+
+  .nav-item {
+    height: 40px; /* Ajustar altura de los botones en pantallas más pequeñas */
+  }
+}
