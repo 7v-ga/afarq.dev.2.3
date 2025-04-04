@@ -1,67 +1,59 @@
 <?php
 /**
- * Template Part: Galería horizontal con lightbox fullscreen
- * Requiere campo ACF tipo WYSIWYG llamado 'galeria_html'
+ * Galería con distribución definida por campo ACF 'galeria_distribucion'
+ * Imágenes vienen del contenido (campo 'galeria_html'), recortadas
  */
 
-function afarq_render_clean_gallery_from_wysiwyg($wysiwyg_html) {
-  preg_match_all('/<img[^>]+>/i', $wysiwyg_html, $matches);
-  $imagenes = $matches[0];
-  if (empty($imagenes)) return '';
+$galeria_html = get_field('galeria_html');
+$distribucion = get_field('galeria_distribucion');
 
-  $output = '<div class="horizontal-gallery">';
-  $total = count($imagenes);
-  $i = 0;
-  $grupo_anterior = 0;
+// Obtener imágenes desde el contenido WYSIWYG
+preg_match_all('/<img[^>]+>/i', $galeria_html, $matches);
+$imagenes = $matches[0] ?? [];
 
-  while ($i < $total) {
-    do {
-      $grupo = rand(1, 3);
-    } while ($grupo === $grupo_anterior && $total - $i > 1);
-    $grupo_anterior = $grupo;
+if (empty($imagenes)) return;
 
-    if ($i + $grupo > $total) {
-      $grupo = $total - $i;
+$filas = explode(',', $distribucion);
+$filas = array_map('intval', array_filter($filas)); // limpiar entradas vacías o no numéricas
+
+$total = count($imagenes);
+$i = 0;
+
+echo '<div class="horizontal-gallery">';
+
+foreach ($filas as $cantidad) {
+  if ($i >= $total) break;
+
+  echo '<div class="image-row">';
+
+  for ($j = 0; $j < $cantidad && ($i + $j) < $total; $j++) {
+    $img_html = $imagenes[$i + $j];
+
+    // Extraer src original
+    preg_match('/src="([^"]+)"/', $img_html, $src_match);
+    $src = $src_match[1] ?? '';
+    $attachment_id = attachment_url_to_postid($src);
+
+    if ($attachment_id) {
+      $thumb = wp_get_attachment_image_src($attachment_id, 'large')[0];
+      $full = wp_get_attachment_url($attachment_id);
+    } else {
+      $thumb = $src;
+      $full = preg_replace('/-\d+x\d+\.(jpg|jpeg|png|webp)/i', '.$1', $src);
     }
 
-    $altura = rand(1, 3);
-    $output .= '<div class="image-row h-row-' . $altura . '">';
-
-    for ($j = 0; $j < $grupo; $j++) {
-      $img_html = $imagenes[$i + $j];
-      preg_match('/src="([^"]+)"/', $img_html, $src_match);
-      $src = $src_match[1] ?? '';
-      $attachment_id = attachment_url_to_postid($src);
-
-      if ($attachment_id) {
-        $thumb = wp_get_attachment_image_src($attachment_id, 'medium_large')[0];
-        $full = wp_get_attachment_url($attachment_id);
-      } else {
-        $thumb = $src;
-        $full = preg_replace('/-\\d+x\\d+\\.(jpg|png|webp)/i', '.$1', $src);
-      }
-
-    $output .= '<img 
+    echo '<img 
       src="' . esc_url($thumb) . '" 
       data-full="' . esc_url($full) . '" 
       loading="lazy" 
       decoding="async" 
       class="lightbox-img" 
-      alt="" 
-      style="filter: none;" />';
-    }
-
-    $output .= '</div>';
-    $i += $grupo;
+      alt="" />';
   }
 
-  $output .= '</div>';
-  return $output;
+  echo '</div>'; // .image-row
+  $i += $cantidad;
 }
 
-// Render desde campo ACF
-$galeria = get_field('galeria_html');
-if ($galeria) {
-  echo afarq_render_clean_gallery_from_wysiwyg($galeria);
-}
+echo '</div>'; // .horizontal-gallery
 ?>
