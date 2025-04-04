@@ -1,36 +1,65 @@
 document.addEventListener("DOMContentLoaded", function () {
   const swiper = new Swiper(".swiper-container", {
+    loop: true,
+    speed: 1000, // Duración del fade
     effect: "fade",
-    zoom: true,
+    fadeEffect: { crossFade: true },
     autoplay: {
-      delay: 7000,
+      delay: 4000, // Cada 4s inicia el cambio
       disableOnInteraction: false,
     },
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-    },
     on: {
-      init: function () {
-        const navItems = document.querySelectorAll(".nav-item");
-        if (navItems.length > 0) {
-          navItems[0].classList.add("active");
-        }
-
-        adjustSliderMargins();
-        setNavBarHeight(); // Llamar a la función para ajustar la altura de las barras
-      },
-      slideChange: function () {
-        const navItems = document.querySelectorAll(".nav-item");
-        if (navItems.length > 0) {
-          navItems.forEach((item) => {
-            item.classList.remove("active");
-          });
-          navItems[this.activeIndex].classList.add("active");
-        }
+      slideChangeTransitionStart: function () {
+        startZoom(this);
       },
     },
   });
+
+  let zoomResetTimers = {};
+
+  function startZoom(swiper) {
+    const currentIndex = swiper.realIndex;
+
+    // Cancela cualquier reset pendiente
+    for (const key in zoomResetTimers) {
+      clearTimeout(zoomResetTimers[key]);
+      delete zoomResetTimers[key];
+    }
+
+    // Aplica zoom al slide activo
+    const activeSlide = swiper.slides[swiper.activeIndex];
+    if (!activeSlide) return;
+
+    const imgs = activeSlide.querySelectorAll(".parallax-layer img");
+    imgs.forEach((img) => {
+      // Comienza el zoom
+      img.style.transition = "transform 7s ease-out";
+      img.style.transform = "scale(1.1)";
+    });
+
+    // Programa el reset después de 7s
+    zoomResetTimers[currentIndex] = setTimeout(() => {
+      // Solo reseteamos si el slide YA NO es el activo
+      const stillActive = swiper.slides[swiper.activeIndex];
+      const stillActiveIndex = stillActive?.getAttribute(
+        "data-swiper-slide-index"
+      );
+
+      if (
+        stillActiveIndex !== null &&
+        stillActiveIndex.toString() !== currentIndex.toString()
+      ) {
+        imgs.forEach((img) => {
+          img.style.transition = "none";
+          img.style.transform = "scale(1)";
+        });
+        delete zoomResetTimers[currentIndex];
+      }
+    }, 7000);
+  }
+
+  swiper.on("init", () => startZoom(swiper));
+  swiper.init();
 
   window.addEventListener("resize", function () {
     adjustSliderMargins();

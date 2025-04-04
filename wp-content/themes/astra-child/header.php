@@ -1,6 +1,6 @@
 <?php
 /**
- * The header for Astra Theme.
+ * The header for AFARQ (Astra Child) Theme.
  *
  * This is the template that displays all of the <head> section and everything up until <div id="content>
  *
@@ -37,6 +37,8 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
 <a class="skip-link screen-reader-text" href="#content" title="<?php echo esc_attr( astra_default_strings( 'string-header-skip-link', false ) ); ?>">
 	<?php echo esc_html( astra_default_strings( 'string-header-skip-link', false ) ); ?>
 </a>
+
+<link href="https://fonts.cdnfonts.com/css/neou" rel="stylesheet">
 
 <div id="page" class="hfeed site">
 	<?php

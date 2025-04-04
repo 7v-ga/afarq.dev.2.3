@@ -20,6 +20,26 @@ h6 {
   color: var(--ast-global-color-3) !important;
 }
 
+.entry-content h1,
+h1,
+.entry-content h2,
+h2,
+.entry-content h3,
+h3,
+.entry-content h4,
+h4,
+.entry-content h5,
+h5,
+.entry-content h6,
+h6 {
+  font-family: "Neou", sans-serif !important;
+}
+
+.entry-content h1,
+h1 {
+  text-align: center;
+}
+
 header.main-header-bar-wrap {
   width: 100%; /* Asegurar que el contenedor principal del encabezado ocupe todo el ancho */
   position: fixed; /* Mantener fijo en la parte superior al hacer scroll */
@@ -51,7 +71,17 @@ header.main-header-bar-wrap {
   ); /* Fondo del header con opacidad al hacer scroll */
 }
 
-.main-menu {
+.site-description {
+  line-height: 1em;
+}
+
+.ast-site-identity {
+  display: flex;
+  align-items: flex-end;
+  text-transform: uppercase;
+  gap: 16px;
+}
+.ast-site-identity .main-menu {
   margin-left: auto; /* Forzar el menú principal a la derecha */
 }
 
@@ -106,6 +136,10 @@ header.main-header-bar-wrap {
   display: flex; /* Convertir en flex para que los íconos sociales y menú se alineen correctamente */
   justify-content: flex-end; /* Alinear el contenido del lado derecho */
   align-items: center; /* Centrar verticalmente */
+}
+
+.is_centered_left {
+  text-align: left;
 }
 
 /* Menú hamburguesa */
@@ -194,12 +228,57 @@ header.main-header-bar-wrap {
   width: 100vw; /* Ancho completo de la ventana */
   height: 100vh; /* Altura completa de la ventana */
   overflow: hidden; /* Evitar desbordamiento */
+  margin-top: 11px;
+  max-height: 1000px;
 }
 
-/* Swiper Container */
 .swiper-container {
-  width: 100%; /* Asegura que ocupe todo el ancho */
-  height: 100%; /* Asegura que ocupe toda la altura */
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.swiper-slide {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.parallax-layer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.parallax-layer.layer-2 {
+  position: absolute;
+  bottom: 51px;
+  right: 51px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  pointer-events: none; /* opcional: para que no interfiera con interacción */
+}
+
+.parallax-layer.layer-2 .overlay {
+  color: white;
+  max-width: 300px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 /* Barra de navegación vertical */
@@ -321,7 +400,6 @@ header.main-header-bar-wrap {
 /* Layout */
 
 .home h1 {
-  text-align: center !important;
   font-weight: 400 !important;
   font-size: 1.6rem !important;
 }
@@ -368,52 +446,59 @@ form.init input:not([type="submit"]) {
 }
 
 .projects-grid {
-  display: flex; /* Usar Flexbox para disposición horizontal */
-  transition: transform 1s ease; /* Transiciones suaves para la animación */
-  will-change: transform; /* Mejora rendimiento para animaciones */
-  margin-left: 0; /* Asegurarse de que no haya margen izquierdo */
+  display: flex;
+  flex-wrap: nowrap; /* mantiene desplazamiento horizontal */
+  gap: 16px; /* espacio entre ítems */
+  transition: transform 1s ease;
+  will-change: transform;
+  margin-left: 0;
 }
 
 .project-item {
-  flex: 0 0 auto; /* Mantener el ancho de cada elemento */
-  margin-right: 16px; /* Espacio entre los elementos */
-  display: flex; /* Usar flex para centrar el contenido */
-  flex-direction: column; /* Organizar los ítems en columna */
-  align-items: center; /* Centrar items horizontalmente */
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .project-item .thumbnail {
-  height: 300px; /* Asegurar que los elementos tengan la misma altura */
-  width: 300px; /* Asegurar que los elementos tengan la misma anchura */
+  position: relative;
+  width: 100%;
+  padding-top: calc(100% / 1.6); /* proporción 1.6:1 */
+  overflow: hidden;
+  border-radius: 4px;
+  margin-bottom: 0.4rem;
 }
 
-.project-item img {
-  height: 300px; /* Asegurar que los elementos tengan la misma altura */
-  width: 300px; /* Asegurar que los elementos tengan la misma anchura */
-  object-fit: cover; /* Recortar para ajustar la imagen al área */
-  border-radius: 8px; /* Opcional: para esquinas redondeadas */
-  display: block;
+.project-item .thumbnail img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
-.project-item h3 {
-  margin-top: 8px; /* Espacio entre la imagen y el código */
-  font-size: 1.2rem; /* Ajusta el tamaño del texto según el gusto */
-  text-align: center; /* Centrar el texto */
-}
-
-/* Responsividad */
-@media (max-width: 768px) {
-  .vertical-navigation {
-    width: 50px; /* Reducir el ancho en pantallas más pequeñas */
+/* Responsive: 4 por fila en escritorio */
+@media (min-width: 1024px) {
+  .project-item {
+    width: calc((100% - 3 * 16px) / 4); /* 4 columnas, 3 espacios de 16px */
   }
 }
 
-@media (max-width: 480px) {
-  .vertical-navigation {
-    width: 40px; /* Menos ancho en dispositivos muy pequeños */
+/* Responsive: 3 por fila en tablet vertical */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .project-item {
+    width: calc((100% - 2 * 16px) / 3); /* 3 columnas, 2 espacios */
   }
+}
 
-  .nav-item {
-    height: 40px; /* Ajustar altura de los botones en pantallas más pequeñas */
+/* Responsive: 1 por fila en móvil */
+@media (max-width: 767px) {
+  .project-item {
+    width: 100%;
   }
 }

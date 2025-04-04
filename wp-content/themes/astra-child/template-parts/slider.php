@@ -31,25 +31,31 @@
                 ],
             ];
 
-            foreach ($slides as $index => $slide) {
-            ?>
-                <div class="swiper-slide">
-                    <img src="<?php echo esc_url($slide['image']); ?>" alt="<?php echo esc_attr($slide['title']); ?>">
-                    <div class="overlay">
-                        <h2><?php echo esc_html($slide['title']); ?></h2>
-                        <p><?php echo esc_html($slide['description']); ?></p>
-                    </div>
-                </div>
-            <?php } ?>
+    foreach ($slides as $slide) :
+    ?>
+      <div class="swiper-slide">
+        <div class="parallax-layer layer-1">
+          <img src="<?php echo esc_url($slide['image']); ?>" alt="">
+        </div>
+        <div class="parallax-layer layer-2">
+            <div class="overlay">
+                <h2><?php echo esc_html($slide['title']); ?></h2>
+                <p><?php echo esc_html($slide['description']); ?></p>
+            </div>
+        </div>
+      </div>
+    <?php endforeach; ?>
+
         </div>
         
-        <!-- Barra de navegación vertical -->
+        <!-- Barra de navegación vertical
         <div class="vertical-navigation">
-            <?php foreach ($slides as $index => $slide) { ?>
-                <div class="nav-item" data-slide="<?php echo $index; ?>">
+            <?php // foreach ($slides as $index => $slide) { ?>
+                <div class="nav-item" data-slide="<?php // echo $index; ?>">
                     <span></span>
                 </div>
-            <?php } ?>
+            <?php // } ?>
         </div>
+         -->
     </div>
 </div>
