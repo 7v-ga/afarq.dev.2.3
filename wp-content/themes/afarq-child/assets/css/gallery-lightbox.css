@@ -126,7 +126,7 @@
   box-shadow: none;
 }
 .lightbox-overlay {
-  stroke : var(--ast-global-color-3);s
+  stroke: var(--ast-global-color-3);
 }
 polyline,
 line {
@@ -140,7 +140,7 @@ line {
 /* Color base (claro) */
 .lightbox-nav svg,
 .lightbox-close svg {
-  stroke: var(--ast-global-color-3);
+  stroke: var(--ast-global-color-Z);
   transition: stroke 0.2s ease;
 }
 
