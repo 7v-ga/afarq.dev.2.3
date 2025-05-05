@@ -25,6 +25,10 @@ function my_theme_enqueue_assets() {
         wp_enqueue_style('gallery-lightbox-css', get_stylesheet_directory_uri() . '/assets/css/gallery-lightbox.css', array(), time());
         wp_enqueue_script('lightbox-js', get_stylesheet_directory_uri() . '/js/lightbox.js', array(), time(), true);
     }
+
+    if (is_page_template('page-proyectos.php')) {
+        wp_enqueue_style('gallery-grid', get_stylesheet_directory_uri() . '/assets/css/gallery-grid.css', [], time());
+    }
 }
 add_action('wp_enqueue_scripts', 'my_theme_enqueue_assets');
 

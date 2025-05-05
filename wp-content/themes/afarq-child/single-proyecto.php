@@ -29,32 +29,27 @@ get_header(); ?>
             </div>
                 
             <div class="tab-content active" id="descripcion">
-              <?php
-                // Dividir el contenido en dos partes (por párrafo)
-                $content = apply_filters('the_content', get_the_content());
-                $parts = explode('</p>', $content);
-                $first_half = implode('</p>', array_slice($parts, 0, ceil(count($parts) / 2))) . '</p>';
-                $second_half = implode('</p>', array_slice($parts, ceil(count($parts) / 2)));
-              ?>
               <div class="descripcion-extracto">
-                <?php echo '<h1 class="inside_h1">'.get_the_title().'</h1>'.$first_half; ?>
+                <?php echo '<h1 class="inside_h1">'.get_the_title().'</h1>'.get_the_content(); ?>
               </div>
-              <div class="descripcion-completa" style="display: none;">
-                <?php echo $second_half; ?>
-              </div>
-              <button class="leer-mas-btn">Leer más</button>
             </div>
                 
             <div class="tab-content" id="detalles">
               <ul class="detalle-lista">
+                <?php if ($arquitectura = get_field('arquitectura')) : ?>
+                  <li><strong>Arquitectura:</strong> <?php echo esc_html($arquitectura); ?></li>
+                <?php endif; ?>
+                <?php if ($ingenieria = get_field('ingenieria')) : ?>
+                  <li><strong>Ingeniería:</strong> <?php echo esc_html($ingenieria); ?></li>
+                <?php endif; ?>
+                <?php if ($construccion = get_field('construccion')) : ?>
+                  <li><strong>Construcción:</strong> <?php echo esc_html($construccion); ?></li>
+                <?php endif; ?>
                 <?php if ($ubicacion = get_field('ubicacion')) : ?>
                   <li><strong>Ubicación:</strong> <?php echo esc_html($ubicacion); ?></li>
                 <?php endif; ?>
-                <?php if ($ano = get_field('ano')) : ?>
-                  <li><strong>Año:</strong> <?php echo esc_html($ano); ?></li>
-                <?php endif; ?>
-                <?php if ($tipo = get_field('tipo')) : ?>
-                  <li><strong>Tipo:</strong> <?php echo esc_html($tipo); ?></li>
+                <?php if ($fotografia = get_field('fotografia')) : ?>
+                  <li><strong>Fotografía:</strong> <?php echo esc_html($fotografia); ?></li>
                 <?php endif; ?>
               </ul>
             </div>
@@ -125,3 +120,4 @@ get_header(); ?>
 </main><!-- #primary -->
 
 <?php get_footer(); ?>
+

@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const overlay = document.getElementById("lightbox-overlay");
   const lightboxImg = document.getElementById("lightbox-image");
-  const loader = document.getElementById("lightbox-loader");
   const closeBtn = document.querySelector(".lightbox-close");
   const nextBtn = document.querySelector(".lightbox-nav.next");
   const prevBtn = document.querySelector(".lightbox-nav.prev");
@@ -14,12 +13,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const fullSrc =
       images[currentIndex].dataset.full || images[currentIndex].src;
 
-    loader.style.display = "block";
     lightboxImg.classList.remove("loaded");
     lightboxImg.style.opacity = 0;
 
     lightboxImg.onload = () => {
-      loader.style.display = "none";
       lightboxImg.classList.add("loaded");
       console.log("✅ Imagen cargada:", fullSrc);
     };
@@ -47,15 +44,29 @@ document.addEventListener("DOMContentLoaded", function () {
     openLightbox(currentIndex);
   }
 
+  // Click en imágenes
   images.forEach((img, index) => {
     img.style.cursor = "pointer";
     img.addEventListener("click", () => openLightbox(index));
   });
 
-  closeBtn.addEventListener("click", closeLightbox);
-  nextBtn.addEventListener("click", showNext);
-  prevBtn.addEventListener("click", showPrev);
+  // Botones con blur para evitar pegado de foco
+  closeBtn?.addEventListener("click", (e) => {
+    e.currentTarget.blur();
+    closeLightbox();
+  });
 
+  nextBtn?.addEventListener("click", (e) => {
+    e.currentTarget.blur();
+    showNext();
+  });
+
+  prevBtn?.addEventListener("click", (e) => {
+    e.currentTarget.blur();
+    showPrev();
+  });
+
+  // Navegación con teclado
   document.addEventListener("keydown", (e) => {
     if (!overlay.classList.contains("active")) return;
     if (e.key === "Escape") closeLightbox();
@@ -63,6 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.key === "ArrowLeft") showPrev();
   });
 
+  // Swipe en móviles
   let touchStartX = 0;
   let touchEndX = 0;
 
@@ -86,15 +98,11 @@ document.addEventListener("DOMContentLoaded", function () {
   function handleSwipe() {
     const swipeDistance = touchEndX - touchStartX;
     if (Math.abs(swipeDistance) > 50) {
-      if (swipeDistance > 0) {
-        showPrev();
-      } else {
-        showNext();
-      }
+      swipeDistance > 0 ? showPrev() : showNext();
     }
   }
 
-  // ✅ Animación on scroll para las imágenes
+  // Animación con scroll (fade+zoom)
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -104,12 +112,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     },
-    {
-      threshold: 0.1,
-    }
+    { threshold: 0.1 }
   );
 
-  images.forEach((img) => {
-    observer.observe(img);
-  });
+  images.forEach((img) => observer.observe(img));
 });

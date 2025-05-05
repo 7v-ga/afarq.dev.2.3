@@ -31,6 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php
 	astra_body_bottom();
 	wp_footer();
+  if (get_post_type() =="proyecto") {
 ?>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
@@ -62,13 +63,11 @@ if ( ! defined( 'ABSPATH' ) ) {
         }
       });
     </script>
-    <div id="lightbox-overlay" class="lightbox-overlay">
-      <div id="lightbox-loader" class="lightbox-loader"></div>
-      <button class="lightbox-close" aria-label="Cerrar"></button>
-      <img id="lightbox-image" src="" alt="">
-      <button class="lightbox-nav prev" aria-label="Anterior"></button>
-      <button class="lightbox-nav next" aria-label="Siguiente"></button>
-    </div>
+    <div class="lightbox-overlay" id="lightbox-overlay">
+      <?php get_template_part('template-parts/lightbox-controls'); ?>
+      <img id="lightbox-image" alt="Imagen ampliada" />
+    </div>  
 
+    <?php }?>
 	</body>
 </html>

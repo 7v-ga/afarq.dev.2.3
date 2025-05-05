@@ -1,12 +1,20 @@
 /* Galería horizontal por filas con alturas dinámicas */
+.image-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 .image-row img {
-  width: 100%;
+  flex: 1 1 0;
+  min-width: 0;
   height: auto;
-  object-fit: cover;
   display: block;
-  transition: transform 0.3s ease;
+  object-fit: cover;
   cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
 /* Lightbox Overlay */
@@ -24,8 +32,24 @@
 }
 
 .lightbox-overlay.active {
-  visibility: visible;
   opacity: 1;
+  visibility: visible;
+}
+
+#lightbox-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+  opacity: 0;
+  transform: scale(0.97);
+}
+
+#lightbox-image.loaded {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .lightbox-overlay img {
@@ -51,15 +75,27 @@
   transform: scale(1);
 }
 
+/* Botón cerrar */
 .lightbox-close {
   position: absolute;
-  top: 20px;
+  top: 30px;
   right: 30px;
-  width: 30px;
-  height: 30px;
   background: none;
   border: none;
+  padding: 0;
   cursor: pointer;
+  z-index: 10000;
+}
+
+.lightbox-close svg {
+  stroke: white;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease;
+}
+
+.lightbox-close:hover svg {
+  transform: scale(1.2);
 }
 
 .lightbox-close:focus,
@@ -67,37 +103,57 @@
   background: transparent;
 }
 
-.lightbox-close::before,
-.lightbox-close::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 24px;
-  height: 2px;
-  background-color: 1px solid var(--ast-global-color-3);
-  transform-origin: center;
-}
-
-.lightbox-close::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-.lightbox-close::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
+/* Flechas navegación */
 .lightbox-nav {
   position: absolute;
   top: 50%;
-  width: 40px;
-  height: 40px;
+  transform: translateY(-50%);
   background: none;
   border: none;
-  cursor: pointer;
-  transform: translateY(-50%);
-  z-index: 10000;
   padding: 0;
+  cursor: pointer;
+  z-index: 10000;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.lightbox-nav,
+.lightbox-close {
+  backdrop-filter: blur(2px); /* desenfoque sutil */
+  border-radius: 6px;
+  padding: 6px;
+  transition: background-color 0.2s ease;
   box-shadow: none;
+}
+.lightbox-overlay {
+  stroke : var(--ast-global-color-3);s
+}
+polyline,
+line {
+  stroke: var(--ast-global-color-1);
+}
+.lightbox-nav:hover,
+.lightbox-close:hover {
+  background-color: rgba(255, 255, 255, 0.4); /* más visible en hover */
+}
+
+/* Color base (claro) */
+.lightbox-nav svg,
+.lightbox-close svg {
+  stroke: var(--ast-global-color-3);
+  transition: stroke 0.2s ease;
+}
+
+/* Al hacer hover o focus: más visibles */
+.lightbox-nav:hover svg,
+.lightbox-close:hover svg,
+.lightbox-nav:focus svg,
+.lightbox-close:focus svg {
+  stroke: #111; /* negro oscuro */
+}
+
+.lightbox-nav:hover svg {
+  transform: scale(1.2);
 }
 
 .lightbox-nav:focus,
@@ -106,43 +162,12 @@
   background-color: rgba(0, 0, 0, 0.03);
 }
 
-.lightbox-nav::before,
-.lightbox-nav::after {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 24px;
-  top: 0;
-  background: var(--ast-global-color-8);
-  transition: all 0.2s ease;
-}
-
-.lightbox-nav.prev::before {
-  transform: rotate(47deg);
-}
-
-.lightbox-nav.prev::after {
-  transform: translateY(15px) rotate(-47deg);
-}
-.lightbox-nav.next::before {
-  transform: rotate(227deg);
-}
-
-.lightbox-nav.next::after {
-  transform: translateY(-15px) rotate(133deg);
-}
-
 .lightbox-nav.prev {
-  left: 26px;
+  left: 24px;
 }
 
 .lightbox-nav.next {
-  right: 26px;
-}
-
-.lightbox-nav {
-  transition: transform 0.2s ease;
-  cursor: pointer;
+  right: 24px;
 }
 
 #lightbox-image {
