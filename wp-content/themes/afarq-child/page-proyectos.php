@@ -7,7 +7,6 @@ get_header(); ?>
 
 <main id="primary" class="site-main proyectos-archivo">
   <section class="proyectos-galeria">
-    <?php echo '<p style="color:red">Template cargado ✔</p>'; ?>
     <?php
     // Obtener la lista de proyectos desde campo ACF tipo "Relación"
     $proyectos = get_field('galeria_proyectos');
@@ -62,111 +61,6 @@ get_header(); ?>
     ?>
   </section>
 </main>
-
-<style>
-.fila-proyectos {
-  display: flex;
-  gap: 1s0px;
-  width: 100%;
-  align-items: stretch;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-  overflow: hidden;
-  height: auto;
-}
-
-.fila-proyectos.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.fila-1 .proyecto-item { flex: 0 0 calc(100%); }
-.fila-2 .proyecto-item { flex: 0 0 calc(50% - 10px); }
-.fila-3 .proyecto-item { flex: 0 0 calc(33.3333% - 13.33px); }
-.fila-4 .proyecto-item { flex: 0 0 calc(25% - 15px); }
-
-.proyecto-item {
-  position: relative;
-  overflow: hidden;
-  text-decoration: none;
-  color: var(--ast-global-color-2);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  color: 
-}
-
-.proyecto-thumb {
-  width: 100%;
-  overflow: hidden;
-  display: flex;
-  align-items: stretch;
-}
-
-.proyecto-thumb img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: filter 0.4s ease, transform 0.4s ease;
-  object-fit: cover;
-}
-
-.proyecto-info {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: var(--ast-global-color-1);
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  background: rgba(0, 0, 0, 0);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  padding: 0 10px;
-  text-align: center;
-}
-
-.proyecto-info h3,
-.proyecto-info p {
-  margin: 0;
-  color: var(--ast-global-color-3);
-  line-height: 1.3;
-}
-
-.proyecto-info h3 {
-  font-size: 1.2rem;
-}
-
-.proyecto-info p {
-  font-size: 0.95rem;
-  color: var(--ast-global-color-3);
-}
-
-.proyecto-item:hover .proyecto-thumb img {
-  transform: scale(1.04);
-  filter: brightness(340%) saturate(10%) contrast(15%);
-}
-
-.proyecto-item:hover .proyecto-info,
-.proyecto-item:hover .proyecto-info p,
-.proyecto-item:hover .proyecto-info h3 {
-  opacity: 1;
-}
-
-@media (max-width: 768px) {
-  .fila-proyectos {
-    flex-wrap: wrap;
-  }
-  .fila-2 .proyecto-item,
-  .fila-3 .proyecto-item,
-  .fila-4 .proyecto-item {
-    flex: 0 0 100%;
-  }
-}
-</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

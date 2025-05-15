@@ -1,5 +1,5 @@
 .ast-article-single,
-.ast-container {
+.ast-container:not(.main-header-bar .ast-container) {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
@@ -8,13 +8,14 @@
   Contenedor general
 ----------------------------- */
 
+.ast-single-post.ast-page-builder-template .site-main > article {
+  margin-top: 72px;
+  padding-top: 0;
+}
+
 /* -----------------------------
   Imagen destacada full width
 ----------------------------- */
-.proyecto-featured-image {
-  margin-top: 36px;
-}
-
 .proyecto-featured-image img {
   width: 100vw;
   max-width: 100%;
@@ -55,12 +56,13 @@ h1.inside_h1 {
 .tab-btn,
 .leer-mas-btn {
   background: none;
-  padding: 8px 0;
+  padding: 6px 0;
   cursor: pointer;
   font-size: 0.95rem;
   box-shadow: none;
   color: var(--ast-global-color-3);
   margin-right: 30px;
+  border-radius: 0;
 }
 
 .tab-btn:focus,
@@ -101,7 +103,7 @@ h1.inside_h1 {
   Galería horizontal (dinámica)
 ----------------------------- */
 .proyecto-galería {
-  padding: 0 10px 40px;
+  padding: 0 40px 40px;
 }
 .horizontal-gallery {
   display: flex;
@@ -119,7 +121,10 @@ h1.inside_h1 {
 .h-row-3 img {
   aspect-ratio: 2.8 / 2;
 }
-
+.image-row {
+  box-shadow: none;
+  overflow: hidden;
+}
 /* Fallback si no hay clase (usar relación clásica) */
 .image-row img {
   width: 100%;
@@ -127,15 +132,14 @@ h1.inside_h1 {
   object-fit: cover;
   display: block;
   aspect-ratio: 3 / 2;
+  box-shadow: none;
 }
 
 /* NAV */
 .proyecto-navegacion {
   display: flex;
   justify-content: space-between;
-  margin: 60px 0 20px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0 30px;
 }
 
 .nav-arrow {
@@ -171,26 +175,6 @@ h1.inside_h1 {
 }
 .nav-arrow.next:hover {
   transform: translateX(4px);
-}
-
-/* Paginator */
-.proyecto-navegacion {
-  display: flex;
-  justify-content: space-between;
-  margin: 60px 10px 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--ast-global-color-8);
-}
-
-.nav-arrow {
-  font-size: 1.5rem;
-  color: var(--ast-global-color-8);
-  text-decoration: none;
-  font-weight: 400;
-  letter-spacing: -0.05em;
-  transition:
-    transform 0.2s ease,
-    color 0.2s ease;
 }
 
 .nav-arrow:hover {

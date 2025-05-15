@@ -37,25 +37,9 @@
         <div class="parallax-layer layer-1">
           <img src="<?php echo esc_url($slide['image']); ?>" alt="">
         </div>
-        <div class="parallax-layer layer-2">
-            <div class="overlay">
-                <h2><?php echo esc_html($slide['title']); ?></h2>
-                <p><?php echo esc_html($slide['description']); ?></p>
-            </div>
-        </div>
       </div>
     <?php endforeach; ?>
 
         </div>
-        
-        <!-- Barra de navegación vertical
-        <div class="vertical-navigation">
-            <?php // foreach ($slides as $index => $slide) { ?>
-                <div class="nav-item" data-slide="<?php // echo $index; ?>">
-                    <span></span>
-                </div>
-            <?php // } ?>
-        </div>
-         -->
     </div>
 </div>

@@ -26,6 +26,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
 	<?php
 }
 ?>
+<link rel="stylesheet" href="https://use.typekit.net/fcm0fka.css">
 <?php wp_head(); ?>
 <?php astra_head_bottom(); ?>
 </head>

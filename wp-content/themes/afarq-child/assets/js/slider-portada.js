@@ -1,0 +1,92 @@
+document.addEventListener("DOMContentLoaded", function () {
+  const container = document.querySelector(".swiper-wrapper");
+  const slides = Array.from(container.children);
+
+  // Mezclar slides aleatoriamente
+  slides.sort(() => Math.random() - 0.5);
+  slides.forEach((slide) => container.appendChild(slide));
+
+  const swiper = new Swiper(".swiper-container", {
+    loop: true,
+    speed: 2000,
+    effect: "fade",
+    fadeEffect: { crossFade: true },
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false,
+    },
+    on: {
+      slideChangeTransitionStart: function () {
+        aplicarZoom(this);
+      },
+    },
+  });
+
+  let zoomResetTimers = {};
+
+  function aplicarZoom(swiper) {
+    const currentIndex = swiper.realIndex;
+
+    // Limpiar resets anteriores
+    for (const key in zoomResetTimers) {
+      clearTimeout(zoomResetTimers[key]);
+      delete zoomResetTimers[key];
+    }
+
+    // Limpiar clase de todos los slides
+    swiper.slides.forEach((slide) => {
+      slide.classList.remove("zoom-activo");
+    });
+
+    const activeSlide = swiper.slides[swiper.activeIndex];
+    if (!activeSlide) return;
+
+    activeSlide.classList.add("zoom-activo");
+
+    const imgs = activeSlide.querySelectorAll(".parallax-layer img");
+
+    imgs.forEach((img) => {
+      if (img.complete) {
+        animarZoom(img);
+      } else {
+        img.addEventListener("load", () => animarZoom(img), { once: true });
+      }
+    });
+
+    // Reset cuando ya no esté activo
+    zoomResetTimers[currentIndex] = setTimeout(() => {
+      const stillActive = swiper.slides[swiper.activeIndex];
+      const stillActiveIndex = stillActive?.getAttribute(
+        "data-swiper-slide-index"
+      );
+
+      if (
+        stillActiveIndex !== null &&
+        stillActiveIndex.toString() !== currentIndex.toString()
+      ) {
+        imgs.forEach((img) => {
+          img.style.transition = "transform 2s ease";
+          img.style.transform = "scale(1)";
+        });
+        delete zoomResetTimers[currentIndex];
+      }
+    }, 7000);
+  }
+
+  function animarZoom(img) {
+    img.style.transition = "none";
+    img.style.transform = "scale(1)";
+    setTimeout(() => {
+      img.style.transition = "transform 8s ease-in-out";
+      img.style.transform = "scale(1.4)";
+    }, 50);
+  }
+
+  // 🚀 Iniciar Swiper y aplicar zoom al primer slide justo después
+  swiper.init();
+
+  // 🔧 Ejecutar zoom inicial manualmente tras init
+  setTimeout(() => {
+    aplicarZoom(swiper);
+  }, 100);
+});

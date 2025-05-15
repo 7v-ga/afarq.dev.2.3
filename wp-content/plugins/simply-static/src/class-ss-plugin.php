@@ -151,6 +151,9 @@ class Plugin {
 		require_once $path . 'src/class-ss-view.php';
 		require_once $path . 'src/class-ss-url-extractor.php';
 		require_once $path . 'src/class-ss-url-fetcher.php';
+		require_once $path . 'src/background/class-ss-async-request.php';
+		require_once $path . 'src/background/class-ss-background-process.php';
+		require_once $path . 'src/tasks/exceptions/class-ss-pause-exception.php';
 		require_once $path . 'src/class-ss-archive-creation-job.php';
 		require_once $path . 'src/tasks/traits/class-skip-further-processing-exception.php';
 		require_once $path . 'src/tasks/traits/trait-can-process-pages.php';
@@ -163,6 +166,7 @@ class Plugin {
 		require_once $path . 'src/tasks/class-ss-wrapup-task.php';
 		require_once $path . 'src/tasks/class-ss-cancel-task.php';
 		require_once $path . 'src/tasks/class-ss-generate-404-task.php';
+		require_once $path . 'src/tasks/class-ss-scan-all-task.php';
 		require_once $path . 'src/handlers/class-ss-page-handler.php';
 		require_once $path . 'src/class-ss-query.php';
 		require_once $path . 'src/models/class-ss-model.php';
@@ -254,6 +258,36 @@ class Plugin {
 	}
 
 	/**
+	 * Handle pause archive job.
+	 *
+	 * @return void
+	 */
+	public function pause_static_export() {
+		// Clear WP object cache.
+		wp_cache_flush();
+
+		// Cancel export.
+		$this->archive_creation_job->pause();
+
+		$this->get_archive_creation_job()->save_status_message( "Export paused.", 'pause', true );
+	}
+
+	/**
+	 * Handle resume archive job.
+	 *
+	 * @return void
+	 */
+	public function resume_static_export() {
+		// Clear WP object cache.
+		wp_cache_flush();
+
+		$this->get_archive_creation_job()->save_status_message( "Export resumed.", 'resume', true );
+
+		// Cancel export.
+		$this->archive_creation_job->resume();
+	}
+
+	/**
 	 * Handle cancel archive job.
 	 *
 	 * @return void
@@ -261,6 +295,8 @@ class Plugin {
 	public function cancel_static_export() {
 		// Clear WP object cache.
 		wp_cache_flush();
+
+		$this->get_archive_creation_job()->save_status_message( "Export cancelled.", 'cancel', true );
 
 		// Cancel export.
 		$this->archive_creation_job->cancel();
@@ -383,9 +419,17 @@ class Plugin {
 	 * @return array The list of tasks to process.
 	 */
 	public function filter_task_list( $task_list, $delivery_method ): array {
-		array_push( $task_list, 'setup', 'fetch_urls' );
 
-		$generate_404 = $this->options->get( 'generate_404' );
+		$generate_404            = $this->options->get( 'generate_404' );
+		$scan_themes_plugins_dir = $this->options->get( 'scan_themes_plugins_dir' );
+
+		$task_list[] = 'setup';
+
+		if ( $scan_themes_plugins_dir ) {
+			$task_list[] = 'scan_themes_plugins_dir';
+		}
+
+		$task_list[] = 'fetch_urls';
 
 		// Add 404 task
 		if ( $generate_404 ) {

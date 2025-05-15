@@ -1,0 +1,58 @@
+.full-slider {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  margin-top: 11px;
+  max-height: 1000px;
+}
+
+.swiper-container,
+.swiper-wrapper,
+.swiper-slide {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.swiper-slide.zoom-activo .overlay-text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.parallax-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.parallax-layer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1);
+  transition: transform 8s ease-in-out;
+  will-change: transform;
+}
+
+/* Opcional: overlays tipo texto/logo */
+.parallax-layer.layer-2 {
+  position: absolute;
+  bottom: 51px;
+  right: 51px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  pointer-events: none;
+}

@@ -1,0 +1,70 @@
+.parallax-layer.layer-2 .overlay {
+  max-width: 300px;
+}
+
+/* Barra de navegación vertical */
+.vertical-navigation {
+  display: flex; /* Usar flexbox para alinear los nav-items uno debajo del otro */
+  flex-direction: column; /* Alinear verticalmente los elementos */
+  align-items: center; /* Centrar los botones horizontalmente */
+  position: absolute;
+  top: 50%; /* Centrar verticalmente */
+  left: 20px; /* Separación del borde izquierdo de la ventana */
+  height: 50%; /* Mitad de la altura del slider */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.4
+  ); /* Fondo blanco con opacidad del 80% */
+  width: 4px; /* Grosor de la barra de navegación */
+  z-index: 5; /* Asegúrate de que este valor sea menor que el del menú */
+  transform: translateY(-50%); /* Centrar verticalmente */
+}
+
+/* Estilos para los elementos de navegación (botones) */
+.nav-item {
+  height: 30px; /* Altura de los botones */
+  width: 4px; /* Grosor de los botones */
+  border: none; /* Sin bordes */
+  cursor: pointer; /* Cambia el cursor al pasar sobre la barra */
+  transition: background-color 0.3s; /* Transición para el hover */
+  display: block; /* Mantener el display block */
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* Estilo del botón activo visible */
+.nav-item.active {
+  background-color: rgba(
+    255,
+    255,
+    255,
+    1
+  ); /* Fondo oscuro cuando el slider está activo */
+}
+
+/* Estilo para el hover */
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* Fondo al pasar el cursor */
+}
+
+/* Estilo del overlay */
+.overlay {
+  position: absolute; /* Para superponer sobre la imagen */
+  bottom: 40px; /* Alineación hacia la parte inferior */
+  left: 40px; /* Ajustando la posición */
+  color: var(--ast-global-color-4);
+  text-align: left;
+  font-weight: 400; /* Peso menor para el texto */
+  padding: 10px; /* Espaciado alrededor del texto */
+}
+
+.overlay h2 {
+  font-size: 1.2rem;
+  text-transform: none;
+  margin: 0;
+  color: var(--ast-global-color-4);
+}

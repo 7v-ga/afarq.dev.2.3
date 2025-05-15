@@ -16,7 +16,10 @@ h4,
 h5,
 .entry-content h6,
 h6 {
-  color: var(--ast-global-color-3) !important;
+  color: var(--ast-global-color-3);
+  font-family: aptos, sans-serif;
+  font-weight: 300;
+  font-style: normal;
 }
 
 .entry-content h1,
@@ -31,43 +34,60 @@ h4,
 h5,
 .entry-content h6,
 h6 {
-  font-family: "Neou", sans-serif !important;
 }
 
-.entry-content h1,
+strong {
+  font-weight: 600;
+}
+p {
+  font-style: normal;
+}
+.ast-container {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.site .site-content #primary .ast-article-single,
+.ast-separate-container .site-content #secondary .widget {
+  padding-top: 120px;
+}
+
+.ast-page-builder-template .entry-header {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 h1 {
   text-align: center;
+  font-weight: 300 !important;
+  font-size: 32px !important;
+  margin-bottom: 0 !important;
 }
 
 header.main-header-bar-wrap {
-  width: 100%; /* Asegurar que el contenedor principal del encabezado ocupe todo el ancho */
-  position: fixed; /* Mantener fijo en la parte superior al hacer scroll */
-  margin: 0; /* Eliminar márgenes que puedan estar restringiendo el ancho */
-  padding: 0; /* Eliminar cualquier padding si es necesario */
-  width: 100%; /* Asegurar que el header sea de ancho completo */
+  width: 100%;
+  position: fixed;
+  margin: 0;
+  padding: 0;
+  width: 100%;
   z-index: 8;
 }
 
 .main-header-bar {
-  background-color: rgba(255, 255, 255, 1); /* Inicialmente transparente */
-  transition: background-color 1s ease; /* Transición suave para el fondo */
+  background-color: rgba(255, 255, 255, 1);
+  transition: background-color 1s ease;
   border-bottom: none;
   padding: 4px 0;
 }
 
 .site-branding {
-  position: relative; /* Necesario para la animación del logo */
-  top: -100px; /* Inicialmente fuera de la vista */
-  transition: top 1s ease; /* Transición para el movimiento del logo */
+  position: relative;
+  top: -100px;
+  transition: top 1s ease;
 }
 
 .header-fade {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.6
-  ); /* Fondo del header con opacidad al hacer scroll */
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
 .site-description {
@@ -77,11 +97,16 @@ header.main-header-bar-wrap {
 .ast-site-identity {
   display: flex;
   align-items: flex-end;
-  text-transform: uppercase;
-  gap: 16px;
+  text-transform: lowercase;
+  gap: 30px;
+  font-size: 17px;
+  padding: 20px 0;
+}
+.site-description {
+  margin-bottom: -2px;
 }
 .ast-site-identity .main-menu {
-  margin-left: auto; /* Forzar el menú principal a la derecha */
+  margin-left: auto;
 }
 
 .social-icons {
@@ -98,43 +123,41 @@ header.main-header-bar-wrap {
 
 .social-menu li {
   margin: 0 8px;
+  line-height: 14px;
 }
 
 .social-menu a {
   text-decoration: none;
   color: #555;
   transition: color 0.3s;
-}
-
-.social-menu a:hover {
-  color: #d05c49;
+  font-size: 17px;
 }
 
 .scroll-logo {
-  top: 0; /* La posición final del logo */
+  top: 0;
 }
 
 .main-header-container {
-  display: flex; /* Usar Flexbox para el diseño */
-  justify-content: space-between; /* Espacio entre elementos */
-  align-items: center; /* Centrar verticalmente */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .ast-logo {
-  flex: 1; /* Permitir que el logotipo ocupe espacio proporcionalmente */
-  text-align: center; /* Centrar horizontalmente el logotipo */
+  flex: 1;
+  text-align: center;
 }
 
 .ast-flex.main-header-container {
-  display: flex; /* Asegúrate de que es flex */
-  justify-content: space-between; /* Espacio entre el contenido */
-  align-items: center; /* Centrar verticalmente */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .ast-grid-right-center-section {
-  display: flex; /* Convertir en flex para que los íconos sociales y menú se alineen correctamente */
-  justify-content: flex-end; /* Alinear el contenido del lado derecho */
-  align-items: center; /* Centrar verticalmente */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .is_centered_left {
@@ -143,72 +166,70 @@ header.main-header-bar-wrap {
 
 /* Menú hamburguesa */
 .menu-toggle {
-  display: flex; /* Mostrar siempre el menú hamburguesa */
+  display: flex;
   flex-direction: column;
   cursor: pointer;
-  position: relative; /* Necesario para el posicionamiento de la X */
-  z-index: 20; /* Mantener el botón sobre otros elementos */
+  position: relative;
+  z-index: 20;
   background-color: transparent;
+  padding-right: 0;
 }
 
 /* Al pasar el ratón sobre el botón de hamburguesa, no cambiar el fondo */
 .menu-toggle:hover {
-  background-color: transparent; /* Mantener el fondo transparente en hover */
+  background-color: transparent;
 }
-
 .bar {
-  height: 2px; /* Altura de las barras */
-  width: 30px; /* Ancho de las barras */
-  background-color: var(
-    --ast-global-color-8
-  ); /* Color más oscuro para las barras */
-  margin: 3px 0; /* Espaciado entre las barras */
-  transition: all 0.3s ease; /* Transiciones suaves */
+  height: 1px;
+  width: 22px;
+  background-color: var(--ast-global-color-8);
+  margin: 3px 0;
+  transition: all 0.3s ease;
 }
 
 /* Transformar las barras a una X */
 .menu-toggle.open .bar:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-  width: 32px;
+  transform: translateY(7px) rotate(45deg);
+  width: 22px;
 }
 
 .menu-toggle.open .bar:nth-child(2) {
-  opacity: 0; /* Hacer desaparecer la barra del medio */
+  opacity: 0;
 }
 
 .menu-toggle.open .bar:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-  width: 32px;
+  transform: translateY(-7px) rotate(-45deg);
+  width: 22px;
 }
 
 /* Estilo del menú */
 .nav {
-  display: none; /* Ocultar el menú por defecto */
-  position: fixed; /* Permitir que cubra completamente la ventana */
+  display: none;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%; /* Cubrir toda la ventana */
-  height: 100%; /* Hacer que el menú cubra toda la ventana */
+  width: 100%;
+  height: 100%;
   background: var(--ast-global-color-5);
-  justify-content: center; /* Centrar el contenido */
-  align-items: center; /* Centrar verticalmente */
-  opacity: 0; /* Inicialmente oculto */
-  transition: opacity 0.5s ease-in; /* Efecto de transición para la opacidad */
-  z-index: 10; /* Cambia este valor para asegurarte de que el menú esté encima */
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+  z-index: 10;
 }
 
 .nav.active {
-  display: flex; /* Mostrar el menú al ser activado */
-  flex-direction: column; /* Orientar el menú verticalmente */
-  opacity: 0.9; /* Opacidad máxima al mostrar el menú */
+  display: flex;
+  flex-direction: column;
+  opacity: 0.9;
 }
 
 /* Lista de navegación */
 .nav-list {
-  list-style: none; /* Eliminar el estilo de lista */
+  list-style: none;
   padding: 0;
-  margin: 0; /* Asegurar que no haya margen */
-  text-align: center; /* Centrar el texto de los enlaces */
+  margin: 0;
+  text-align: center;
 }
 
 .nav-list ul {
@@ -217,205 +238,44 @@ header.main-header-bar-wrap {
 }
 
 .nav-list li {
-  margin: 20px 0; /* Espacio entre los elementos del menú */
+  margin: 20px 0;
 }
 
 .nav-list li a {
-  text-decoration: none; /* Eliminación del subrayado */
-  font-size: 2rem; /* Tamaño de fuente actualizado */
-}
-
-/* Swiper.js */
-/* Contenedor del slider */
-.full-slider {
-  position: relative; /* No fijado para permitir el scroll */
-  width: 100vw; /* Ancho completo de la ventana */
-  height: 100vh; /* Altura completa de la ventana */
-  overflow: hidden; /* Evitar desbordamiento */
-  margin-top: 11px;
-  max-height: 1000px;
-}
-
-.swiper-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.swiper-slide {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.parallax-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.parallax-layer img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.parallax-layer.layer-2 {
-  position: absolute;
-  bottom: 51px;
-  right: 51px;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-  pointer-events: none; /* opcional: para que no interfiera con interacción */
-}
-
-.parallax-layer.layer-2 .overlay {
-  color: white;
-  max-width: 300px;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
-}
-
-/* Barra de navegación vertical */
-.vertical-navigation {
-  display: flex; /* Usar flexbox para alinear los nav-items uno debajo del otro */
-  flex-direction: column; /* Alinear verticalmente los elementos */
-  align-items: center; /* Centrar los botones horizontalmente */
-  position: absolute;
-  top: 50%; /* Centrar verticalmente */
-  left: 20px; /* Separación del borde izquierdo de la ventana */
-  height: 50%; /* Mitad de la altura del slider */
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.4
-  ); /* Fondo blanco con opacidad del 80% */
-  width: 4px; /* Grosor de la barra de navegación */
-  z-index: 5; /* Asegúrate de que este valor sea menor que el del menú */
-  transform: translateY(-50%); /* Centrar verticalmente */
-}
-
-/* Estilos para los elementos de navegación (botones) */
-.nav-item {
-  height: 30px; /* Altura de los botones */
-  width: 4px; /* Grosor de los botones */
-  border: none; /* Sin bordes */
-  cursor: pointer; /* Cambia el cursor al pasar sobre la barra */
-  transition: background-color 0.3s; /* Transición para el hover */
-  display: block; /* Mantener el display block */
-}
-
-.nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.7);
-}
-
-/* Estilo del botón activo visible */
-.nav-item.active {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    1
-  ); /* Fondo oscuro cuando el slider está activo */
-}
-
-/* Estilo para el hover */
-.nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.3); /* Fondo al pasar el cursor */
-}
-
-/* Estilos para las imágenes y el overlay */
-.swiper-slide img {
-  transition: transform 7s ease; /* Suave transición para el zoom */
-}
-
-.swiper-slide-active img {
-  transform: scale(1.018); /* Aumentar levemente el tamaño de la imagen */
-}
-
-.swiper-slide img {
-  display: block; /* Eliminar espacio en línea */
-  width: 100%; /* Asegura que las imágenes ocupen todo el ancho */
-  height: 100%; /* Asegura que las imágenes ocupen toda la altura */
-  object-fit: cover; /* Asegura que la imagen cubra el área sin deformarse */
-}
-
-.row-flex-half > * {
-  display: flex;
-  flex-wrap: nowrap;
-}
-
-/* Estilo del overlay */
-.overlay {
-  position: absolute; /* Para superponer sobre la imagen */
-  bottom: 40px; /* Alineación hacia la parte inferior */
-  right: 40px; /* Ajustando la posición */
-  color: #fff; /* Color del texto */
-  text-align: right; /* Justificar el texto a la izquierda */
-  font-weight: 400; /* Peso menor para el texto */
-  padding: 10px; /* Espaciado alrededor del texto */
-}
-
-.overlay h2 {
-  font-size: 1.6rem; /* Un tamaño más razonable para el título */
-  margin: 0; /* Sin márgenes adicionales */
+  text-decoration: none;
+  font-size: 2rem;
 }
 
 /* Estilo para el contenido adicional */
 /* Este código se puede eliminar si no hay contenido adicional. */
 .content {
-  padding: 20px; /* Espaciado alrededor del contenido */
-  background-color: white; /* Fondo blanco para el contenido */
-  z-index: 1; /* Asegúrate de que esté frente al slider */
-  position: relative; /* Para permitir el flujo normal del contenido */
+  padding: 20px;
+  background-color: white;
+  z-index: 1;
+  position: relative;
 }
 
 /* Metric Widget */
 .metric-container {
-  display: flex; /* Usar flexbox para disposición horizontal */
-  justify-content: space-between; /* Espacio entre columnas */
-  max-width: 770px !important; /* Ancho máximo total */
-  margin: 0 auto; /* Centrar el contenedor */
-  padding: 20px; /* Espaciado interno */
+  display: flex;
+  justify-content: space-between;
+  max-width: 770px !important;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .metric {
-  text-align: center; /* Centrar texto en cada columna */
-  flex: 1; /* Permitir que las columnas tengan el mismo ancho */
-  margin: 0 10px; /* Espacio entre columnas */
+  text-align: center;
+  flex: 1;
+  margin: 0 10px;
 }
 
 .metric-count {
-  font-size: 2.5rem; /* Tamaño grande para los contadores */
-  margin-bottom: 10px !important;
-  font-weight: 400 !important;
+  font-size: 40px;
+  margin-bottom: 0 !important;
 }
 
 /* Layout */
-
-.home h1 {
-  font-weight: 400 !important;
-  font-size: 1.6rem !important;
-}
-
-h2 {
-  font-size: 1.6rem !important;
-}
-
-h3 {
-  font-size: 1.4rem !important;
-}
-
 .inner-width {
   max-width: 750px !important;
 }
@@ -444,15 +304,15 @@ form.init input:not([type="submit"]) {
 
 /* Proyectos destacados */
 .outstanding-projects {
-  overflow: hidden; /* Ocultar el desbordamiento */
-  width: 100%; /* Asegurar que ocupe todo el ancho */
-  position: relative; /* Para permitir el desplazamiento del contenedor interno */
+  overflow: hidden;
+  width: 100%;
+  position: relative;
 }
 
 .projects-grid {
   display: flex;
-  flex-wrap: nowrap; /* mantiene desplazamiento horizontal */
-  gap: 16px; /* espacio entre ítems */
+  flex-wrap: nowrap;
+  gap: 16px;
   transition: transform 1s ease;
   will-change: transform;
   margin-left: 0;
@@ -470,7 +330,7 @@ form.init input:not([type="submit"]) {
 .project-item .thumbnail {
   position: relative;
   width: 100%;
-  padding-top: calc(100% / 1.6); /* proporción 1.6:1 */
+  padding-top: calc(100% / 1.6);
   overflow: hidden;
   border-radius: 4px;
   margin-bottom: 0.4rem;
@@ -486,17 +346,57 @@ form.init input:not([type="submit"]) {
   border-radius: 4px;
 }
 
+/* Clases */
+.align-flex-end {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.align-flex-end p {
+  margin-bottom: 0;
+}
+
+/* Forms */
+.wpcf7 form.wpcf7-form > div,
+.wpcf7 form.wpcf7-form > div p {
+  margin-bottom: 12px;
+}
+
+/* Parallax */
+.parallax-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-container img {
+  display: block;
+}
+
 /* Responsive: 4 por fila en escritorio */
 @media (min-width: 1024px) {
   .project-item {
-    width: calc((100% - 3 * 16px) / 4); /* 4 columnas, 3 espacios de 16px */
+    width: calc((100% - 3 * 16px) / 4);
   }
 }
 
 /* Responsive: 3 por fila en tablet vertical */
 @media (min-width: 768px) and (max-width: 1023px) {
   .project-item {
-    width: calc((100% - 2 * 16px) / 3); /* 3 columnas, 2 espacios */
+    width: calc((100% - 2 * 16px) / 3);
   }
 }
 

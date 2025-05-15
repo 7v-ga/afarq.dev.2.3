@@ -14,14 +14,23 @@
   display: block;
   object-fit: cover;
   cursor: pointer;
-  transition: transform 0.3s ease;
+}
+
+.lightbox-img {
+  opacity: 0;
+  transition: opacity 1.8s ease-out;
+}
+
+.lightbox-img.visible {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Lightbox Overlay */
 .lightbox-overlay {
   position: fixed;
   inset: 0;
-  background: var(--ast-global-color-7);
+  background-color: var(--ast-global-color-4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -44,12 +53,6 @@
     opacity 0.4s ease,
     transform 0.4s ease;
   opacity: 0;
-  transform: scale(0.97);
-}
-
-#lightbox-image.loaded {
-  opacity: 1;
-  transform: scale(1);
 }
 
 .lightbox-overlay img {
@@ -57,22 +60,6 @@
   max-height: 90vh;
   object-fit: contain;
   transition: transform 0.3s ease;
-}
-
-#lightbox-image {
-  max-width: 90vw;
-  max-height: 90vh;
-  object-fit: contain;
-  opacity: 0;
-  transform: scale(0.98);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
-}
-
-#lightbox-image.loaded {
-  opacity: 1;
-  transform: scale(1);
 }
 
 /* Botón cerrar */
@@ -85,22 +72,17 @@
   padding: 0;
   cursor: pointer;
   z-index: 10000;
+  box-shadow: none;
 }
 
 .lightbox-close svg {
-  stroke: white;
-  width: 24px;
-  height: 24px;
-  transition: transform 0.2s ease;
+  stroke: var(--ast-global-color-3);
+  width: 18px;
+  height: 18px;
 }
 
-.lightbox-close:hover svg {
-  transform: scale(1.2);
-}
-
-.lightbox-close:focus,
 .lightbox-close:hover {
-  background: transparent;
+  background-color: transparent !important;
 }
 
 /* Flechas navegación */
@@ -108,83 +90,38 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
+  background-color: transparent;
   border: none;
   padding: 0;
-  cursor: pointer;
   z-index: 10000;
   transition: transform 0.2s ease;
   cursor: pointer;
-}
-
-.lightbox-nav,
-.lightbox-close {
-  backdrop-filter: blur(2px); /* desenfoque sutil */
-  border-radius: 6px;
-  padding: 6px;
-  transition: background-color 0.2s ease;
   box-shadow: none;
 }
-.lightbox-overlay {
-  stroke: var(--ast-global-color-3);
-}
+
 polyline,
 line {
-  stroke: var(--ast-global-color-1);
-}
-.lightbox-nav:hover,
-.lightbox-close:hover {
-  background-color: rgba(255, 255, 255, 0.4); /* más visible en hover */
-}
-
-/* Color base (claro) */
-.lightbox-nav svg,
-.lightbox-close svg {
-  stroke: var(--ast-global-color-Z);
-  transition: stroke 0.2s ease;
-}
-
-/* Al hacer hover o focus: más visibles */
-.lightbox-nav:hover svg,
-.lightbox-close:hover svg,
-.lightbox-nav:focus svg,
-.lightbox-close:focus svg {
-  stroke: #111; /* negro oscuro */
-}
-
-.lightbox-nav:hover svg {
-  transform: scale(1.2);
+  stroke: var(--ast-global-color-3);
+  stroke-width: 1px;
 }
 
 .lightbox-nav:focus,
 .lightbox-nav:hover {
-  transform: translateY(-50%) scale(1.25);
-  background-color: rgba(0, 0, 0, 0.03);
+  transform: translateY(-50%) scale(1.12);
+  background-color: transparent !important;
 }
 
 .lightbox-nav.prev {
-  left: 24px;
+  left: 22px;
 }
 
 .lightbox-nav.next {
-  right: 24px;
-}
-
-#lightbox-image {
-  opacity: 0;
-  transform: scale(0.98);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+  right: 22px;
 }
 
 #lightbox-image.loaded {
   opacity: 1 !important;
   transform: scale(1);
-}
-
-.nav-arrow.next:hover {
-  transform: translateX(4px);
 }
 
 @keyframes spin {
@@ -197,18 +134,4 @@ line {
   .image-row img {
     aspect-ratio: 4 / 3 !important;
   }
-}
-
-.lightbox-img {
-  opacity: 0;
-  transform: scale(0.93);
-  transition:
-    opacity 0.8s ease-out,
-    transform 0.8s ease-out;
-  will-change: opacity, transform;
-}
-
-.lightbox-img.visible {
-  opacity: 1;
-  transform: scale(1);
 }
