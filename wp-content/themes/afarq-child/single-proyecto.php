@@ -23,24 +23,16 @@ get_header(); ?>
                 
           <!-- Tabs -->
           <div class="proyecto-tabs">
-            <div class="tab-buttons">
-              <button class="tab-btn active" data-tab="descripcion">Descripción</button>
-              <button class="tab-btn" data-tab="detalles">Detalles</button>
-            </div>
                 
-            <div class="tab-content active" id="descripcion">
-              <div class="descripcion-extracto">
-                <?php echo '<h1 class="inside_h1">'.get_the_title().'</h1>'.get_the_content(); ?>
-              </div>
-            </div>
-                
-            <div class="tab-content" id="detalles">
+            <div class="tab-content active" id="detalles">
+
+              <?php echo '<h1 class="inside_h1">'.get_the_title().'</h1><br>'; ?>
               <ul class="detalle-lista">
                 <?php if ($arquitectura = get_field('arquitectura')) : ?>
                   <li><strong>Arquitectura:</strong> <?php echo esc_html($arquitectura); ?></li>
                 <?php endif; ?>
-                <?php if ($ingenieria = get_field('ingenieria')) : ?>
-                  <li><strong>Ingeniería:</strong> <?php echo esc_html($ingenieria); ?></li>
+                <?php if ($superficie = get_field('superficie')) : ?>
+                  <li><strong>Superficie:</strong> <?php echo esc_html($superficie); ?></li>
                 <?php endif; ?>
                 <?php if ($construccion = get_field('construccion')) : ?>
                   <li><strong>Construcción:</strong> <?php echo esc_html($construccion); ?></li>
@@ -96,21 +88,53 @@ get_header(); ?>
           ));
 
           ?>
-          <div class="proyecto-navegacion">
-            <?php if (!empty($prev_post)) : ?>
-              <a class="nav-arrow prev" href="<?php echo get_permalink($prev_post[0]); ?>" aria-label="Proyecto anterior">
-                <span class="arrow">&larr;</span>
-                <span class="label"><?php echo esc_html(get_the_title($prev_post[0])); ?></span>
-              </a>
-            <?php endif; ?>         
+          <?php
+// Obtener lista ordenada desde la página de inicio (suponiendo ID = 2 o usando slug)
+$inicio = get_page_by_path('inicio'); // o get_post(2);
+$lista = get_field('galeria_proyectos', $inicio);
 
-            <?php if (!empty($next_post)) : ?>
-              <a class="nav-arrow next" href="<?php echo get_permalink($next_post[0]); ?>" aria-label="Proyecto siguiente">
-                <span class="label"><?php echo esc_html(get_the_title($next_post[0])); ?></span>
-                <span class="arrow">&rarr;</span>
-              </a>
-            <?php endif; ?>
-          </div>
+$proyecto_actual_id = get_the_ID();
+$anterior = null;
+$siguiente = null;
+
+if ($lista && is_array($lista)) {
+  $ids = array_map(function ($item) {
+    return is_object($item) ? $item->ID : intval($item);
+  }, $lista);
+
+  $pos = array_search($proyecto_actual_id, $ids);
+
+  if ($pos !== false) {
+    $anterior_id = $ids[$pos - 1] ?? null;
+    $siguiente_id = $ids[$pos + 1] ?? null;
+
+    $anterior = $anterior_id ? get_post($anterior_id) : null;
+    $siguiente = $siguiente_id ? get_post($siguiente_id) : null;
+  }
+}
+?>
+
+<div class="proyecto-navegacion">
+  <?php if ($anterior) : ?>
+    <a class="nav-arrow prev" href="<?php echo get_permalink($anterior); ?>" aria-label="Proyecto anterior">
+      <span class="arrow">&larr;</span>
+      <span class="label"><?php echo esc_html(get_the_title($anterior)); ?></span>
+    </a>
+  <?php endif; ?>
+
+  <a class="nav-arrow view-all" href="<?php echo esc_url(site_url('/nuestros-proyectos')); ?>" aria-label="Ver todos los proyectos">
+    <span class="label">Ver todos</span>
+    <img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/view-all.svg" alt="Ver todos" />
+  </a>
+
+  <?php if ($siguiente) : ?>
+    <a class="nav-arrow next" href="<?php echo get_permalink($siguiente); ?>" aria-label="Proyecto siguiente">
+      <span class="label"><?php echo esc_html(get_the_title($siguiente)); ?></span>
+      <span class="arrow">&rarr;</span>
+    </a>
+  <?php endif; ?>
+</div>
+
 
       </article>
 

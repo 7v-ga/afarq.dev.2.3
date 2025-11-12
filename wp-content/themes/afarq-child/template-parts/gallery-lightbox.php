@@ -4,13 +4,11 @@ $distribucion_txt = get_field('galeria_distribucion');
 
 if (!$galeria_html) return;
 
-// Extraer <img> del WYSIWYG
 preg_match_all('/<img[^>]+>/i', $galeria_html, $matches);
 $imagenes = $matches[0];
 $total = count($imagenes);
 $index = 0;
 
-// Procesar distribución escrita como: "3,2,1"
 $distribucion = array_filter(array_map('intval', explode(',', $distribucion_txt)));
 
 if (empty($distribucion)) {
@@ -28,31 +26,48 @@ foreach ($distribucion as $fila => $cantidad_por_fila) {
 
   echo '<div class="image-row">';
 
+  $ratios = [];
+  $imagenes_fila = [];
+
   for ($j = 0; $j < $cantidad_por_fila && $index < $total; $j++, $index++) {
     $img_html = $imagenes[$index];
 
-    // Obtener src original
     preg_match('/src="([^"]+)"/', $img_html, $src_match);
     $src = $src_match[1] ?? '';
     $attachment_id = attachment_url_to_postid($src);
 
+    $ratio = 1; // default cuadrado
     if ($attachment_id) {
-      $full = wp_get_attachment_url($attachment_id);
-    } else {
-      $full = preg_replace('/-\d+x\d+\.(jpg|png|webp)/i', '.$1', $src);
+      $meta = wp_get_attachment_metadata($attachment_id);
+      $w = $meta['width'] ?? 1;
+      $h = $meta['height'] ?? 1;
+      $ratio = $w / $h;
     }
 
+    $imagenes_fila[] = [
+      'src' => esc_url($src),
+      'ratio' => $ratio,
+      'attachment_id' => $attachment_id,
+    ];
+  }
+
+  $total_ratio = array_sum(array_column($imagenes_fila, 'ratio'));
+
+  foreach ($imagenes_fila as $img) {
+    $flex = $img['ratio'] / $total_ratio;
+
+    echo '<div class="image-wrapper" style="flex: ' . $flex . '">';
     echo '<img 
-      src="' . esc_url($full) . '" 
-      data-full="' . esc_url($full) . '" 
-      loading="lazy" 
-      decoding="async" 
-      class="lightbox-img" 
+      src="' . esc_url($img['src']) . '" 
+      data-full="' . esc_url($img['src']) . '"
+      loading="lazy"
+      decoding="async"
+      class="lightbox-img"
       alt="" />';
+    echo '</div>';
   }
 
   echo '</div>';
 }
 
 echo '</div>';
-?>

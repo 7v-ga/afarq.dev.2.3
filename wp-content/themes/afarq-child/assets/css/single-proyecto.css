@@ -1,16 +1,15 @@
+/* -----------------------------
+  Reset Astra contenedores
+----------------------------- */
 .ast-article-single,
 .ast-container:not(.main-header-bar .ast-container) {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
-/* -----------------------------
-  Contenedor general
------------------------------ */
-
 .ast-single-post.ast-page-builder-template .site-main > article {
   margin-top: 72px;
-  padding-top: 0;
+  padding-top: 0 !important;
 }
 
 /* -----------------------------
@@ -23,6 +22,7 @@
   display: block;
   object-fit: cover;
   margin: 0;
+  box-shadow: none;
 }
 
 /* -----------------------------
@@ -100,46 +100,175 @@ h1.inside_h1 {
 }
 
 /* -----------------------------
-  Galería horizontal (dinámica)
+  Galería horizontal dinámica
 ----------------------------- */
 .proyecto-galería {
   padding: 0 40px 40px;
 }
+
 .horizontal-gallery {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
-/* Alturas variables por fila usando aspect-ratio */
-.h-row-1 img {
-  aspect-ratio: 5 / 3;
-}
-.h-row-2 img {
-  aspect-ratio: 3 / 2.2;
-}
-.h-row-3 img {
-  aspect-ratio: 2.8 / 2;
-}
 .image-row {
-  box-shadow: none;
-  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
-/* Fallback si no hay clase (usar relación clásica) */
+
+.image-wrapper {
+  display: block;
+  height: auto;
+}
+
+.image-wrapper img,
 .image-row img {
   width: 100%;
   height: auto;
-  object-fit: cover;
   display: block;
-  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  cursor: pointer;
+  box-shadow: none;
+  transition:
+    opacity 1.8s ease-out,
+    transform 0.8s ease-out;
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.image-wrapper img.visible,
+.image-row img.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* -----------------------------
+  Lightbox
+----------------------------- */
+.lightbox-img {
+  opacity: 0;
+  transition: opacity 1.8s ease-out;
+}
+
+.lightbox-img.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--ast-global-color-4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+
+.lightbox-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+#lightbox-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+  opacity: 0;
+}
+
+#lightbox-image.loaded {
+  opacity: 1 !important;
+  transform: scale(1);
+}
+
+.lightbox-overlay img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+/* Botón cerrar */
+.lightbox-close {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 10000;
   box-shadow: none;
 }
 
-/* NAV */
+.lightbox-close svg {
+  stroke: var(--ast-global-color-3);
+  width: 18px;
+  height: 18px;
+}
+
+.lightbox-close:hover {
+  background-color: transparent !important;
+}
+
+/* Navegación en lightbox */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  z-index: 10000;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.lightbox-nav:focus,
+.lightbox-nav:hover {
+  transform: translateY(-50%) scale(1.12);
+  background-color: transparent !important;
+}
+
+.lightbox-nav.prev {
+  left: 22px;
+}
+
+.lightbox-nav.next {
+  right: 22px;
+}
+
+polyline,
+line {
+  stroke: var(--ast-global-color-3);
+  stroke-width: 1px;
+}
+
+/* -----------------------------
+  Navegación entre proyectos
+----------------------------- */
 .proyecto-navegacion {
-  display: flex;
   justify-content: space-between;
-  margin: 0 30px;
+  align-items: center;
+  margin: 0 36px;
+  gap: 20px;
+  position: relative;
+  width: calc(100% - 76px);
+  display: block;
+  height: 80px;
 }
 
 .nav-arrow {
@@ -149,9 +278,8 @@ h1.inside_h1 {
   display: flex;
   align-items: center;
   gap: 10px;
-  transition:
-    transform 0.2s ease,
-    color 0.2s ease;
+  transition: color 0.2s ease;
+  position: absolute;
 }
 
 .nav-arrow .label {
@@ -162,24 +290,62 @@ h1.inside_h1 {
   transition: opacity 0.2s ease;
 }
 
-.nav-arrow:hover {
-  color: #000;
+.nav-arrow.prev {
+  left: 0;
+}
+.nav-arrow.next {
+  right: 0;
+}
+
+.nav-arrow.prev:hover {
+  transform: translateX(-4px);
+  color: var(--ast-global-color-3);
+}
+
+.nav-arrow.next:hover {
+  transform: translateX(4px);
+  color: var(--ast-global-color-3);
 }
 
 .nav-arrow:hover .label {
   opacity: 1;
 }
 
-.nav-arrow.prev:hover {
-  transform: translateX(-4px);
-}
-.nav-arrow.next:hover {
-  transform: translateX(4px);
+/* Botón View All */
+.nav-arrow.view-all {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  gap: 6px;
+  text-align: center;
+  transform: none !important;
+  left: calc(50% - 24px);
+  top: -10px;
 }
 
-.nav-arrow:hover {
-  transform: translateX(-4px);
-  color: var(--ast-global-color-4);
+.nav-arrow.view-all img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.nav-arrow.view-all .label {
+  font-size: 0.8rem;
+  color: var(--ast-global-color-3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  line-height: 1.2;
+}
+
+.nav-arrow.view-all:hover {
+  opacity: 1;
+}
+
+.nav-arrow.view-all:hover .label {
+  opacity: 1;
 }
 
 /* -----------------------------
@@ -189,8 +355,13 @@ h1.inside_h1 {
   .proyecto-title {
     font-size: 2rem;
   }
+}
 
-  .image-row img {
-    aspect-ratio: 3 / 2.4 !important;
+/* -----------------------------
+  Utilidades
+----------------------------- */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

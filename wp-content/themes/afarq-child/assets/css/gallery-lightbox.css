@@ -2,7 +2,7 @@
 .image-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 12px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -14,6 +14,24 @@
   display: block;
   object-fit: cover;
   cursor: pointer;
+  box-shadow: none;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition:
+    opacity 1.8s ease-out,
+    transform 0.8s ease-out;
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.image-wrapper img.visible {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .lightbox-img {
@@ -127,11 +145,5 @@ line {
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 768px) {
-  .image-row img {
-    aspect-ratio: 4 / 3 !important;
   }
 }

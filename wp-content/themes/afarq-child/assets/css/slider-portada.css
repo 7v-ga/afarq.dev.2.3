@@ -40,7 +40,7 @@
   object-fit: cover;
   display: block;
   transform: scale(1);
-  transition: transform 8s ease-in-out;
+  transition: transform 6s ease-in-out;
   will-change: transform;
 }
 

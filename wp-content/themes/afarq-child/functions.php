@@ -22,13 +22,15 @@ function my_theme_enqueue_assets() {
 
     if (is_singular('proyecto')) {
         wp_enqueue_style('single-proyecto', get_stylesheet_directory_uri() . '/assets/css/single-proyecto.css', array(), time());
-        wp_enqueue_style('gallery-lightbox-css', get_stylesheet_directory_uri() . '/assets/css/gallery-lightbox.css', array(), time());
         wp_enqueue_script('lightbox-js', get_stylesheet_directory_uri() . '/assets/js/lightbox.js', array(), time(), true);
     }
 
-    if (is_page_template('page-proyectos.php')) {
+    global $post;
+    if (isset($post) && has_shortcode($post->post_content, 'galeria_proyectos')) {
         wp_enqueue_style('gallery-grid', get_stylesheet_directory_uri() . '/assets/css/page-proyectos.css', [], time());
+        wp_enqueue_script('proyectos-script', get_stylesheet_directory_uri() . '/assets/js/masonry-proyectos.js', [], time(), true);
     }
+
 }
 add_action('wp_enqueue_scripts', 'my_theme_enqueue_assets');
 
@@ -274,3 +276,80 @@ function afarq_enqueue_parallax() {
     get_stylesheet_directory_uri() . '/assets/js/parallax.js', array(), time(), true);
 }
 add_action('wp_enqueue_scripts', 'afarq_enqueue_parallax');
+
+// Galería de proyectos Shortcode
+function shortcode_galeria_proyectos($atts) {
+    ob_start();
+
+    $post_id = get_the_ID(); // usa el ID de la página actual
+    $proyectos = get_field('galeria_proyectos', $post_id);
+    $distribucion_raw = get_field('galeria_distribucion', $post_id);
+    $bloques = !empty($distribucion_raw) ? explode(',', $distribucion_raw) : ['3x300'];
+
+    if (empty($proyectos)) {
+        echo '<p>No hay proyectos para mostrar.</p>';
+        return ob_get_clean();
+    }
+
+    $distribucion = [];
+    foreach ($bloques as $bloque) {
+        if (preg_match('/(\d+)x(\d+)/', trim($bloque), $matches)) {
+            $distribucion[] = [
+                'cantidad' => (int)$matches[1],
+                'altura' => (int)$matches[2]
+            ];
+        }
+    }
+
+    $index = 0;
+    $proyecto_idx = 0;
+    $total = count($proyectos);
+
+    echo '<div class="proyectos-galeria">';
+    while ($proyecto_idx < $total) {
+        $conf = $distribucion[$index % count($distribucion)];
+        $fotos_en_fila = $conf['cantidad'];
+        $fila_height = $conf['altura'];
+
+        $fila_proyectos = array_slice($proyectos, $proyecto_idx, $fotos_en_fila);
+
+        echo '<div class="fila-proyectos fade-up" data-altura-base="' . $fila_height . '">';
+
+        foreach ($fila_proyectos as $proyecto) {
+            $thumb = get_field('imagen_grid', $proyecto->ID);
+            $titulo = get_the_title($proyecto->ID);
+            $link = get_permalink($proyecto->ID);
+
+            $thumb_url = '';
+            $ratio = null;
+
+            if ($thumb && is_numeric($thumb)) {
+                $thumb_url = wp_get_attachment_image_url($thumb, 'large');
+                $meta = wp_get_attachment_metadata($thumb);
+                $width = $meta['width'] ?? 0;
+                $height = $meta['height'] ?? 0;
+                if ($width > 0 && $height > 0) {
+                    $ratio = $width / $height;
+                }
+            } else {
+                $thumb_url = is_string($thumb) ? esc_url($thumb) : get_stylesheet_directory_uri() . '/assets/img/placeholder.jpg';
+            }
+
+            $ratio_attr = $ratio ? ' data-ratio="' . round($ratio, 4) . '"' : '';
+
+            echo '<a href="' . esc_url($link) . '" class="proyecto-item"' . $ratio_attr . '>';
+            echo '<div class="proyecto-thumb"><img src="' . $thumb_url . '" alt="' . esc_attr($titulo) . '"></div>';
+            echo '<div class="proyecto-info"><h3>' . esc_html($titulo) . '</h3></div>';
+            echo '</a>';
+        }
+
+        echo '</div>';
+
+        $proyecto_idx += $fotos_en_fila;
+        $index++;
+    }
+    echo '</div>';
+
+    return ob_get_clean();
+}
+add_shortcode('galeria_proyectos', 'shortcode_galeria_proyectos');

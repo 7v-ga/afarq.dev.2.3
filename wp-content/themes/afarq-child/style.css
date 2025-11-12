@@ -3,6 +3,13 @@ Theme Name: AFARQ Child
 Template: astra
 */
 
+.ast-plain-container,
+.ast-page-builder-template,
+.site-below-footer-wrap[data-section="section-below-footer-builder"],
+.site-primary-footer-wrap[data-section="section-primary-footer-builder"] {
+  background-color: var(--ast-global-color-7);
+}
+
 body,
 .entry-content h1,
 h1,
@@ -36,15 +43,34 @@ h5,
 h6 {
 }
 
+.site-primary-footer-wrap[data-section="section-primary-footer-builder"] {
+  border-top: 1px solid var(--ast-global-color-1);
+  font-size: 0.9rem;
+}
+
 strong {
   font-weight: 600;
 }
 p {
   font-style: normal;
 }
+
+.entry-content > .wp-block-group.full-width {
+  padding: 0;
+}
+
+.site .site-content #primary .ast-article-single,
 .ast-container {
   padding-left: 40px;
   padding-right: 40px;
+}
+
+.ast-page-builder-template
+  .entry-content[data-ast-blocks-layout]
+  > .alignwide:not(.uagb-is-root-container)
+  > *,
+.ast-page-builder-template .entry-content[data-ast-blocks-layout] > * {
+  max-width: var(--wp--style--global--content-size) !important;
 }
 
 .site .site-content #primary .ast-article-single,
@@ -74,8 +100,7 @@ header.main-header-bar-wrap {
 }
 
 .main-header-bar {
-  background-color: rgba(255, 255, 255, 1);
-  transition: background-color 1s ease;
+  background-color: var(--ast-global-color-7);
   border-bottom: none;
   padding: 4px 0;
 }
@@ -210,7 +235,7 @@ header.main-header-bar-wrap {
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--ast-global-color-5);
+  background-color: var(--ast-global-color-7);
   justify-content: center;
   align-items: center;
   opacity: 0;

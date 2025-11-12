@@ -8,11 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const swiper = new Swiper(".swiper-container", {
     loop: true,
-    speed: 2000,
+    speed: 1800,
     effect: "fade",
     fadeEffect: { crossFade: true },
     autoplay: {
-      delay: 5000,
+      delay: 4900,
       disableOnInteraction: false,
     },
     on: {
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
         stillActiveIndex.toString() !== currentIndex.toString()
       ) {
         imgs.forEach((img) => {
-          img.style.transition = "transform 2s ease";
+          img.style.transition = "transform 1.8s ease";
           img.style.transform = "scale(1)";
         });
         delete zoomResetTimers[currentIndex];
@@ -77,8 +77,8 @@ document.addEventListener("DOMContentLoaded", function () {
     img.style.transition = "none";
     img.style.transform = "scale(1)";
     setTimeout(() => {
-      img.style.transition = "transform 8s ease-in-out";
-      img.style.transform = "scale(1.4)";
+      img.style.transition = "transform 8.6s ease-in-out";
+      img.style.transform = "scale(1.22)";
     }, 50);
   }
 
