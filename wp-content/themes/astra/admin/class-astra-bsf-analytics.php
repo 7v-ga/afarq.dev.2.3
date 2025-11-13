@@ -67,6 +67,7 @@ class Astra_BSF_Analytics {
 					'path'                => ASTRA_THEME_DIR . 'inc/lib/bsf-analytics',
 					'author'              => 'brainstormforce',
 					'time_to_display'     => '+24 hours',
+					'hide_optin_checkbox' => true,
 
 					/* Deactivation Survey */
 					'deactivation_survey' => apply_filters(
@@ -163,11 +164,158 @@ class Astra_BSF_Analytics {
 			'using_old_header_footer'      => $is_hf_builder_active ? 'no' : 'yes',
 			'loading_google_fonts_locally' => isset( $admin_dashboard_settings['self_hosted_gfonts'] ) && $admin_dashboard_settings['self_hosted_gfonts'] ? 'yes' : 'no',
 			'preloading_local_fonts'       => isset( $admin_dashboard_settings['preload_local_fonts'] ) && $admin_dashboard_settings['preload_local_fonts'] ? 'yes' : 'no',
+			'hosting_provider'             => self::get_hosting_provider(),
 		);
+
+		// Add onboarding analytics data.
+		self::add_astra_onboarding_analytics_data( $astra_stats );
 
 		$stats_data['plugin_data']['astra'] = array_merge_recursive( $stats_data['plugin_data']['astra'], $astra_stats );
 
 		return $stats_data;
+	}
+
+	/**
+	 * Add Astra onboarding analytics data.
+	 *
+	 * @param array $astra_stats Reference to the astra stats data.
+	 *
+	 * @since 4.11.12
+	 * @return array
+	 */
+	public static function add_astra_onboarding_analytics_data( &$astra_stats ) {
+		// Get onboarding analytics data from option.
+		/** @psalm-suppress UndefinedClass */
+		$option_name     = is_callable( '\One_Onboarding\Core\Register::get_option_name' )
+			? \One_Onboarding\Core\Register::get_option_name( 'astra' )
+			: 'astra_onboarding';
+		$onboarding_data = get_option( $option_name, array() );
+
+		// Return if no onboarding data.
+		if ( empty( $onboarding_data ) || ! is_array( $onboarding_data ) ) {
+			return;
+		}
+
+		// Process skipped screens.
+		if ( isset( $onboarding_data['screens'] ) && is_array( $onboarding_data['screens'] ) ) {
+			// Determine the last screen.
+			$last_screen = isset( $onboarding_data['completion_screen'] ) ? $onboarding_data['completion_screen'] : 'done';
+
+			// Transform the screen keys to their descriptive names.
+			$skipped_screens = array();
+			foreach ( $onboarding_data['screens'] as $screen ) {
+				if ( ! isset( $screen['id'] ) ) {
+					continue;
+				}
+
+				$screen_id = $screen['id'];
+
+				// Break if we've reached the last screen.
+				if ( $screen_id === $last_screen ) {
+					break;
+				}
+
+				$skipped = isset( $screen['skipped'] ) ? $screen['skipped'] : $screen_id !== $last_screen;
+				if ( $skipped ) {
+					$skipped_screens[] = $screen_id;
+				}
+			}
+
+			// Add the skipped screens as an array.
+			$astra_stats['onboarding_skipped_screens'] = $skipped_screens;
+		}
+
+		// Process pro features.
+		if ( isset( $onboarding_data['pro_features'] ) && is_array( $onboarding_data['pro_features'] ) ) {
+			$astra_stats['onboarding_selected_pro_features'] = $onboarding_data['pro_features'];
+		}
+
+		// Process selected starter templates builder.
+		$astra_stats['onboarding_selected_st_builder'] = isset( $onboarding_data['starter_templates_builder'] ) ? $onboarding_data['starter_templates_builder'] : '';
+
+		// Process selected addons
+		if ( isset( $onboarding_data['selected_addons'] ) && is_array( $onboarding_data['selected_addons'] ) ) {
+			$astra_stats['onboarding_selected_addons'] = $onboarding_data['selected_addons'];
+		}
+
+		// Onboarding Completion Status.
+		$astra_stats['boolean_values']['onboarding_completed'] = isset( $onboarding_data['completion_screen'] ) && ! empty( $onboarding_data['completion_screen'] );
+		if ( $astra_stats['boolean_values']['onboarding_completed'] ) {
+			$astra_stats['onboarding_completion_screen'] = isset( $onboarding_data['completion_screen'] ) ? $onboarding_data['completion_screen'] : '';
+		}
+
+		// Onboarding Exit Status.
+		if ( isset( $onboarding_data['exited_early'] ) ) {
+			$astra_stats['boolean_values']['onboarding_exited_early'] = (bool) $onboarding_data['exited_early'];
+		}
+	}
+
+	/**
+	 * Get the hosting provider (ASN Organization) for the current site.
+	 *
+	 * @param string      $ip    Optional. IP address to look up. Defaults to server IP.
+	 * @param string|null $token Optional. ipinfo.io API token for higher rate limits.
+	 *
+	 * @return string|null Hosting provider name (ASN org), or null if not detected.
+	 */
+	public static function get_hosting_provider( $ip = '', $token = null ) {
+		if ( 'local' === wp_get_environment_type() ) {
+			return null; // Skip on local environments.
+		}
+
+		$transient_key = 'ast' . md5( 'hosting_provider' );
+		// If no IP provided, try to get the current server IP.
+		$is_current_server = false;
+		if ( ! $ip ) {
+			// Fetch from transient only for current server IP.
+			$cached = get_transient( $transient_key );
+			if ( $cached ) {
+				return $cached;
+			}
+
+			$is_current_server = true;
+			$ip                = $_SERVER['SERVER_ADDR'] ?? null;
+		}
+
+		// Fallback: resolve server name.
+		if ( ! $ip || $ip === '127.0.0.1' || $ip === '::1' ) {
+			$hostname = $_SERVER['SERVER_NAME'] ?? 'localhost';
+			$ip       = gethostbyname( $hostname );
+		}
+
+		// Optional: fallback to external service for public IP.
+		if ( ! $ip || $ip === '127.0.0.1' || $ip === '::1' ) {
+			$response = wp_remote_get( 'https://api.ipify.org' );
+			if ( ! is_wp_error( $response ) ) {
+				$ip = trim( wp_remote_retrieve_body( $response ) );
+			}
+		}
+
+		if ( ! $ip ) {
+			return null; // Could not detect IP.
+		}
+
+		// Query ipinfo.io.
+		$url      = "https://ipinfo.io/{$ip}/json" . ( $token ? "?token={$token}" : '' );
+		$response = wp_remote_get( $url, array( 'timeout' => 5 ) );
+		if ( is_wp_error( $response ) ) {
+			return null;
+		}
+
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( ! empty( $data['org'] ) ) {
+			// Example: "AS13335 Cloudflare, Inc."
+			$parts            = explode( ' ', $data['org'], 2 );
+			$hosting_provider = isset( $parts[1] ) ? $parts[1] : $data['org'];
+
+			// Cache the result for current server IP only.
+			if ( $is_current_server ) {
+				set_transient( $transient_key, $hosting_provider, defined( 'MONTH_IN_SECONDS' ) ? MONTH_IN_SECONDS : 30 * DAY_IN_SECONDS );
+			}
+			return $hosting_provider;
+		}
+
+		return null;
 	}
 
 	/**

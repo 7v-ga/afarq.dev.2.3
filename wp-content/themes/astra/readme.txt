@@ -5,7 +5,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: custom-menu, custom-logo, entertainment, featured-images, full-width-template, one-column, two-columns, left-sidebar, e-commerce, right-sidebar, custom-colors, editor-style, featured-images, full-width-template, microformats, post-formats, rtl-language-support, theme-options, threaded-comments, translation-ready, blog
 Tested up to: 6.8
 Requires PHP: 5.3
-Stable tag: 4.11.0
+Stable tag: 4.11.15
 
 Astra is fast, fully customizable & beautiful WordPress theme suitable for blog, personal portfolio, business website and WooCommerce storefront.
 
@@ -17,7 +17,7 @@ It offers special features and templates so it works perfectly with all page bui
 
 Looking for a perfect base theme? Look no further. Astra is fast, fully customizable and WooCommerce ready theme that you can use for building any kind of website!
 
-The Astra WordPress theme is lightning-fast and highly customizable. It has over 1 million downloads and the only theme in the world with 5,700+ five-star reviews! 
+The Astra WordPress theme is lightning-fast and highly customizable. It has over 1 million downloads and the only theme in the world with 6,000+ five-star reviews! 
 
 It’s ideal for professional web designers, solopreneurs, small businesses, eCommerce, membership sites and any type of website.
 
@@ -119,9 +119,23 @@ https://underscores.me/, (C) 2012-2020 Automattic, Inc., [GPLv2 or later](https:
 Astra local fonts feature is based on Webfonts Loader by WordPress Themes Team (WPTT). (https://github.com/WPTT/webfont-loader)
 Licensed under MIT ( https://github.com/WPTT/webfont-loader/blob/master/LICENSE )
 
+= WP Background Processing =
+
+Astra uses a modified version of WP Background Processing library for handling background tasks efficiently.
+Original library by Delicious Brains (https://github.com/deliciousbrains/wp-background-processing)
+Licensed under GNU GPL v2.0 or later.
+
 = Privacy Policy =
 
 Astra uses a YouTube video embedded in the Astra dashboard to provide helpful information and tutorials.
 Please note that YouTube may collect user data as outlined in their Privacy Policy (https://policies.google.com/privacy).
 No personal data is collected or stored by the Astra theme itself through this video embed.
 For more details on YouTube’s data collection, please refer to their Terms of Service (https://www.youtube.com/t/terms) and Privacy Policy (https://policies.google.com/privacy).
+
+== Frequently Asked Questions ==
+
+= How can I report a security bug? =
+
+We take plugin security extremely seriously. If you discover a security vulnerability, please report it in a safe and responsible manner.
+
+You can report the issue through our [Bug Bounty Program](https://brainstormforce.com/bug-bounty-program/).

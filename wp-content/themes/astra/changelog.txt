@@ -1,10 +1,123 @@
 *** Astra Changelog ***
 
+2025-11-11 - version 4.11.15
+* Fix: Astra theme was throwing a ReactDOM console warning in the Customizer.
+
+2025-11-04 - version 4.11.14
+* Improvement: Enhanced accessibility for the “Skip to Content” link.
+* Fix: Resolved an issue where the forum title was not displayed on the frontend when using the BuddyBoss plugin with the Forum module enabled.
+* Fix: Resolved an issue in WooCommerce integration to ensure quantity buttons are disabled for “sold individually” products on single product pages.
+* Fix: Resolved an issue where Google Fonts in the Customizer showed limited font weights in Astra.
+* Fix: Resolved a minor issue where the Columns block might not display at full width in some cases.
+* Fix: Resolved a broken color picker UI issue in the Blog Archive metabox.
+
+2025-10-07 - version 4.11.13
+* Improvement: Added lazy-loading for Google Fonts in Customizer to improve performance and reduce extra PHP memory consume by loading fonts via AJAX only when needed.
+* Improvement: Added LifterLMS compatibility on course catalog page.
+* Improvement: Improved post filter color settings spacing.
+* Fix: Fixed incorrect aspect ratios for Vimeo and YouTube embeds.
+* Fix: Fixed JavaScript error 'wc_add_to_cart_params is not defined' when using EDD cart widget in header builder.
+* Fix: Resolved an issue where the Off-Canvas Menu did not work correctly with the Sticky Header.
+
+2025-09-16 - version 4.11.12
+* New: Streamlined onboarding flow for quicker setup and an easier path to building websites with Astra and Starter Templates.
+* Improvement: Added LifterLMS compatibility on the course catalog page.
+* Improvement: Optimized mobile menu initialization to use DOMContentLoaded instead of window.load for faster responsiveness on content-heavy pages.
+* Improvement: Added consistency for empty cart button styling in WooCommerce mini cart.
+* Fix: Resolved issue where the logo disappeared when the primary menu was empty by ensuring the custom logo remains visible regardless of menu state.
+* Fix: Corrected the aria-expanded attribute not updating for mobile menu toggle buttons in flyout and fullscreen header types.
+* Fix: Resolved issue with padding not applying on single and archive pages.
+* Fix: Corrected misaligned color picker in Related Posts → Design → Content Colors options.
+
+2025-09-09 - version 4.11.11
+* Improvement: Enhanced the loading performance of the Quantity Plus and Minus buttons by using placeholders.
+* Improvement: Updated archive, special, and single pages to automatically swap left/right positioning for full RTL compatibility.
+* Improvement: Refined the Site Identity section UI in the Style Guide for better clarity and usability.
+* Improvement: Added a new astra_elementor_use_default_settings filter to allow skipping Elementor-specific modifications for empty posts.
+* Improvement: Dark palettes (e.g., palette 4) are now correctly detected and styled as dark mode even if colors are customized.
+* Improvement: Resolved custom SVG attribute conflicts to improve SVG UI rendering.
+* Improvement: Added the astra_html_widget_allowed_html filter to allow custom HTML elements in header/footer HTML widgets.
+* Fix: Resolved an issue where the copyright element’s bottom margin was not applied across all devices.
+* Fix: Fixed an issue where HTML select/option elements were displayed as plain text in header/footer HTML widgets.
+* Fix: Corrected responsive font sizing for text in the Archive Title section.
+* Fix: Corrected a dynamic CSS issue in the Search Page Title section.
+* Fix: Fixed Elementor CSS cache issue where page title display settings were not updated after saving posts.
+
+2025-08-20 - version 4.11.10
+* Improvement: Fixed duplicate menu IDs in navigation components to improve WCAG 2.0 accessibility compliance.
+* Improvement: Enhanced accessibility to prevent screen readers from announcing fly-out navigation content when it is hidden.
+* Fix: Resolved the Astra dashboard compatibility issue with the Gutenberg plugin, where sprintf was not defined.
+* Fix: Resolved minor UI styling issues in Customizer controls.
+* Fix: Corrected an issue where the post title appeared in the Elementor editor even when disabled, ensuring proper sync with Elementor’s Hide Title option.
+* Fix: Corrected content scrolling issue in Beaver Builder editor when the header off-canvas flyout menu is enabled.
+
+2025-08-11 - version 4.11.9
+* Improvement: Compatibility with Spectra V3.
+* Improvement: Improved accessibility of Header Builder elements, particularly the toggle menu.
+* Improvement: Improved compatibility with the GenerateBlocks plugin to ensure proper styling from block settings.
+* Fix: Resolved syncing issue between Astra meta settings in the WP and the Elementor editor for newly created pages.
+
+2025-07-30 - version 4.11.8
+* New: Added an option to use custom SVG code in the Social Icons widget.
+* Improvement: Enhanced off-canvas menu keyboard navigation with proper focus management and ESC key support (WCAG 2.1 compliance).
+* Fix: Resolved an alignment issue with the WooCommerce mini cart item count.
+* Fix: Resolved an issue where the remove icon for taxonomy options displayed raw SVG HTML in the Customizer control.
+* Fix: Resolved an issue where the "Dropdown Target Link" option closed the menu panel instead of opening the corresponding submenu.
+* Fix: Unwanted Cart markup visible inside the customizer before the footer area.
+
+2025-07-17 - version 4.11.7
+* Updated the NPS Survey library to incorporate the latest enhancements.
+
+2025-07-16 - version 4.11.6
+* Improvement: Updated live search results background to use a dynamic color variable for better dark mode support.
+* Improvement: Improved accessibility by assigning explicit roles to the header and footer widget areas to ensure proper landmark structure.
+* Improvement: Added a filter to exclude specific post types (such as SureForms) from Astra meta key registration to avoid errors.
+* Improvement: Prevented WooCommerce-related CSS selectors from dynamic CSS when WooCommerce is not installed or activated, reducing unnecessary output and improving code cleanliness.
+* Improvement: Added consistent button styling across the editor and frontend on a fresh setup.
+* Fix: Resolved a quantity update button conflict with Beaver Themer.
+* Fix: Resolved an issue where WPForms styling incorrectly applied dark mode CSS when the File Generation option was enabled.
+* Fix: Resolved a layout conflict between the WooPack Off-Canvas Cart module and the Beaver Themer header in Astra.
+
+2025-07-01 - version 4.11.5
+* This version includes an updated package to ensure compatibility with Astra UTM links on wp.org.
+
+2025-07-01 - version 4.11.4
+* Improvement: Improved anchor link behavior across pages to prevent content from being hidden behind the sticky header.
+* Improvement: Made Cart flyout navigation and WooCommerce product gallery image slider keyboard accessible with proper focus indicators.
+* Improvement: Ensured feature image, category, tag, and post filter buttons are focusable with visible input highlight for better navigation.
+* Fix: Resolved warning in breadcrumb trail by adding proper checks for post type rewrite rules and slug access.
+* Fix: Corrected tooltip icon positioning in WooCommerce Customizer settings.
+* Fix: Footer row layout change button is not updating properly.
+
+2025-06-17 - version 4.11.3
+* New: Enabled access to Astra Meta Settings inside the Elementor Editor under the Page Settings panel.
+* Fix: Social Sharing icons aligned uniformly with transparent backgrounds.
+* Fix: Off-Canvas menu dropdown not closing when using Sticky Header animation or on scroll-down behavior.
+* Fix: Resolved an issue with saving the Footer Builder layout in Customizer draft mode.
+* Fix: Resolved an issue where the new multiselect control was not saving the subsection value properly.
+* Fix: Resolved an issue where extra bottom margin CSS was being applied to Stack and Group blocks inside the editor.
+
+2025-06-05 - version 4.11.2
+* New: We've completely redesigned the Astra Dashboard with our new Force UI components, delivering a modern interface & enhanced user experience.
+* Improvement: Improvised Accessibility of the Off-canvas menu section by ensuring consistent toggle behavior during keyboard navigation and interaction.
+* Fix: Submenu item divider color and size options not applying correctly on responsive devices when the primary menu is placed inside the Off-Canvas section.
+* Fix: Resolved RTL alignment issue in Footer Builder where inner text did not respect right-to-left direction.
+* Fix: Prevented Spectra Tabs from triggering the off-canvas close event when switching tabs inside the Mega Menu.
+
+2025-05-20 - version 4.11.1
+* Improvement: Ensured consistent cart icon display across the preview and Customizer selector control.
+* Improvement: Enhanced text visibility during webfont loading for a better reading experience.
+* Improvement: Optimized Customizer performance by deferring non-critical data loading via AJAX, resulting in reduced memory usage.
+* Fix: Resolved Customizer loading conflict with Astra Pro and Gravity Forms by optimizing performance.
+* Fix: Inconsistent font size rendering for semantic inline text-level elements to ensure visual consistency with surrounding text.
+* Fix: Resolved an issue where switching between Customizer tabs failed in edge cases.
+
 2025-05-07 - version 4.11.0
 * New: Introducing a new polished UI for the Astra Customizer, offering an improved user experience and refreshed design. (https://wpastra.com/docs/astra-customizer-refined-ui/)
 * Improvement: Enhanced accessibility in post grid and search input markup.
 * Improvement: Added a filter to control the loading of Dark Mode compatibility CSS.
 * Fix: Resolved an issue where the submenu border radius was not applying correctly for inner menu links on hover.
+* Fix: Resolved a UI issue with the shipping country dropdown when WooCommerce notices were displayed.
 
 2025-04-24 - version 4.10.1
 * Fix: Resolved a dark mode styling behavior where <legend> elements were affected globally, even when dark mode was disabled.

@@ -1,4 +1,4 @@
-# Copyright (C) 2024 ThemeIsle
+# Copyright (C) 2025 ThemeIsle
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
@@ -9,9 +9,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-11-12T10:58:15+00:00\n"
+"POT-Creation-Date: 2025-09-05T11:16:36+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: neve-fse\n"
 
 #. Theme Name of the theme
@@ -41,6 +41,7 @@ msgstr ""
 
 #. translators: %s message to upgrade PHP to the latest version
 #: functions.php:53
+#, php-format
 msgid "Hey, we've noticed that you're running an outdated version of PHP which is no longer supported. Make sure your site is fast and secure, by %1$s. Neve FSE's minimal requirement is PHP%2$s."
 msgstr ""
 
@@ -49,81 +50,92 @@ msgid "upgrading PHP to the latest version"
 msgstr ""
 
 #. translators: %s: commands to run the theme
-#: functions.php:105
+#: functions.php:106
+#, php-format
 msgid "You appear to be running the Neve FSE theme from source code. Please finish installation by running %s."
 msgstr ""
 
-#: inc/Admin.php:96
+#: inc/Admin.php:97
 msgid "Dismiss"
 msgstr ""
 
-#: inc/Admin.php:97
+#: inc/Admin.php:98
 msgid "Neve FSE recommends"
 msgstr ""
 
-#: inc/Admin.php:98
-#: inc/Admin.php:326
+#: inc/Admin.php:99
+#: inc/Admin.php:327
 msgid "Learn More"
 msgstr ""
 
 #. translators: %s: FSE Design Pack:
-#: inc/Admin.php:101
+#: inc/Admin.php:102
+#, php-format
 msgid "%s Access a collection of 40+ layout patterns ready to import to your website"
 msgstr ""
 
-#: inc/Admin.php:224
+#: inc/Admin.php:225
 msgid "Neve FSE Logo"
 msgstr ""
 
-#: inc/Admin.php:226
+#: inc/Admin.php:227
 msgid "We value your feedback"
 msgstr ""
 
-#: inc/Admin.php:228
+#: inc/Admin.php:229
 msgid "Thank you for trying Neve FSE. We would love to hear your thoughts on how we can enhance and improve the theme even further. Would you mind taking a moment to share your insights through a quick survey?"
 msgstr ""
 
-#: inc/Admin.php:233
+#: inc/Admin.php:234
 msgid "Take the survey"
 msgstr ""
 
-#: inc/Admin.php:237
+#: inc/Admin.php:238
 msgid "Maybe later"
 msgstr ""
 
-#: inc/Admin.php:289
+#: inc/Admin.php:290
 msgid "Activating"
 msgstr ""
 
-#: inc/Admin.php:290
+#: inc/Admin.php:291
 msgid "Installing"
 msgstr ""
 
-#: inc/Admin.php:291
+#: inc/Admin.php:292
 msgid "Done"
 msgstr ""
 
-#: inc/Admin.php:299
+#: inc/Admin.php:300
 msgid "Otter Blocks preview"
 msgstr ""
 
 #. translators: %s: Otter Blocks
-#: inc/Admin.php:305
+#: inc/Admin.php:306
+#, php-format
 msgid "Power up your website building experience with %s!"
 msgstr ""
 
-#: inc/Admin.php:309
+#: inc/Admin.php:310
 msgid "Otter is a Gutenberg Blocks page builder plugin that adds extra functionality to the WordPress Block Editor (also known as Gutenberg) for a better page building experience without the need for traditional page builders."
 msgstr ""
 
 #. translators: %s: Otter Blocks
-#: inc/Admin.php:319
+#: inc/Admin.php:320
+#, php-format
 msgid "Activate %s"
 msgstr ""
 
 #. translators: %s: Otter Blocks
-#: inc/Admin.php:321
+#: inc/Admin.php:322
+#, php-format
 msgid "Install & Activate %s"
+msgstr ""
+
+#. translators: %1$s - plugin namce, %2$s - HTML tag, %3$s - discount, %4$s - HTML tag, %5$s - company name.
+#: inc/Admin.php:577
+#, php-format
+msgid "Enhance %1$s with %2$s– up to %3$s OFF in our biggest sale of the year. Limited time only."
 msgstr ""
 
 #: inc/Block_Patterns.php:63
@@ -347,11 +359,7 @@ msgstr ""
 msgid "Single Post 3 (Cover)"
 msgstr ""
 
-#: styles/s1-crayola.json
-msgctxt "Style variation name"
-msgid "Crayola"
-msgstr ""
-
+#: theme.json
 #: styles/s1-crayola.json
 #: styles/s2-majorelle-blue.json
 #: styles/s3-zomp.json
@@ -359,11 +367,11 @@ msgstr ""
 #: styles/s5-aztec-gold.json
 #: styles/s6-vivid-red-tangelo.json
 #: styles/s7-greenlight.json
-#: theme.json
 msgctxt "Color name"
 msgid "Background"
 msgstr ""
 
+#: theme.json
 #: styles/s1-crayola.json
 #: styles/s2-majorelle-blue.json
 #: styles/s3-zomp.json
@@ -371,11 +379,11 @@ msgstr ""
 #: styles/s5-aztec-gold.json
 #: styles/s6-vivid-red-tangelo.json
 #: styles/s7-greenlight.json
-#: theme.json
 msgctxt "Color name"
 msgid "Foreground"
 msgstr ""
 
+#: theme.json
 #: styles/s1-crayola.json
 #: styles/s2-majorelle-blue.json
 #: styles/s3-zomp.json
@@ -383,11 +391,11 @@ msgstr ""
 #: styles/s5-aztec-gold.json
 #: styles/s6-vivid-red-tangelo.json
 #: styles/s7-greenlight.json
-#: theme.json
 msgctxt "Color name"
 msgid "Accent"
 msgstr ""
 
+#: theme.json
 #: styles/s1-crayola.json
 #: styles/s2-majorelle-blue.json
 #: styles/s3-zomp.json
@@ -395,11 +403,11 @@ msgstr ""
 #: styles/s5-aztec-gold.json
 #: styles/s6-vivid-red-tangelo.json
 #: styles/s7-greenlight.json
-#: theme.json
 msgctxt "Color name"
 msgid "Accent Secondary"
 msgstr ""
 
+#: theme.json
 #: styles/s1-crayola.json
 #: styles/s2-majorelle-blue.json
 #: styles/s3-zomp.json
@@ -407,11 +415,11 @@ msgstr ""
 #: styles/s5-aztec-gold.json
 #: styles/s6-vivid-red-tangelo.json
 #: styles/s7-greenlight.json
-#: theme.json
 msgctxt "Color name"
 msgid "Background Dark"
 msgstr ""
 
+#: theme.json
 #: styles/s1-crayola.json
 #: styles/s2-majorelle-blue.json
 #: styles/s3-zomp.json
@@ -419,11 +427,11 @@ msgstr ""
 #: styles/s5-aztec-gold.json
 #: styles/s6-vivid-red-tangelo.json
 #: styles/s7-greenlight.json
-#: theme.json
 msgctxt "Color name"
 msgid "Background Alt"
 msgstr ""
 
+#: theme.json
 #: styles/s1-crayola.json
 #: styles/s2-majorelle-blue.json
 #: styles/s3-zomp.json
@@ -431,39 +439,8 @@ msgstr ""
 #: styles/s5-aztec-gold.json
 #: styles/s6-vivid-red-tangelo.json
 #: styles/s7-greenlight.json
-#: theme.json
 msgctxt "Color name"
 msgid "Foreground Alt"
-msgstr ""
-
-#: styles/s2-majorelle-blue.json
-msgctxt "Style variation name"
-msgid "Majorelle Blue"
-msgstr ""
-
-#: styles/s3-zomp.json
-msgctxt "Style variation name"
-msgid "Zomp"
-msgstr ""
-
-#: styles/s4-dark-pastel-red.json
-msgctxt "Style variation name"
-msgid "Dark Pastel Red"
-msgstr ""
-
-#: styles/s5-aztec-gold.json
-msgctxt "Style variation name"
-msgid "Aztec Gold"
-msgstr ""
-
-#: styles/s6-vivid-red-tangelo.json
-msgctxt "Style variation name"
-msgid "Vivid Red-Tangelo"
-msgstr ""
-
-#: styles/s7-greenlight.json
-msgctxt "Style variation name"
-msgid "Greenlight"
 msgstr ""
 
 #: theme.json
@@ -594,4 +571,39 @@ msgstr ""
 #: theme.json
 msgctxt "Template part name"
 msgid "Footer Variation - 5 Columns"
+msgstr ""
+
+#: styles/s1-crayola.json
+msgctxt "Style variation name"
+msgid "Crayola"
+msgstr ""
+
+#: styles/s2-majorelle-blue.json
+msgctxt "Style variation name"
+msgid "Majorelle Blue"
+msgstr ""
+
+#: styles/s3-zomp.json
+msgctxt "Style variation name"
+msgid "Zomp"
+msgstr ""
+
+#: styles/s4-dark-pastel-red.json
+msgctxt "Style variation name"
+msgid "Dark Pastel Red"
+msgstr ""
+
+#: styles/s5-aztec-gold.json
+msgctxt "Style variation name"
+msgid "Aztec Gold"
+msgstr ""
+
+#: styles/s6-vivid-red-tangelo.json
+msgctxt "Style variation name"
+msgid "Vivid Red-Tangelo"
+msgstr ""
+
+#: styles/s7-greenlight.json
+msgctxt "Style variation name"
+msgid "Greenlight"
 msgstr ""

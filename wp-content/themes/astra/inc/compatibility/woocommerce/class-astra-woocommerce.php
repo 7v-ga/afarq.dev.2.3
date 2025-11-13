@@ -72,6 +72,9 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) {
 			add_action( 'wp', array( $this, 'shop_meta_option' ), 1 );
 			add_action( 'wp', array( $this, 'cart_page_upselles' ) );
 
+			// Quantity plus minus button placeholders.
+			add_action( 'wp', array( $this, 'init_quantity_placeholder_buttons' ) );
+
 			add_filter( 'loop_shop_columns', array( $this, 'shop_columns' ) );
 			add_filter( 'loop_shop_per_page', array( $this, 'shop_no_of_products' ) );
 			add_filter( 'body_class', array( $this, 'shop_page_products_item_class' ) );
@@ -171,6 +174,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) {
 		public function add_active_filter_widget_class( $block_content, $block ) {
 
 			if ( isset( $block['blockName'] ) && isset( $block['attrs']['displayStyle'] ) && 'chips' === $block['attrs']['displayStyle'] ) {
+				// phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- Safe usage: no /e modifier, simple string replacement with quoted pattern
 				$block_content = preg_replace(
 					'/' . preg_quote( 'class="', '/' ) . '/',
 					'class="ast-woo-active-filter-widget ',
@@ -475,7 +479,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) {
 
 			if ( ! $notice_hidden && 'hang-over-top' === astra_get_option( 'store-notice-position' ) ) {
 				$css_output_desktop['.ast-woocommerce-store-notice-hanged'] = array(
-					'margin-top' => '57px',
+					'padding-top' => '57px',
 				);
 			}
 
@@ -734,6 +738,10 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) {
 		 * @return array
 		 */
 		public function woo_filter_style( $styles ) {
+
+			if ( ! Astra_Enqueue_Scripts::should_load_woocommerce_css() ) {
+				return array();
+			}
 
 			/* Directory and Extension */
 			$file_prefix = '.min';
@@ -1512,6 +1520,10 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) {
 		 * @since 1.0.31
 		 */
 		public function add_scripts_styles() {
+			if ( ! Astra_Enqueue_Scripts::should_load_woocommerce_js() ) {
+				return;
+			}
+
 			if ( is_cart() ) {
 				wp_enqueue_script( 'wc-cart-fragments' ); // Require for cart widget update on the cart page.
 			}
@@ -2708,11 +2720,16 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) {
 				$add_to_cart_quantity_btn_css = '';
 
 				$add_to_cart_quantity_btn_css .= '
-					.woocommerce-js .quantity.buttons_added {
+					.woocommerce-js .quantity {
 						display: inline-flex;
 					}
 
-					.woocommerce-js .quantity.buttons_added + .button.single_add_to_cart_button {
+					/* Quantity Plus Minus Button - Placeholder for CLS. */
+					.woocommerce .quantity .ast-qty-placeholder {
+						cursor: not-allowed;
+					}
+
+					.woocommerce-js .quantity + .button.single_add_to_cart_button {
 						margin-' . $ltr_left . ': unset;
 					}
 
@@ -2733,6 +2750,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) {
 						outline: 0;
 						font-weight: 400;
 						z-index: 3;
+						position: relative;
 					}
 
 					.woocommerce-js .quantity .minus {
@@ -3892,6 +3910,63 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) {
 			}
 
 			return $value;
+		}
+
+		/**
+		 * Initialize quantity placeholder buttons.
+		 *
+		 * @since 4.11.11
+		 */
+		public function init_quantity_placeholder_buttons() {
+			if ( astra_add_to_cart_quantity_btn_enabled() ) {
+				add_action( 'woocommerce_before_quantity_input_field', array( $this, 'render_placeholder_minus_button' ), 5 );
+				add_action( 'woocommerce_after_quantity_input_field', array( $this, 'render_placeholder_plus_button' ), 15 );
+			}
+		}
+
+		/**
+		 * Get quantity button class based on option type.
+		 *
+		 * @since 4.11.11
+		 *
+		 * @return string
+		 */
+		public function get_quantity_btn_class() {
+			$quantity_btn_type = astra_get_option( 'cart-plus-minus-button-type', 'normal' );
+
+			switch ( $quantity_btn_type ) {
+				case 'vertical':
+				case 'vertical-icon':
+					return ' ast-vertical-icon';
+
+				case 'no-internal-border':
+					return ' no-internal-border';
+
+				default:
+					return '';
+			}
+		}
+
+		/**
+		 * Render placeholder minus button.
+		 *
+		 * @since 4.11.11
+		 */
+		public function render_placeholder_minus_button() {
+			$btn_class = $this->get_quantity_btn_class();
+
+			echo '<a href="javascript:void(0)" class="ast-qty-placeholder minus' . esc_attr( $btn_class ) . '">-</a>';
+		}
+
+		/**
+		 * Render placeholder plus button.
+		 *
+		 * @since 4.11.11
+		 */
+		public function render_placeholder_plus_button() {
+			$btn_class = $this->get_quantity_btn_class();
+
+			echo '<a href="javascript:void(0)" class="ast-qty-placeholder plus' . esc_attr( $btn_class ) . '">+</a>';
 		}
 	}
 

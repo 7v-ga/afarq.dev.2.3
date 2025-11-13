@@ -196,6 +196,9 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 			add_action( 'wp_ajax_astra_regenerate_fonts_folder', array( $this, 'regenerate_astra_fonts_folder' ) );
 
 			add_action( 'wp_footer', array( $this, 'style_guide_template' ) );
+
+			// Handles the AJAX request for astra SVG icons.
+			add_action( 'wp_ajax_astra_logo_svg_icons', array( $this, 'logo_svg_icons' ) );
 		}
 
 		/**
@@ -642,6 +645,16 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 					$configuration['value'] = $val;
 					break;
 				case 'ast-logo-svg-icon':
+					if ( ! isset( $val['type'] ) ) {
+						$configuration['value'] = array(
+							'type'  => '',
+							'value' => '',
+						);
+					} else {
+						$configuration['value'] = $val;
+					}
+					break;
+
 				case 'ast-svg-icon-selector':
 					if ( ! isset( $val['type'] ) ) {
 						$configuration['value'] = array(
@@ -651,8 +664,6 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 					} else {
 						$configuration['value'] = $val;
 					}
-
-					$configuration['ast_all_svg_icons'] = function_exists( 'astra_get_logo_svg_icons_array' ) ? astra_get_logo_svg_icons_array() : array();
 					break;
 
 			} // Switch End.
@@ -677,6 +688,30 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 			}
 
 			return $configuration;
+		}
+
+		/**
+		 * Handles the AJAX request for logo SVG icons.
+		 * The main purpose of handling this via AJAX is to improve Customizer performance.
+		 *
+		 * @return array The array of logo SVG icons.
+		 */
+		public function logo_svg_icons() {
+			// Check if the current user has the capability to edit theme options.
+			if ( ! current_user_can( 'edit_theme_options' ) ) {
+				wp_send_json_error( __( 'You are not allowed to access this resource.', 'astra' ) );
+			}
+
+			// Check if the current request is an AJAX request and if it is being done in the Customizer screen.
+			if ( ! is_admin() || ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+				wp_send_json_error( __( 'This request is only allowed in the Customizer screen.', 'astra' ) );
+			}
+
+			wp_send_json_success(
+				array(
+					'icons' => function_exists( 'astra_get_logo_svg_icons_array' ) ? astra_get_logo_svg_icons_array() : array(),
+				)
+			);
 		}
 
 		/**
@@ -1125,7 +1160,7 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 					'is_site_rtl'             => is_rtl(),
 					'defaults'                => $this->get_control_defaults(),
 					'isWP_5_9'                => astra_wp_version_compare( '5.8.99', '>=' ),
-					'googleFonts'             => Astra_Font_Families::get_google_fonts(),
+					'googleFonts'             => array(),
 					'variantLabels'           => Astra_Font_Families::font_variant_labels(),
 					'upgradeUrl'              => array(
 						'default'        => astra_get_upgrade_url( 'customizer' ),
@@ -1166,6 +1201,24 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 				ASTRA_THEME_URI . 'inc/assets/css/' . $font_icon_picker_css_file . '.css',
 				array( 'wp-components' ),
 				ASTRA_THEME_VERSION
+			);
+
+			$dir_name    = SCRIPT_DEBUG ? 'unminified' : 'minified';
+			$file_prefix = SCRIPT_DEBUG ? '' : '.min';
+			wp_enqueue_script(
+				'astra-google-fonts-loader',
+				ASTRA_THEME_URI . 'assets/js/' . $dir_name . '/customizer-google-fonts' . $file_prefix . '.js',
+				array( 'jquery', 'customize-controls' ),
+				ASTRA_THEME_VERSION,
+				true
+			);
+
+			wp_localize_script(
+				'astra-google-fonts-loader',
+				'astraCustomizer',
+				array(
+					'customizer_nonce' => wp_create_nonce( 'astra_customizer_nonce' ),
+				)
 			);
 		}
 
@@ -1352,6 +1405,14 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 				)
 			);
 
+			Astra_Customizer_Control_Base::add_control(
+				'ast-description-with-link',
+				array(
+					'callback'          => 'Astra_Control_Description_With_Link',
+					'sanitize_callback' => null,
+				)
+			);
+
 			/**
 			 * Helper files
 			 */
@@ -1438,6 +1499,7 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 			wp_enqueue_script( 'astra-customizer-controls-toggle-js', ASTRA_THEME_URI . 'assets/js/' . $dir . '/customizer-controls-toggle' . $js_prefix, array(), ASTRA_THEME_VERSION, true );
 
 			wp_enqueue_script( 'astra-customizer-controls-js', ASTRA_THEME_URI . 'assets/js/' . $dir . '/customizer-controls' . $js_prefix, array( 'astra-customizer-controls-toggle-js' ), ASTRA_THEME_VERSION, true );
+
 			// Extended Customizer Assets - Panel extended.
 			wp_enqueue_style( 'astra-extend-customizer-css', ASTRA_THEME_URI . 'assets/css/minified/extend-customizer' . $css_prefix, null, ASTRA_THEME_VERSION );
 			wp_enqueue_script( 'astra-extend-customizer-js', ASTRA_THEME_URI . 'assets/js/' . $dir . '/extend-customizer' . $js_prefix, array(), ASTRA_THEME_VERSION, true );
@@ -1829,6 +1891,7 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 
 			$js_prefix = '.min.js';
 			$dir       = 'minified';
+			/** @psalm-suppress RedundantCondition */
 			if ( SCRIPT_DEBUG ) {
 				$js_prefix = '.js';
 				$dir       = 'unminified';

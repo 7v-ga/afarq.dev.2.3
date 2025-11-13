@@ -21,7 +21,7 @@ if ( ! class_exists( 'Astra_Builder_UI_Controller' ) ) {
 		 *
 		 * @var mixed ast_svgs
 		 */
-		private static $ast_svgs = null;
+		public static $ast_svgs = null;
 
 		/**
 		 * Get an SVG Icon
@@ -112,10 +112,18 @@ if ( ! class_exists( 'Astra_Builder_UI_Controller' ) ) {
 							esc_attr( $builder_type )
 						);
 
-						echo self::fetch_svg_icon( $item['icon'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						// Handle custom SVG or icon library
+						if ( isset( $item['icon_type'] ) && 'custom' === $item['icon_type'] && ! empty( $item['custom_svg'] ) ) {
+							// Use custom SVG
+							echo '<span aria-hidden="true" class="ahfb-svg-iconset ast-inline-flex svg-baseline">' . $item['custom_svg'] . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						} else {
+							// Use icon library
+							echo self::fetch_svg_icon( $item['icon'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						}
 
 						if ( $show_label ) {
-							echo '<span class="social-item-label">' . esc_html( $item['label'] ) . '</span>';
+							/** @psalm-suppress PossiblyUndefinedStringArrayOffset */
+							echo '<span class="social-item-label">' . esc_html( isset( $item['label'] ) ? $item['label'] : '' ) . '</span>';
 						}
 
 						echo '</a>';
@@ -152,7 +160,62 @@ if ( ! class_exists( 'Astra_Builder_UI_Controller' ) ) {
 				// First applying wpautop to handle paragraphs, then removing extra <p> around shortcodes.
 				$content = shortcode_unautop( wpautop( $content ) );
 
-				echo do_shortcode( wp_kses_post( $content ) );
+				$allowed_html = wp_kses_allowed_html( 'post' );
+
+				// Add here additional tags that weren't working if you got something.
+				$additional_tags = array(
+					'select'   => array(
+						'name'     => true,
+						'id'       => true,
+						'class'    => true,
+						'multiple' => true,
+						'size'     => true,
+						'required' => true,
+						'disabled' => true,
+						'style'    => true,
+					),
+					'option'   => array(
+						'value'    => true,
+						'selected' => true,
+						'disabled' => true,
+						'class'    => true,
+						'id'       => true,
+					),
+					'optgroup' => array(
+						'label'    => true,
+						'disabled' => true,
+						'class'    => true,
+					),
+					'iframe'   => array(
+						'src'             => true,
+						'width'           => true,
+						'height'          => true,
+						'frameborder'     => true,
+						'allowfullscreen' => true,
+						'style'           => true,
+						'title'           => true,
+						'loading'         => true,
+						'referrerpolicy'  => true,
+						'sandbox'         => true,
+						'class'           => true,
+						'id'              => true,
+					),
+				);
+
+				$allowed_html = array_merge( $allowed_html, $additional_tags );
+
+				/**
+				 * Filter allowed HTML tags for HTML widget content.
+				 *
+				 * @param array $allowed_html Array of allowed HTML tags and attributes.
+				 * @param string $content The HTML content being filtered.
+				 * @since 4.11.11
+				 *
+				 * @psalm-suppress TooManyArguments
+				 */
+				$allowed_html = apply_filters( 'astra_html_widget_allowed_html', $allowed_html, $content );
+
+				echo do_shortcode( wp_kses( $content, $allowed_html ) );
 				echo '</div>';
 				echo '</div>';
 			}
@@ -224,7 +287,7 @@ if ( ! class_exists( 'Astra_Builder_UI_Controller' ) ) {
 			}
 			?>
 			<div class="ast-button-wrap">
-				<button type="button" class="menu-toggle main-header-menu-toggle ast-mobile-menu-trigger-<?php echo esc_attr( $toggle_btn_style ); ?>" <?php echo apply_filters( 'astra_nav_toggle_data_attrs', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php echo esc_attr( $aria_controls ); ?> aria-expanded="false">
+				<button type="button" class="menu-toggle main-header-menu-toggle ast-mobile-menu-trigger-<?php echo esc_attr( $toggle_btn_style ); ?>" <?php echo apply_filters( 'astra_nav_toggle_data_attrs', '' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php echo esc_attr( $aria_controls ); ?> aria-expanded="false" aria-label="Main menu toggle">
 					<span class="screen-reader-text">Main Menu</span>
 					<span class="mobile-menu-toggle-icon">
 						<?php
@@ -311,7 +374,7 @@ if ( ! class_exists( 'Astra_Builder_UI_Controller' ) ) {
 			<div class="astra-mobile-cart-overlay"></div>
 			<div id="astra-mobile-cart-drawer" class="astra-cart-drawer">
 				<div class="astra-cart-drawer-header">
-					<button type="button" class="astra-cart-drawer-close" aria-label="<?php echo esc_attr__( 'Close Cart Drawer', 'astra' ); ?>">
+					<button tabindex="0" type="button" class="astra-cart-drawer-close" aria-label="<?php echo esc_attr__( 'Close Cart Drawer', 'astra' ); ?>">
 							<?php echo self::fetch_svg_icon( 'close' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</button>
 					<div class="astra-cart-drawer-title">
@@ -406,6 +469,7 @@ if ( ! class_exists( 'Astra_Builder_UI_Controller' ) ) {
 					if ( $action_type === 'link' || 'hover' === $show_menu ) {
 						$link_href = '' !== $link_url ? 'href=' . esc_url( $link_url ) : '';
 					}
+					$role = $action_type === 'link' ? 'link' : 'button';
 
 					$link_classes = array(
 						'ast-header-account-link',
@@ -426,7 +490,7 @@ if ( ! class_exists( 'Astra_Builder_UI_Controller' ) ) {
 
 					?>
 					<div class="ast-header-account-inner-wrap">
-						<a class="<?php echo esc_attr( implode( ' ', $link_classes ) ); ?>" role="link" aria-label="<?php esc_attr_e( 'Account icon link', 'astra' ); ?>" <?php echo esc_attr( $link_href . ' ' . $new_tab . ' ' . $link_rel ); ?> >
+						<a class="<?php echo esc_attr( implode( ' ', $link_classes ) ); ?>" role="<?php echo esc_attr( $role ); ?>" aria-label="<?php esc_attr_e( 'Account icon link', 'astra' ); ?>" <?php echo esc_attr( $link_href . ' ' . $new_tab . ' ' . $link_rel ); ?> >
 
 							<?php
 							if ( 'avatar' === $login_profile_type ) {

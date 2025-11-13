@@ -62,12 +62,13 @@ class Admin {
 		add_action( 'admin_notices', array( $this, 'render_survey_notice' ) );
 		add_action( 'wp_ajax_neve_fse_dismiss_welcome_notice', array( $this, 'remove_welcome_notice' ) );
 		add_action( 'wp_ajax_neve_fse_dismiss_survey_notice', array( $this, 'remove_survey_notice' ) );
-		add_action( 'admin_print_scripts', array( $this, 'add_nps_form' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'register_internal_page' ) );
 
 		add_action( 'enqueue_block_editor_assets', array( $this, 'add_fse_design_pack_notice' ) );
 		add_action( 'wp_ajax_neve_fse_dismiss_design_pack_notice', array( $this, 'remove_design_pack_notice' ) );
 		add_action( 'activated_plugin', array( $this, 'after_otter_activation' ) );
 		add_action( 'wp_ajax_neve_fse_set_otter_ref', array( $this, 'set_otter_ref' ) );
+		add_filter( 'themeisle_sdk_blackfriday_data', array( $this, 'add_black_friday_data' ), 20 );
 	}
 
 	/**
@@ -530,26 +531,62 @@ class Admin {
 	}
 
 	/**
-	 * Convert a number to a category.
+	 * Register internal pages.
 	 *
-	 * @param int $number Number to convert.
-	 * @param int $scale  Scale.
-	 *
-	 * @return int
+	 * @return void
 	 */
-	public static function convert_to_category( $number, $scale = 1 ) {
-		$normalized_number = intval( round( $number / $scale ) );
-
-		if ( 0 === $normalized_number || 1 === $normalized_number ) {
-			return 0;
-		} elseif ( $normalized_number > 1 && $normalized_number < 8 ) {
-			return 7;
-		} elseif ( $normalized_number >= 8 && $normalized_number < 31 ) {
-			return 30;
-		} elseif ( $normalized_number > 30 && $normalized_number < 90 ) {
-			return 90;
-		} elseif ( $normalized_number > 90 ) {
-			return 91;
+	public function register_internal_page() {
+		$screen = get_current_screen();
+		
+		if ( ! current_user_can( 'manage_options' ) || ( 'dashboard' !== $screen->id && 'themes' !== $screen->id ) ) {
+			return;
 		}
+		
+		add_filter(
+			'themeisle-sdk/survey/' . NEVE_FSE_PRODUCT_SLUG,
+			function( $data, $page_slug ) {
+				$install_days_number = intval( ( time() - get_option( 'neve_fse_install', time() ) ) / DAY_IN_SECONDS );
+
+				$data = array(
+					'environmentId' => 'clr7hcws7et2g8up0tpz8u8es',
+					'attributes'    => array(
+						'install_days_number' => $install_days_number,
+						'version'             => NEVE_FSE_VERSION,
+					),
+				);
+
+				return $data;
+			},
+			10,
+			2 
+		);
+		do_action( 'themeisle_internal_page', NEVE_FSE_PRODUCT_SLUG, $screen->id );
+	}
+
+	/**
+	 * Add Black Friday data.
+	 *
+	 * @param array $configs The configuration array for the loaded products.
+	 *
+	 * @return array
+	 */
+	public function add_black_friday_data( $configs ) {
+		$config = $configs['default'];
+
+		// translators: %1$s - plugin namce, %2$s - HTML tag, %3$s - discount, %4$s - HTML tag, %5$s - company name.
+		$message_template = __( 'Enhance %1$s with %2$s– up to %3$s OFF in our biggest sale of the year. Limited time only.', 'neve-fse' );
+
+		$config['dismiss']  = true; // Note: Allow dismiss since it appears on `/wp-admin`.
+		$config['message']  = sprintf( $message_template, 'Neve FSE', 'Otter Blocks Pro', '70%' );
+		$config['sale_url'] = add_query_arg(
+			array(
+				'utm_term' => 'free',
+			),
+			tsdk_translate_link( tsdk_utmify( 'https://themeisle.link/otter-bf', 'bfcm', 'neve-fse' ) )
+		);
+
+		$configs[ NEVE_FSE_PRODUCT_SLUG ] = $config;
+
+		return $configs;
 	}
 }
