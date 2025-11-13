@@ -93,14 +93,104 @@ class Url_Fetcher {
 
 		Util::debug_log( "Fetching URL and saving it to: " . $temp_filename );
 
+		// Check if the URL is a local asset (file) that we can copy directly
+		// We do this check before prepare_url to avoid query parameters interfering with extension detection
+		$original_url   = $url;
+		$is_local_asset = Util::is_local_asset_url( $original_url );
+
+		Util::debug_log( "URL: " . $original_url . " - Is local asset: " . ( $is_local_asset ? 'Yes' : 'No' ) );
+
 		if ( $prepare_url ) {
 			$url = $static_page->get_handler()->prepare_url( $url );
 		}
 
-		$response = self::remote_get( $url, $temp_filename );
+		// Check if the URL is a local asset (file) that we can copy directly
+		if ( $is_local_asset ) {
+			// Get the local path for the URL using the original URL without query parameters
+			$local_path = Util::get_path_from_local_url( $original_url );
+			$file_path  = ABSPATH . ltrim( $local_path, '/' );
+
+			Util::debug_log( "Local path: " . $local_path . " - Full file path: " . $file_path );
+
+			// Check if the file exists
+			if ( file_exists( $file_path ) ) {
+				Util::debug_log( "Copying local file directly: " . $file_path );
+
+				// Copy the file to the temporary location
+				if ( copy( $file_path, $temp_filename ) ) {
+					// Create a response-like array to match what remote_get would return
+					$response = array(
+						'response' => array(
+							'code' => 200
+						),
+						'headers'  => array(
+							'content-type' => mime_content_type( $file_path )
+						)
+					);
+				} else {
+					// If copy fails, fall back to remote_get
+					Util::debug_log( "Failed to copy local file, falling back to remote_get" );
+					$response = self::remote_get( $url, $temp_filename );
+				}
+			} else {
+				// If file doesn't exist, fall back to remote_get
+				Util::debug_log( "Local file not found, falling back to remote_get" );
+				$response = self::remote_get( $url, $temp_filename );
+			}
+		} else {
+			// Not a local asset, use remote_get as before
+			$response = self::remote_get( $url, $temp_filename );
+		}
 
 		$filesize = file_exists( $temp_filename ) ? filesize( $temp_filename ) : 0;
 		Util::debug_log( "Filesize: " . $filesize . ' bytes' );
+
+		// Fallback: Sometimes streamed requests create an empty file despite 200 OK.
+		// If we got 200 but the file is empty, try alternative strategies to populate it.
+		if ( ! is_wp_error( $response ) ) {
+			$code = isset( $response['response']['code'] ) ? (int) $response['response']['code'] : 0;
+			if ( $code === 200 && $filesize === 0 ) {
+				Util::debug_log( 'Streamed file is empty after 200 response; attempting fallback to recover content.' );
+				$recovered = false;
+				// Attempt 1: If it is a local asset, try copying directly from disk again.
+				if ( isset( $is_local_asset ) && $is_local_asset ) {
+					$local_path = Util::get_path_from_local_url( $original_url );
+					$file_path  = ABSPATH . ltrim( $local_path, '/' );
+					if ( file_exists( $file_path ) && is_readable( $file_path ) ) {
+						$recovered = copy( $file_path, $temp_filename );
+						if ( $recovered ) {
+							Util::debug_log( 'Recovered by copying local asset from disk.' );
+							$filesize = filesize( $temp_filename );
+						}
+					}
+				}
+				// Attempt 2: Do a non-streamed request and write body manually.
+				if ( ! $recovered ) {
+					$alt_args          = array(
+						'timeout'     => self::TIMEOUT,
+						'user-agent'  => 'Simply Static/' . SIMPLY_STATIC_VERSION,
+						'sslverify'   => false,
+						'redirection' => 0,
+						'blocking'    => true,
+					);
+					$basic_auth_digest = base64_encode( Options::instance()->get( 'http_basic_auth_username' ) . ':' . Options::instance()->get( 'http_basic_auth_password' ) );
+					if ( $basic_auth_digest ) {
+						$alt_args['headers'] = array( 'Authorization' => 'Basic ' . $basic_auth_digest );
+					}
+					$alt_resp = wp_remote_get( $url, apply_filters( 'ss_remote_get_args', $alt_args ) );
+					if ( ! is_wp_error( $alt_resp ) ) {
+						$body = wp_remote_retrieve_body( $alt_resp );
+						if ( strlen( $body ) > 0 ) {
+							file_put_contents( $temp_filename, $body );
+							$filesize  = filesize( $temp_filename );
+							$response  = $alt_resp; // use headers from non-streamed response
+							$recovered = true;
+							Util::debug_log( 'Recovered by non-streamed request. Size: ' . $filesize . ' bytes' );
+						}
+					}
+				}
+			}
+		}
 
 		if ( is_wp_error( $response ) ) {
 			Util::debug_log( "We encountered an error when fetching: " . $response->get_error_message() );
@@ -113,8 +203,21 @@ class Url_Fetcher {
 			return false;
 		} else {
 			$static_page->http_status_code = $response['response']['code'];
-			$static_page->content_type     = $response['headers']['content-type'];
-			$static_page->redirect_url     = isset( $response['headers']['location'] ) ? $response['headers']['location'] : null;
+
+			// Check if this is a JavaScript or CSS file based on the URL extension
+			$path_info = Util::url_path_info( $static_page->url );
+			if ( isset( $path_info['extension'] ) && $path_info['extension'] === 'js' ) {
+				// Force the correct MIME type for JavaScript files
+				$static_page->content_type = 'application/javascript';
+			} elseif ( isset( $path_info['extension'] ) && $path_info['extension'] === 'css' ) {
+				// Force the correct MIME type for CSS files
+				$static_page->content_type = 'text/css';
+			} else {
+				// Use the content type from the response headers
+				$static_page->content_type = $response['headers']['content-type'];
+			}
+
+			$static_page->redirect_url = isset( $response['headers']['location'] ) ? $response['headers']['location'] : null;
 
 			Util::debug_log( "http_status_code: " . $static_page->http_status_code . " | content_type: " . $static_page->content_type );
 
@@ -219,6 +322,34 @@ class Url_Fetcher {
 			}
 		}
 
+		// Prevent query-string URLs from overwriting base paths by placing them in a deterministic subdirectory based on the query string.
+		// Exception: native WordPress search (query parameter `s`) should NOT use a hash subdirectory.
+		if ( ! empty( $url_parts['query'] ) ) {
+			$relative_file_dir = Util::add_trailing_directory_separator( $relative_file_dir );
+			$use_hash_dir      = true;
+			parse_str( (string) $url_parts['query'], $qs_args );
+			if ( is_array( $qs_args ) && array_key_exists( 's', $qs_args ) ) {
+				$use_hash_dir = false;
+			}
+			/**
+			 * Filter whether Simply Static should use a hash directory for query-string URLs.
+			 *
+			 * Returning false writes query-string URLs directly under `__qs/` without the hash subdirectory.
+			 *
+			 * @param bool              $use_hash_dir Whether to use the hash directory. Default true (except for native search URLs).
+			 * @param array<string,mixed> $qs_args     Parsed query-string arguments.
+			 * @param \Simply_Static\Page $static_page The current static page.
+			 */
+			$use_hash_dir = apply_filters( 'simply_static_use_qs_hash_dir', $use_hash_dir, $qs_args, $static_page );
+			if ( $use_hash_dir ) {
+				$qs_hash           = substr( md5( $url_parts['query'] ), 0, 12 );
+				$relative_file_dir .= '__qs/' . $qs_hash . '/';
+			} else {
+				$relative_file_dir .= '__qs/';
+				Util::debug_log( '[SS][SEARCH_QS] Using non-hashed __qs/ directory for URL: ' . $static_page->url );
+			}
+		}
+
 		$page_handler = $static_page->get_handler();
 
 		$path_info         = apply_filters( 'simply_static_page_path_info', $page_handler->get_path_info( $path_info ), $static_page );
@@ -246,7 +377,7 @@ class Url_Fetcher {
 	}
 
 	public static function remote_get( $url, $filename = null ) {
-		$basic_auth_digest = base64_encode( Options::instance()->get('http_basic_auth_username') . ':' . Options::instance()->get('http_basic_auth_password') );
+		$basic_auth_digest = base64_encode( Options::instance()->get( 'http_basic_auth_username' ) . ':' . Options::instance()->get( 'http_basic_auth_password' ) );
 
 		Util::debug_log( "Fetching URL: " . $url );
 
@@ -267,9 +398,7 @@ class Url_Fetcher {
 			$args['headers'] = array( 'Authorization' => 'Basic ' . $basic_auth_digest );
 		}
 
-		$response = wp_remote_get( $url, apply_filters( 'ss_remote_get_args', $args ) );
-
-		return $response;
+		return wp_remote_get( $url, apply_filters( 'ss_remote_get_args', $args ) );
 	}
 
 }

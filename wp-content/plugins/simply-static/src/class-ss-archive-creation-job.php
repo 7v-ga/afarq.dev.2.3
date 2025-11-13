@@ -103,6 +103,15 @@ class Archive_Creation_Job extends Background_Process {
 	}
 
 	/**
+	 * @param Options $options
+	 *
+	 * @return void
+	 */
+	public function set_options( Options $options ) {
+		$this->options = $options;
+	}
+
+	/**
 	 * Helper method for starting the Archive_Creation_Job
 	 * @return boolean true if we were able to successfully start generating an archive
 	 */
@@ -136,6 +145,9 @@ class Archive_Creation_Job extends Background_Process {
 				->save();
 
 			Util::debug_log( "Pushing first task to queue: " . $first_task );
+
+			// Set the current site ID for multisite support
+			$this->set_current_site_id( $blog_id );
 
 			$this->push_to_queue( $first_task )
 			     ->save()
@@ -207,6 +219,8 @@ class Archive_Creation_Job extends Background_Process {
 		try {
 			Util::debug_log( 'Performing task: ' . $task_name );
 			$is_done = $task->perform();
+
+			Util::debug_log( 'Task performed: ' . (bool)$is_done );
 		} catch (Pause_Exception $e ) {
 			// If it's a pause execption, just return task since we've paused the execution of tha tasks.
 			return $task_name;
@@ -259,7 +273,7 @@ class Archive_Creation_Job extends Background_Process {
 	protected function task_cleanup( $task_name ) {
 		$task = $this->get_task_object( $task_name );
 
-		if ( method_exists( $task, 'cleanup' ) ) {
+		if ( $task && method_exists( $task, 'cleanup' ) ) {
 			Util::debug_log( "Cleaning on first run for task: " . $task_name );
 			$task->cleanup();
 		}
@@ -320,7 +334,6 @@ class Archive_Creation_Job extends Background_Process {
 
 			$end_time    = Util::formatted_datetime();
 			$this->options->set( 'archive_end_time', $end_time );
-
 
 			$cancel_task = new Cancel_Task();
 			$cancel_task->perform();
@@ -424,6 +437,7 @@ class Archive_Creation_Job extends Background_Process {
 	protected function exception_occurred( $exception ) {
 		Util::debug_log( "An exception occurred: " . $exception->getMessage() );
 		Util::debug_log( $exception );
+
 		$message = sprintf( __( "An exception occurred: %s", 'simply-static' ), $exception->getMessage() );
 		$this->save_status_message( $message, 'error' );
 		do_action( 'ss_completed', 'exception', $message );
@@ -441,6 +455,7 @@ class Archive_Creation_Job extends Background_Process {
 	protected function error_occurred( $wp_error ) {
 		Util::debug_log( "An error occurred: " . $wp_error->get_error_message() );
 		Util::debug_log( $wp_error );
+
 		$message = sprintf( __( "An error occurred: %s", 'simply-static' ), $wp_error->get_error_message() );
 		$this->save_status_message( $message, 'error' );
 		do_action( 'ss_completed', 'error', $message );

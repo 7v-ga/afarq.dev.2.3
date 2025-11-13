@@ -13,6 +13,227 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Util {
 
 	/**
+	 * Parse a list of user-provided lines into literals and regex patterns.
+	 * Lines wrapped like /pattern/flags are treated as regex; others as literals.
+	 *
+	 * @param array $lines
+	 * @return array{literals: string[], regex: string[]}
+	 */
+	public static function parse_patterns( array $lines ): array {
+		$literals = [];
+		$regex    = [];
+		foreach ( $lines as $line ) {
+			$line = trim( (string) $line );
+			if ( $line === '' ) { continue; }
+			// Regex if starts and ends with /, allow optional flags like i,m,s,u
+			if ( strlen( $line ) >= 2 && $line[0] === '/' && strrpos( $line, '/' ) !== 0 ) {
+				$last = strrpos( $line, '/' );
+				$pattern = substr( $line, 0, $last + 1 );
+				$flags   = substr( $line, $last + 1 );
+				// Validate pattern
+				$valid = @preg_match( $pattern . $flags, '' );
+				if ( $valid !== false ) {
+					$regex[] = $pattern . $flags;
+					continue;
+				}
+			}
+			$literals[] = $line;
+		}
+		return [ 'literals' => array_values( array_unique( $literals ) ), 'regex' => array_values( array_unique( $regex ) ) ];
+	}
+
+	/**
+	 * Build a candidate URL list used when resolving regex in Additional URLs.
+	 * This is a best-effort set: home/front page, all public posts, term links, author links,
+	 * and common archive/pagination URLs. Filterable and capped by limits.
+	 *
+	 * @return string[]
+	 */
+	public static function candidate_urls_for_regex(): array {
+		$limit = (int) apply_filters( 'ss_regex_candidate_url_limit', 5000 );
+		$urls  = [];
+		$urls[] = home_url( '/' );
+		if ( 'page' === get_option( 'show_on_front' ) ) {
+			$front_id = (int) get_option( 'page_on_front' );
+			if ( $front_id ) {
+				$u = get_permalink( $front_id ); if ( is_string( $u ) ) { $urls[] = $u; }
+			}
+		}
+		// Posts and pages of public types
+		$post_types = get_post_types( [ 'public' => true ], 'names' );
+		unset( $post_types['attachment'] );
+		$post_types = apply_filters( 'simply_static_post_types_to_crawl', $post_types );
+		$q = [ 'post_type' => $post_types, 'post_status' => 'publish', 'posts_per_page' => -1, 'fields' => 'ids' ];
+		$ids = get_posts( $q );
+		foreach ( (array) $ids as $pid ) {
+			$u = get_permalink( $pid ); if ( is_string( $u ) ) { $urls[] = $u; }
+			if ( count( $urls ) >= $limit ) { break; }
+		}
+		if ( count( $urls ) < $limit ) {
+			// Terms
+			$taxes = get_taxonomies( [ 'public' => true ], 'names' );
+			foreach ( $taxes as $tx ) {
+				$terms = get_terms( [ 'taxonomy' => $tx, 'hide_empty' => true ] );
+				if ( is_wp_error( $terms ) ) { continue; }
+				foreach ( $terms as $term ) {
+					$u = get_term_link( $term ); if ( ! is_wp_error( $u ) ) { $urls[] = $u; }
+					if ( count( $urls ) >= $limit ) { break 2; }
+				}
+			}
+		}
+		if ( count( $urls ) < $limit ) {
+			// Authors
+			$users = get_users( [ 'who' => 'authors' ] );
+			foreach ( (array) $users as $user ) {
+				$u = get_author_posts_url( $user->ID ); if ( is_string( $u ) ) { $urls[] = $u; }
+				if ( count( $urls ) >= $limit ) { break; }
+			}
+		}
+		return array_values( array_unique( $urls ) );
+	}
+
+	/**
+	 * Determine if a URL should be excluded based on settings and patterns.
+	 * Centralized helper used by crawlers and fetch tasks.
+	 *
+	 * @param string $url
+	 * @return bool
+	 */
+	public static function is_url_excluded( string $url ): bool {
+		$excluded = array( '.php' );
+		$opts = Options::instance();
+
+		// Exclude debug files (.log, .txt) but not robots.txt
+		if ( preg_match( '/\.(log|txt)$/i', $url ) && strpos( $url, 'debug' ) !== false && strpos( $url, 'robots.txt' ) === false ) {
+			return true;
+		}
+
+		// Exclude feeds if add_feeds is not true.
+		if ( ! $opts->get( 'add_feeds' ) ) {
+			// Only exclude WordPress feed-style URLs
+			if ( preg_match( '/(\/feed\/?$|\?feed=|\/feed\/|\/rss\/?$|\/atom\/?$)/i', $url ) ) {
+				return true;
+			}
+		}
+
+		// Exclude Rest API if add_rest_api is not true.
+		if ( ! $opts->get( 'add_rest_api' ) ) {
+			$excluded[] = 'wp-json';
+		}
+
+		$urls_to_exclude = $opts->get( 'urls_to_exclude' );
+		$regex_patterns  = [];
+		if ( ! empty( $urls_to_exclude ) ) {
+			if ( is_array( $urls_to_exclude ) ) {
+				$excluded_by_option = wp_list_pluck( $urls_to_exclude, 'url' );
+			} else {
+				$excluded_by_option = explode( "\n", $urls_to_exclude );
+			}
+
+			if ( is_array( $excluded_by_option ) ) {
+				// Normalize: trim whitespace/CRLF, drop empties, unique
+				$excluded_by_option = array_filter( array_map( 'trim', $excluded_by_option ), function ( $v ) {
+					return $v !== '';
+				} );
+				$excluded_by_option = array_unique( $excluded_by_option );
+				$parsed = self::parse_patterns( $excluded_by_option );
+				$excluded = array_merge( $excluded, $parsed['literals'] );
+				$regex_patterns = $parsed['regex'];
+			}
+		}
+
+		if ( apply_filters( 'simply_static_exclude_temp_dir', true ) ) {
+			$excluded[] = self::get_temp_dir_url();
+		}
+
+		$excluded = apply_filters( 'ss_excluded_by_default', $excluded );
+
+		if ( $excluded ) {
+			$excluded = array_filter( $excluded );
+		}
+
+		// First test regex patterns if provided
+		foreach ( (array) $regex_patterns as $pattern ) {
+			if ( @preg_match( $pattern, $url ) ) {
+				if ( preg_match( $pattern, $url ) ) { return true; }
+			}
+		}
+
+		// Then test literal contains (case-insensitive)
+		if ( ! empty( $excluded ) ) {
+			foreach ( $excluded as $excludable ) {
+				if ( stripos( $url, $excludable ) !== false ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get all active plugins for the current site, including network-activated plugins on multisite.
+	 *
+	 * Returns a list of plugin basenames (e.g. akismet/akismet.php).
+	 *
+	 * @return array
+	 */
+	public static function get_all_active_plugins(): array {
+		$active = (array) get_option( 'active_plugins', [] );
+		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+			// Network-activated plugins are stored as an associative array with plugin file as the key.
+			$network = (array) get_site_option( 'active_sitewide_plugins', [] );
+			$network_plugins = array_keys( $network );
+			$active = array_merge( $active, $network_plugins );
+		}
+		$active = array_values( array_unique( $active ) );
+		sort( $active );
+		return $active;
+	}
+
+	/**
+	 * Compute the target Static Site URL based on Simply Static settings.
+	 * Returns an empty string if it cannot be determined.
+	 *
+	 * Logic:
+	 * - destination_url_type = 'relative' and relative_path not empty:
+	 *   Use the current site's scheme (https if wp_is_using_https() or is_ssl()),
+	 *   then build home_url( '/', $scheme ) + relative_path.
+	 * - destination_url_type = 'absolute' with non-empty destination_scheme and destination_host:
+	 *   Normalize and return scheme://host.
+	 *
+	 * @return string The static site URL or empty string when unavailable.
+	 */
+	public static function get_static_site_url() {
+		$options = get_option( 'simply-static' );
+		if ( empty( $options ) || ! is_array( $options ) ) {
+			return '';
+		}
+
+		$type = isset( $options['destination_url_type'] ) ? strtolower( trim( $options['destination_url_type'] ) ) : '';
+		$target_url = '';
+
+		if ( 'relative' === $type ) {
+			$relative_path = isset( $options['relative_path'] ) ? trim( $options['relative_path'] ) : '';
+			if ( $relative_path !== '' ) {
+				$scheme   = ( function_exists( 'wp_is_using_https' ) && wp_is_using_https() ) ? 'https' : ( is_ssl() ? 'https' : 'http' );
+				$base_url = home_url( '/', $scheme );
+				$target_url = trailingslashit( $base_url ) . ltrim( $relative_path, '/' );
+			}
+		} elseif ( 'absolute' === $type ) {
+			$scheme = isset( $options['destination_scheme'] ) ? trim( $options['destination_scheme'] ) : '';
+			$host   = isset( $options['destination_host'] ) ? trim( $options['destination_host'] ) : '';
+			if ( $scheme !== '' && $host !== '' ) {
+				$scheme = preg_replace( '/:\\/*$/', '', $scheme );
+				$host   = preg_replace( '/^\\/*/', '', $host );
+				$target_url = $scheme . '://' . $host;
+			}
+		}
+
+		return $target_url;
+	}
+
+	/**
 	 * Get the protocol used for the origin URL
 	 * @return string http or https
 	 */
@@ -91,6 +312,10 @@ class Util {
 
 		$debug_file = self::get_debug_log_filename();
 
+		if ( ! file_exists( $debug_file ) ) {
+			wp_mkdir_p( dirname( $debug_file ) );
+		}
+
 		// add timestamp and newline
 		$message = '[' . date( 'Y-m-d H:i:s' ) . '] ';
 
@@ -141,16 +366,39 @@ class Util {
 	 * @return string         String containing the contents of the object
 	 */
 	protected static function get_contents_from_object( $object ) {
+		// Handle common scalar types early and safely
 		if ( is_string( $object ) ) {
-			return $object;
+			// Prevent huge memory usage by truncating very large strings
+			return self::truncate( $object, 5000 );
+		}
+		if ( is_null( $object ) ) {
+			return 'NULL';
+		}
+		if ( is_bool( $object ) ) {
+			return $object ? 'TRUE' : 'FALSE';
+		}
+		if ( is_int( $object ) || is_float( $object ) ) {
+			return (string) $object;
+		}
+		if ( is_resource( $object ) ) {
+			return 'resource(' . get_resource_type( $object ) . ')';
 		}
 
-		ob_start();
-		var_dump( $object );
-		$contents = ob_get_contents();
-		ob_end_clean();
+		// For arrays/objects, avoid var_dump which can explode memory usage.
+		// Prefer JSON with partial output on error; fall back to print_r.
+		$max_length = apply_filters( 'simply_static_debug_max_length', 100000 ); // 100 KB by default
+		$json_opts  = defined( 'JSON_PARTIAL_OUTPUT_ON_ERROR' ) ? JSON_PARTIAL_OUTPUT_ON_ERROR : 0;
+		$encoded    = function_exists( 'wp_json_encode' ) ? wp_json_encode( $object, $json_opts, 5 ) : json_encode( $object, $json_opts, 5 );
 
-		return $contents;
+		if ( $encoded === false || $encoded === null ) {
+			$encoded = print_r( $object, true );
+		}
+
+		if ( strlen( $encoded ) > $max_length ) {
+			$encoded = substr( $encoded, 0, $max_length ) . '... [truncated]';
+		}
+
+		return $encoded;
 	}
 
 	public static function is_valid_scheme( $scheme ) {
@@ -178,6 +426,11 @@ class Util {
 	 * @return string|null                   Absolute URL, or null
 	 */
 	public static function relative_to_absolute_url( $extracted_url, $page_url ) {
+
+		// we can't do anything with null or blank urls
+		if ( $extracted_url === null ) {
+			return null;
+		}
 
 		$extracted_url = trim( $extracted_url );
 
@@ -344,6 +597,10 @@ class Util {
 	 * @return array            Converted array
 	 */
 	public static function string_to_array( $textarea ) {
+		if ( ! is_string( $textarea ) ) {
+			return array();
+		}
+
 		// using preg_split to intelligently break at newlines
 		// see: http://stackoverflow.com/questions/1483497/how-to-put-string-in-array-split-by-new-line
 		$lines = preg_split( "/\r\n|\n|\r/", $textarea );
@@ -445,26 +702,16 @@ class Util {
 		}
 
 		$allowed_asset_extensions = apply_filters( 'simply_static_allowed_local_asset_extensions', [
-			'webp',
-			'gif',
-			'jpg',
-			'jpeg',
-			'png',
-			'svg',
-			'mp4',
-			'webm',
-			'ogg',
-			'ogv',
-			'mp3',
-			'wav',
-			'json',
-			'js',
-			'css',
-			'xml',
-			'csv',
-			'pdf',
-			'txt',
-			'cur'
+			// Images
+			'webp', 'gif', 'jpg', 'jpeg', 'png', 'svg', 'ico', 'cur',
+			// Media
+			'mp4', 'webm', 'ogg', 'ogv', 'mp3', 'wav',
+			// Data/Docs
+			'json', 'xml', 'csv', 'pdf', 'txt',
+			// Web assets
+			'js', 'css',
+			// Fonts
+			'woff2', 'woff', 'ttf', 'eot', 'otf'
 		] );
 
 		$path_info = self::url_path_info( $url );
@@ -500,6 +747,9 @@ class Util {
 	 * @param string $path File path to remove leading directory separators from
 	 */
 	public static function remove_leading_directory_separator( $path ) {
+		if ( $path === null ) {
+			return '';
+		}
 		return ltrim( $path, DIRECTORY_SEPARATOR );
 	}
 
@@ -518,6 +768,9 @@ class Util {
 	 * @param string $path URL path to remove leading slash from
 	 */
 	public static function remove_leading_slash( $path ) {
+		if ( $path === null ) {
+			return '';
+		}
 		return ltrim( $path, '/' );
 	}
 
@@ -560,10 +813,29 @@ class Util {
 	 * @return string
 	 */
 	public static function abs_path_to_url( $path = '' ) {
+		$normalized_path = wp_normalize_path( $path );
+
+		// Check if the path is within WP_CONTENT_DIR
+		if ( defined( 'WP_CONTENT_DIR' ) && defined( 'WP_CONTENT_URL' ) ) {
+			$normalized_content_dir = wp_normalize_path( untrailingslashit( WP_CONTENT_DIR ) );
+
+			// If the path starts with the content directory, use WP_CONTENT_URL for replacement
+			if ( strpos( $normalized_path, $normalized_content_dir ) === 0 ) {
+				$url = str_replace(
+					$normalized_content_dir,
+					untrailingslashit( WP_CONTENT_URL ),
+					$normalized_path
+				);
+
+				return esc_url_raw( $url );
+			}
+		}
+
+		// Default behavior for paths not in WP_CONTENT_DIR
 		$url = str_replace(
 			wp_normalize_path( untrailingslashit( ABSPATH ) ),
 			site_url(),
-			wp_normalize_path( $path )
+			$normalized_path
 		);
 
 		return esc_url_raw( $url );
@@ -601,6 +873,38 @@ class Util {
 	 */
 	public static function normalize_slashes( string $path ): string {
 		return strpos( $path, '\\' ) !== false ? str_replace( '\\', '/', $path ) : $path;
+	}
+
+	/**
+	 * Build a safe relative path from an absolute path and its base directory.
+	 * Ensures forward slashes and a leading slash for consistent URL building.
+	 *
+	 * @param string $base_dir      The base directory (prefix) of the absolute path.
+	 * @param string $absolute_path The absolute path to the file.
+	 * @return string               The normalized relative path starting with '/'.
+	 */
+	public static function safe_relative_path( string $base_dir, string $absolute_path ): string {
+		$dir_norm = rtrim( $base_dir, DIRECTORY_SEPARATOR );
+		$rel      = substr( $absolute_path, strlen( $dir_norm ) );
+		if ( $rel === false ) {
+			$rel = str_replace( $base_dir, '', $absolute_path );
+		}
+		$rel = str_replace( '\\', '/', $rel );
+		if ( $rel === '' || $rel[0] !== '/' ) {
+			$rel = '/' . ltrim( $rel, '/' );
+		}
+		return $rel;
+	}
+
+	/**
+	 * Join a base URL and a relative path with exactly one slash.
+	 *
+	 * @param string $base_url      Base URL (may end with or without a slash).
+	 * @param string $relative_path Relative path (may start with or without a slash).
+	 * @return string               The joined URL.
+	 */
+	public static function safe_join_url( string $base_url, string $relative_path ): string {
+		return rtrim( $base_url, '/' ) . '/' . ltrim( $relative_path, '/' );
 	}
 
 	/**
@@ -707,5 +1011,51 @@ class Util {
 		}
 
 		return trailingslashit( $temp_dir );
+	}
+
+	/**
+	 * Recursively delete contents of a directory but keep the directory itself.
+	 *
+	 * Rules:
+	 * - No error suppression operators (@). We perform checks before FS calls to avoid warnings.
+	 * - Very defensive: do nothing for empty/non-dirs and for very shallow paths.
+	 *
+	 * @param string $dir Absolute path to the directory whose contents should be cleared.
+	 * @return void
+	 */
+	public static function delete_dir_contents( string $dir ): void {
+		$dir = (string) $dir;
+		if ( $dir === '' || ! is_dir( $dir ) ) {
+			return;
+		}
+		$normalized = str_replace( '\\', '/', $dir );
+		// Safety guard: do not operate on very shallow paths (like root-level). Require at least 3 path segments.
+		if ( substr_count( trim( $normalized, '/' ), '/' ) < 2 ) {
+			return;
+		}
+		$items = scandir( $dir );
+		if ( $items === false ) {
+			return;
+		}
+		foreach ( $items as $item ) {
+			if ( $item === '.' || $item === '..' ) {
+				continue;
+			}
+			$path = $dir . DIRECTORY_SEPARATOR . $item;
+			if ( is_dir( $path ) && ! is_link( $path ) ) {
+				self::delete_dir_contents( $path );
+				// Remove the now-empty directory if possible.
+				if ( is_dir( $path ) && is_writable( $path ) ) {
+					rmdir( $path );
+				}
+			} else {
+				// Files or links
+				if ( ( is_file( $path ) || is_link( $path ) ) && ( file_exists( $path ) || is_link( $path ) ) ) {
+					if ( is_writable( $path ) ) {
+						unlink( $path );
+					}
+				}
+			}
+		}
 	}
 }

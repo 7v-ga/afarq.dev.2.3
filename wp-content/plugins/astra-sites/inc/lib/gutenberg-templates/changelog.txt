@@ -1,3 +1,25 @@
+v.2.4.15 - 03-November-2025
+Improvement: Streamlined Spectra version handling by unifying multiple version filters into a single state and refining the toggle UX for Pages tab.
+Improvement: Enhanced premium patterns import flow.
+Fix: Corrected hover height issue in Notice blocks.
+
+v.2.4.14 - 03-November-2025
+Improvement: Added spectra-blocks-ver parameter to API requests for better version-based content filtering.
+
+v.2.4.13 - 03-November-2025
+Improvement: Enhanced the licensing flow to provide a smoother activation experience for premium patterns and starter kits.
+
+v.2.4.12 - 29-October-2025
+Misc: Updated Spectra plugin version.
+
+v.2.4.11 - 28-October-2025
+New: Added compatibility for Spectra v3.
+New: Added SureForms compatibility for block patterns and pages.
+Improvement: Use only Unsplash image engine for Russian users as Pexels is blocked in Russia.
+
+v.2.4.10 - 21-August-2025
+New: Added compatibility with Spectra version 3.
+
 v.2.4.9 - 28-March-2025
 Improvement: Optimized asset loading logic to prevent unnecessary script and style loading in non-essential backend areas, improving performance.
 
@@ -295,7 +317,7 @@ v1.1.8 - 19-January-2023
 v1.1.7 - 01-September-2022
 - Fix: Install and Activate Spectra for light category patterns only.
 
-v1.1.6 - 22-Auguest-2022
+v1.1.6 - 22-August-2022
 - Improvement: Install Spectra while importing Block Patterns and Wireframe Pattern.
 
 v1.1.3 - 19-May-2022

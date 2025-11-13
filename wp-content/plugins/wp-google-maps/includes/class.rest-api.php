@@ -325,11 +325,23 @@ class RestAPI extends Factory
 			'callback'					=> array($this, 'geocodeCache'),
 			'useCompressedPathVariable'	=> true
 		));
+
+		$this->registerRoute('/query-nominatim', array(
+			'methods'					=> array('GET'),
+			'callback'					=> array($this, 'queryNominatim'),
+			'useCompressedPathVariable'	=> true
+		));
 		
 		$this->registerRoute('/decompress', array(
 			'methods'					=> array('GET'),
 			'callback'					=> array($this, 'decompress'),
 			'useCompressedPathVariable'	=> true
+		));
+
+		$this->registerRoute('/system-health-tools/', array(
+			'methods'					=> array('POST'),
+			'callback'					=> array($this, 'systemHealthTools'),
+			'permission_callback'		=> array($wpgmza, 'isUserAllowedToEdit')
 		));
 		
 	    /* Developer Hook (Action) - Register additional rest routes */     
@@ -416,6 +428,9 @@ class RestAPI extends Factory
 				}
 			}
 		}
+
+		/* Check for delete simulation - To allow nonce checks when applicable */
+		$this->checkForDeleteSimulation();
 		
 		// Try to match the route
 		$args = null;
@@ -424,6 +439,18 @@ class RestAPI extends Factory
 		{
 			if(preg_match($regex, $_REQUEST['route']))
 			{
+				$method = !empty($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : false;
+				if(empty($method)){
+					/* Unknown request method - Do nothing */
+					continue;
+				}
+
+
+				if(empty($value['methods']) || (!empty($value['methods']) && is_array($value['methods']) && !in_array($method, $value['methods']))){
+					/* Method does not match this routes definition */
+					continue;
+				}
+
 				$args = $value;
 				break;
 			}
@@ -590,7 +617,9 @@ class RestAPI extends Factory
 				}
 				else if($feature_id) {
 					// $qualified	= "WPGMZA\\" . ucwords($feature_type);
-					$instance	= new $qualified($feature_id);
+					
+					// $instance	= new $qualified($feature_id);
+					$instance	= $qualified::createInstance($feature_id);
 					return $instance;
 				}
 				
@@ -684,7 +713,8 @@ class RestAPI extends Factory
 						
 						foreach($wpdb->get_results($stmt) as $row)
 						{
-							$instance		= new $qualified($row, Crud::BULK_READ);
+							// $instance		= new $qualified($row, Crud::BULK_READ);
+							$instance	= $qualified::createInstance($row, Crud::BULK_READ);
 							
 							// NB: Not sure why we have to explicitly call jsonSerialize here, but if you don't, inheritence doesn't seem to work properly (eg Crud::jsonSerialize is used but Feature::jsonSerialize is ignored)
 							$features[]		= $instance->jsonSerialize();
@@ -712,9 +742,9 @@ class RestAPI extends Factory
 					unset($data['id']);
 				}
 				
-				$instance	= new $qualified($id);
+				// $instance	= new $qualified($id);
+				$instance	= $qualified::createInstance($id);
 				$instance->set($data);
-				
 				return $instance;
 				
 				break;
@@ -725,12 +755,15 @@ class RestAPI extends Factory
 					return new \WP_Error('wpgmza_permission_denied', 'You do not have permission to access this resource');
 				}
 				
-				$id			= ( isset($m[3]) ? ltrim($m[3], '/') : ( isset($m[2]) ? ltrim($m[2], '/') : -1) );
-				
+				$id			= ( isset($m[3]) ? ltrim($m[3], '/') : ( isset($m[2]) ? ltrim($m[2], '/') : 0) );
 
-
-				$instance	= new $qualified($id);
-				$instance->trash();
+				if(!empty($id)){
+					// $instance	= new $qualified($id);
+					$instance	= $qualified::createInstance($id);
+					$instance->trash();
+				} else if(isset($request['ids'])) {
+					$qualified::bulk_trash($request['ids']);
+				}
 				
 				return array('success' => true);
 				
@@ -816,6 +849,11 @@ class RestAPI extends Factory
 				if(isset($_GET['action'])){
 					switch($_GET['action']){
 						case 'count-duplicates':
+							if(!$wpgmza->isUserAllowedToEdit()){
+								/* Permission re-assertion */
+								return new \WP_Error('wpgmza_permission_denied', 'You do not have permission to access this resource');
+							}
+
 							$total		= $wpdb->get_var("SELECT COUNT(*) FROM $wpgmza_tblname");
 							$duplicates	= $wpdb->get_var("SELECT COUNT(*) FROM $wpgmza_tblname GROUP BY map_id, lat, lng, address, title, link, description");
 							return array(
@@ -823,6 +861,11 @@ class RestAPI extends Factory
 							);
 							break;
 						case 'remove-duplicates':
+							if(!$wpgmza->isUserAllowedToEdit()){
+								/* Permission re-assertion */
+								return new \WP_Error('wpgmza_permission_denied', 'You do not have permission to access this resource');
+							}
+							
 							$allowed	= $wpdb->get_col("SELECT MIN(id) FROM $wpgmza_tblname GROUP BY map_id, lat, lng, address, title, link, description");
 							if(empty($allowed)){
 								return array(
@@ -1062,6 +1105,30 @@ class RestAPI extends Factory
 		
 		return $record;
 	}
+
+	public function queryNominatim(){
+		$params	= $this->getRequestParameters();
+		$cache	= new NominatimGeocodeCache();
+
+		if(!empty($params) && !empty($params['data'])){
+			$query = (object) $params['data'];
+			$results = $cache->queryNominatimProxy($query);
+			if(!empty($results)){
+				if(!empty($query->_query) && empty($results->error)){
+					/* Cache key passed */
+					try{
+						$cache->set(sanitize_text_field($query->_query), $results);
+					} catch (\Exception $ex){
+
+					} catch (\Error $err){
+
+					}
+				}
+				return $results;
+			}
+		}
+		return array();
+	}
 	
 	public function decompress($request)
 	{
@@ -1074,7 +1141,7 @@ class RestAPI extends Factory
 	{
 		$now = new \DateTime();
 		
-		update_option('wpgmza_last_rest_api_blocked', $now->format(\DateTime::ISO8601));
+		update_option('wpgmza_last_rest_api_blocked', $now->format(\DateTime::ISO8601), false);
 	}
 
 	public function cleanRequestOutput($requestData){
@@ -1086,5 +1153,38 @@ class RestAPI extends Factory
 			}
 		}
 		return $requestData;
+	}
+
+	public function systemHealthTools($request){
+		global $wpgmza;
+
+		$response = array(
+			'success' => false,
+			'message' => false
+		);
+
+		$params = $this->getRequestParameters();
+		if(!empty($params['type'])){
+			$type = $params['type'];
+			switch($type){
+				case 'resolve_coordinates':
+					$indexed = $wpgmza->database->resolveSpatialCoordinates();
+					if(!empty($indexed)){
+						$response['message'] = __("All missing spatial coordinates have been identified and resolved", "wp-google-maps");
+						$response['success'] = true;
+					} else {
+						$response['message'] = __("We could not find any missing spatial coordinates", "wp-google-maps");
+					}
+					break;
+				default:
+					$response['message'] = __("Unkown performance tool, we could not complete your request", "wp-google-maps");
+					$type = 'unknown';
+					break;
+			}
+
+			$response['type'] = $type;
+		}
+
+		return $response;
 	}
 }

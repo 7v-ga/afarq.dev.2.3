@@ -60,12 +60,6 @@ const skipFeatures = !! aiBuilderVars?.skipFeatures;
 
 const SitePreview = ( { handleClickStartBuilding, isInProgress } ) => {
 	const { nextStep } = useNavigateSteps();
-	const handleStartBuilding = () => {
-		window.open(
-			`https://app.zipwp.com/founders-deal?source=${ wpApiSettings?.zipwp_auth?.source }`,
-			'_blank'
-		);
-	};
 
 	const [ loadingIframe, setLoadingIframe ] = useState( true );
 	const [ responsiveMode, setResponsiveMode ] = useState(
@@ -119,7 +113,8 @@ const SitePreview = ( { handleClickStartBuilding, isInProgress } ) => {
 
 	const isTemplateRestricted =
 		selectedTemplateItem?.is_premium &&
-		aiBuilderVars?.zip_plans?.active_plan?.slug === 'free';
+		( ! aiBuilderVars?.zip_plans?.active_plan ||
+			aiBuilderVars?.zip_plans?.active_plan?.slug === 'free' );
 
 	const updateScaling = () => {
 		const container = previewContainer.current;
@@ -415,7 +410,8 @@ const SitePreview = ( { handleClickStartBuilding, isInProgress } ) => {
 								) }
 							</div>
 						</div>
-						{ isTemplateRestricted ? (
+						{ isTemplateRestricted &&
+						aiBuilderVars?.show_premium_badge ? (
 							<div className="mt-5">
 								<div className="flex flex-col p-4 rounded-md border border-solid border-alert-info-text gap-4 bg-transparent text-white">
 									<div className="flex gap-4 flex-col">
@@ -434,64 +430,47 @@ const SitePreview = ( { handleClickStartBuilding, isInProgress } ) => {
 										</div>
 										<p className="text-brand-secondary-200 text-white text-sm">
 											{ __(
-												"You've chosen a Premium Design. Access this design and all others with our paid plans starting at just $79.",
+												"You've chosen a Premium Design. Access this design and all others with our paid plans",
 												'ai-builder'
 											) }
 										</p>
 									</div>
-
-									<Button
-										className="w-full h-10 font-semibold text-sm leading-5"
-										variant="primary"
-										size="l"
-										onClick={ handleStartBuilding }
-									>
-										{ __(
-											'Unlock the Access',
-											'ai-builder'
-										) }
-									</Button>
 								</div>
 							</div>
 						) : (
 							<></>
 						) }
 						<div className="mt-8 mb-5 space-y-5">
-							{ ! isTemplateRestricted && (
-								<Button
-									className="h-10 w-full font-semibold text-sm leading-5"
-									onClick={
-										skipFeatures
-											? handleClickStartBuilding( true )
-											: nextStep
-									}
-									variant="primary"
-									hasSuffixIcon={ ! isInProgress }
-								>
-									{ isInProgress ? (
-										<LoadingSpinner className="w-5 h-5" />
-									) : (
-										<>
-											<span>
-												{ skipFeatures ? (
-													<span>
-														{ __(
-															'Start Building',
-															'ai-builder'
-														) }
-													</span>
-												) : (
-													__(
-														'Continue',
+							<Button
+								className="h-10 w-full font-semibold text-sm leading-5"
+								onClick={
+									skipFeatures
+										? handleClickStartBuilding( true )
+										: nextStep
+								}
+								variant="primary"
+								hasSuffixIcon={ ! isInProgress }
+							>
+								{ isInProgress ? (
+									<LoadingSpinner className="w-5 h-5" />
+								) : (
+									<>
+										<span>
+											{ skipFeatures ? (
+												<span>
+													{ __(
+														'Start Building',
 														'ai-builder'
-													)
-												) }
-											</span>
-											<ArrowRightIcon className="w-5 h-5" />
-										</>
-									) }
-								</Button>
-							) }
+													) }
+												</span>
+											) : (
+												__( 'Continue', 'ai-builder' )
+											) }
+										</span>
+										<ArrowRightIcon className="w-5 h-5" />
+									</>
+								) }
+							</Button>
 							<Button
 								className="mx-auto text-white h-10 w-full font-semibold text-sm leading-5 bg-zip-dark-theme-content-background"
 								variant="blank"

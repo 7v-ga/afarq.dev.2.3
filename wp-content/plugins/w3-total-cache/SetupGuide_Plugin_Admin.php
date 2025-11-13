@@ -55,7 +55,7 @@ class SetupGuide_Plugin_Admin {
 	/**
 	 * Set the template.
 	 *
-	 * @since X.X.X
+	 * @since 2.8.8
 	 *
 	 * @see self::get_config()
 	 *
@@ -777,7 +777,7 @@ class SetupGuide_Plugin_Admin {
 					'enabled'            => $config->get_boolean( 'lazyload.enabled' ),
 					'process_img'        => $config->get_boolean( 'lazyload.process_img' ),
 					'process_background' => $config->get_boolean( 'lazyload_process_background' ),
-					'exclude'            => $config->get_array( 'lazyload.exclude' ),
+					'exclude'            => $config->get_array( 'lazyload.exclude' ), // phpcs:ignore WordPressVIPMinimum
 					'embed_method'       => $config->get_string( 'lazyload.embed_method' ),
 				)
 			);

@@ -1,3 +1,28 @@
+v1.1.21 - 18-September-2025
+- Improvement: Added multisite import compatibility for classic templates.
+- Improvement: Enhanced import error handling to minimize failure rates.
+
+v1.1.20 - 21-August-2025
+- Improvement: Added headers to improve sse import over http2 protocol.
+
+v1.1.19 - 13-August-2025
+- Fix: Resolved an issue where the email address was not being passed during SureCart account creation.
+
+v1.1.18 - 16-July-2025
+- Fix: Resolved the “No Kit Found” error message when editing with Elementor after successful import.
+
+v1.1.17 - 03-July-2025
+- Fix: Addressed missing alt text when importing Spectra images.
+
+v1.1.16 - 26-June-2025
+- Fix: Resolved an issue where Gutenberg batches of Elementor templates were not processed correctly.
+
+v1.1.15 - 19-May-2025
+- Improvement: Added compatibility with Spectra Popup Builder post types.
+
+v1.1.14 - 12-May-2025
+- Improvement: Refined the condition to detect Gutenberg pages more efficiently.
+
 v1.1.13 - 11-April-2025
 - New: Added Elementor templates import compatibility.
 

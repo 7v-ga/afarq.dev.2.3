@@ -1,43 +1,63 @@
-# WordPress specific
+# ----------------------------------------------------
+# WORDPRESS CORE (NO VERSIONAR)
+# ----------------------------------------------------
+/wp-admin/
+/wp-includes/
+/wp-content/plugins/*
+!/wp-content/plugins/afarq-*/      # <- tus plugins propios si existieran
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/backups/
 wp-config.php
 
-# Ignore the /wp-content directory, except for what's inside
-!/wp-content/
-wp-content/cache/
-wp-content/backups/
-wp-content/upgrade/
-wp-content/uploads/
+# ----------------------------------------------------
+# PERMITIR SOLO EL TEMA HIJO
+# ----------------------------------------------------
+!/wp-content/themes/
+/wp-content/themes/*
+!/wp-content/themes/astra-child-afarq/   # <- AJUSTA EL NOMBRE REAL
+
+# ----------------------------------------------------
+# WORDPRESS SPECIAL
+# ----------------------------------------------------
 wp-content/advanced-cache.php
 wp-content/wp-cache-config.php
 wp-content/db.php
 
-# Ignore these file types across the entire repository
-*.log
+# ----------------------------------------------------
+# SENSITIVE FILES
+# ----------------------------------------------------
+*.env
 *.sql
 *.sqlite
-*.env
-
-# Vendor and dependencies
-node_modules/
-vendor/
-
-# Operating system files
-.DS_Store
-Thumbs.db
-
-# IDE or editor specific files
-*.sublime-project
-*.sublime-workspace
-*.codekit-cache
-*.idea/
-*.vscode/
-*.komodoproject
-*.tmproj
-*.swp
-
-# Miscellaneous
+*.log
 *.bak
 *.orig
 *.tmp
-*.sass-cache/
-*.htaccess
+
+# ----------------------------------------------------
+# DEPENDENCIAS
+# ----------------------------------------------------
+node_modules/
+vendor/
+
+# ----------------------------------------------------
+# SISTEMA OPERATIVO
+# ----------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# ----------------------------------------------------
+# EDITORES
+# ----------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.sublime-project
+*.sublime-workspace
+
+# ----------------------------------------------------
+# .htaccess se ignora
+# ----------------------------------------------------
+.htaccess

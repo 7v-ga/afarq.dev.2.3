@@ -11,6 +11,11 @@ if ( astraSitesVars?.default_page_builder ) {
 		astraSitesVars?.default_page_builder === 'brizy'
 			? 'gutenberg'
 			: astraSitesVars?.default_page_builder;
+
+	// If AI builder is disabled but set as default, fallback to gutenberg
+	if ( builderKey === 'ai-builder' && ! astraSitesVars?.showAiBuilder ) {
+		builderKey = 'gutenberg';
+	}
 }
 
 export const siteLogoDefault = {
@@ -64,57 +69,25 @@ export const initialState = {
 			icon: 'ecommerce',
 		},
 		{
-			title: __( 'Website Emails & SMTP', 'astra-sites' ),
-			id: 'smtp',
+			title: __( 'SEO & Search Visibility', 'astra-sites' ),
+			id: 'seo',
 			description: __(
-				'Get emails from your website (forms, etc)',
+				'Optimize your website for search engines',
 				'astra-sites'
 			),
 			enabled: true,
 			compulsory: false,
-			icon: 'envelope',
+			icon: 'arrow-trending-up',
 		},
-		{
-			title: __( 'Donations', 'astra-sites' ),
-			id: 'donations',
-			description: __(
-				'Collect donations online from your website',
-				'astra-sites'
-			),
-			enabled: false,
-			compulsory: false,
-			icon: 'heart',
-		},
-		{
-			title: __( 'Automation & Integrations', 'astra-sites' ),
-			id: 'automation-integrations',
-			description: __( 'Automate your website & tasks', 'astra-sites' ),
-			enabled: false,
-			compulsory: false,
-			icon: 'squares-plus',
-		},
-		{
-			title: __( 'Sales Funnels', 'astra-sites' ),
-			id: 'sales-funnels',
-			description: __(
-				'Boost your sales & maximize your profits',
-				'astra-sites'
-			),
-			enabled: false,
-			compulsory: false,
-			icon: 'funnel',
-		},
-		{
-			title: __( 'Video Player', 'astra-sites' ),
-			id: 'video-player',
-			description: __(
-				'Showcase your videos on your website',
-				'astra-sites'
-			),
-			enabled: false,
-			compulsory: false,
-			icon: 'play-circle',
-		},
+		// Will be added back.
+		// {
+		// 	title: __( 'Automation & Integrations', 'astra-sites' ),
+		// 	id: 'automation-integrations',
+		// 	description: __( 'Automate your website & tasks', 'astra-sites' ),
+		// 	enabled: false,
+		// 	compulsory: false,
+		// 	icon: 'squares-plus',
+		// },
 		{
 			title: __( 'Appointment & Bookings', 'astra-sites' ),
 			id: 'appointment-bookings',
@@ -125,6 +98,17 @@ export const initialState = {
 			enabled: false,
 			compulsory: false,
 			icon: 'calendar',
+		},
+		{
+			title: __( 'Website Emails & SMTP', 'astra-sites' ),
+			id: 'smtp',
+			description: __(
+				'Get emails from your website (forms, etc)',
+				'astra-sites'
+			),
+			enabled: false,
+			compulsory: false,
+			icon: 'envelope',
 		},
 		{
 			title: __( 'Free Live Chat', 'astra-sites' ),
@@ -139,8 +123,8 @@ export const initialState = {
 		},
 	],
 	formDetails: {
-		first_name: '',
-		email: '',
+		first_name: astraSitesVars?.userDetails?.first_name || '',
+		email: astraSitesVars?.userDetails?.email || '',
 		wp_user_type: '',
 		build_website_for: '',
 		opt_in: true,
@@ -250,6 +234,14 @@ export const initialState = {
 	limitExceedModal: {
 		open: false,
 	},
+
+	// Page builder API loading state and cache
+	pageBuilderCache: {
+		timestamp: null,
+	},
+
+	// Spectra Blocks Version
+	spectraBlocksVersion: astraSitesVars?.spectraBlocks?.version || 'v2',
 };
 
 const reducer = ( state = initialState, { type, ...rest } ) => {

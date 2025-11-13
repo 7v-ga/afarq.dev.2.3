@@ -74,51 +74,57 @@ class Plugin {
 			self::$instance = new self();
 			self::$instance->includes();
 
-			// Run export via WP-Cron.
-			add_action( 'simply_static_site_export_cron', array( self::$instance, 'run_static_export' ) );
+			// Apply hooks after init to avoid loading issues.
+			add_action( 'init', function () {
+				// Run export via WP-Cron.
+				add_action( 'simply_static_site_export_cron', array( self::$instance, 'run_static_export' ) );
 
-			// Filters.
-			add_filter( 'simplystatic.archive_creation_job.task_list', array(
-				self::$instance,
-				'filter_task_list'
-			), 10, 2 );
+				// Filters.
+				add_filter( 'simplystatic.archive_creation_job.task_list', array(
+					self::$instance,
+					'filter_task_list'
+				), 10, 2 );
 
-			// Maybe clear local directory.
-			add_action( 'ss_after_setup_task', array( self::$instance, 'maybe_clear_directory' ) );
+				// Maybe clear local directory.
+				add_action( 'ss_after_setup_task', array( self::$instance, 'maybe_clear_directory' ) );
 
-			// Add quick link to the plugin page.
-			add_filter( 'plugin_action_links_simply-static/simply-static.php', array(
-				self::$instance,
-				'add_quick_links'
-			) );
+				// Add quick link to the plugin page.
+				add_filter( 'plugin_action_links_simply-static/simply-static.php', array(
+					self::$instance,
+					'add_quick_links'
+				) );
 
-			// Handle Basic Auth.
-			add_filter( 'http_request_args', array( self::$instance, 'add_http_filters' ), 10, 2 );
+				// Handle Basic Auth.
+				add_filter( 'http_request_args', array( self::$instance, 'add_http_filters' ), 10, 2 );
 
-			self::$instance->integrations = new Integrations();
-			self::$instance->integrations->load();
+				// Set up integrations.
+				self::$instance->integrations = new Integrations();
+				self::$instance->integrations->load();
 
-			self::$instance->options              = Options::instance();
-			self::$instance->view                 = new View();
-			self::$instance->archive_creation_job = new Archive_Creation_Job();
-			self::$instance->page_handlers        = new Page_Handlers();
+				// Set up defaults.
+				self::$instance->options              = Options::instance();
+				self::$instance->view                 = new View();
+				self::$instance->archive_creation_job = new Archive_Creation_Job();
+				self::$instance->page_handlers        = new Page_Handlers();
 
-			$page                         = isset( $_GET['page'] ) ? $_GET['page'] : '';
-			self::$instance->current_page = $page;
+				// Set up pagination.
+				$page                         = isset( $_GET['page'] ) ? $_GET['page'] : '';
+				self::$instance->current_page = $page;
 
-			// Maybe run upgrade.
-			Upgrade_Handler::run();
+				// Maybe run upgrade.
+				Upgrade_Handler::run();
 
-			// Multisite.
-			if ( is_multisite() ) {
-				Multisite::get_instance();
-			}
+				// Multisite.
+				if ( is_multisite() ) {
+					Multisite::get_instance();
+				}
 
-			// Plugin compatibility.
-			Plugin_Compatibility::get_instance();
+				// Plugin compatibility.
+				Plugin_Compatibility::get_instance();
 
-			// Boot up admin.
-			Admin_Settings::get_instance();
+				// Boot up admin.
+				Admin_Settings::get_instance();
+			} );
 		}
 
 		return self::$instance;
@@ -149,6 +155,7 @@ class Plugin {
 		require_once $path . 'src/class-ss-phpuri.php';
 		require_once $path . 'src/class-ss-options.php';
 		require_once $path . 'src/class-ss-view.php';
+		require_once $path . 'src/class-ss-html-encoding-helper.php';
 		require_once $path . 'src/class-ss-url-extractor.php';
 		require_once $path . 'src/class-ss-url-fetcher.php';
 		require_once $path . 'src/background/class-ss-async-request.php';
@@ -160,13 +167,13 @@ class Plugin {
 		require_once $path . 'src/tasks/traits/trait-can-transfer.php';
 		require_once $path . 'src/tasks/class-ss-task.php';
 		require_once $path . 'src/tasks/class-ss-setup-task.php';
+		require_once $path . 'src/tasks/class-ss-discover-urls-task.php';
 		require_once $path . 'src/tasks/class-ss-fetch-urls-task.php';
 		require_once $path . 'src/tasks/class-ss-transfer-files-locally-task.php';
 		require_once $path . 'src/tasks/class-ss-create-zip-archive.php';
 		require_once $path . 'src/tasks/class-ss-wrapup-task.php';
 		require_once $path . 'src/tasks/class-ss-cancel-task.php';
 		require_once $path . 'src/tasks/class-ss-generate-404-task.php';
-		require_once $path . 'src/tasks/class-ss-scan-all-task.php';
 		require_once $path . 'src/handlers/class-ss-page-handler.php';
 		require_once $path . 'src/class-ss-query.php';
 		require_once $path . 'src/models/class-ss-model.php';
@@ -199,9 +206,20 @@ class Plugin {
 	 *
 	 * @param int $blog_id given blog id.
 	 *
-	 * @return void
+	 * @return bool Whether the export was started successfully
 	 */
 	public function run_static_export( $blog_id = 0, $type = 'export' ) {
+		// Check if an export is already running
+		if ( $this->archive_creation_job->is_running() ) {
+			Util::debug_log( "Export already running. Blocking new export request." );
+			Util::debug_log( "Current task: " . $this->archive_creation_job->get_current_task() );
+			Util::debug_log( "Is job done: " . ($this->archive_creation_job->is_job_done() ? 'true' : 'false') );
+
+			// For cron jobs or programmatic calls, we just return without starting a new export
+			// The REST API endpoints will handle their own error responses
+			return false;
+		}
+
 		if ( ! $blog_id ) {
 			$blog_id = get_current_blog_id();
 		}
@@ -219,17 +237,17 @@ class Plugin {
 
 		switch ( $server_type ) {
 			case ( strpos( $server_type, 'Apache' ) !== false ) :
-				if ( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
+				if ( isset( $_SERVER['PHP_AUTH_USER'] ) && ! empty( $_SERVER['PHP_AUTH_USER'] ) ) {
 					$basic_auth_on = true;
 				}
 				break;
 			case ( strpos( $server_type, 'nginx' ) !== false ) :
-				if ( isset( $_SERVER['REMOTE_USER'] ) ) {
+				if ( isset( $_SERVER['REMOTE_USER'] ) && ! empty( $_SERVER['REMOTE_USER'] ) ) {
 					$basic_auth_on = true;
 				}
 				break;
 			case ( strpos( $server_type, 'IIS' ) !== false ) :
-				if ( isset( $_SERVER['AUTH_USER'] ) ) {
+				if ( isset( $_SERVER['AUTH_USER'] ) && ! empty( $_SERVER['AUTH_USER'] ) ) {
 					$basic_auth_on = true;
 				}
 				break;
@@ -253,8 +271,11 @@ class Plugin {
 				$options['archive_end_time']   = null;
 
 				update_option( 'simply-static', $options );
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -316,7 +337,7 @@ class Plugin {
 
 		$log = $this->options->get( 'archive_status_messages' );
 
-		do_action( 'ss_after_render_activity_log', $blog_id );
+		do_action( 'ss_after_render_activity_log', $blog_id, $this->get_archive_creation_job() );
 
 		return $log;
 	}
@@ -334,7 +355,7 @@ class Plugin {
 
 		$blog_id = $blog_id ?: get_current_blog_id();
 
-		do_action( 'ss_before_render_export_log', $blog_id );
+		do_action( 'ss_before_render_export_log', $blog_id, $this->get_archive_creation_job() );
 
 		$per_page = $per_page ?: 25;
 		$offset   = ( intval( $current_page ) - 1 ) * intval( $per_page );
@@ -352,7 +373,7 @@ class Plugin {
 		$total_static_pages = apply_filters( 'ss_total_pages', array_sum( array_values( $http_status_codes ) ) );
 		$total_pages        = ceil( $total_static_pages / $per_page );
 
-		do_action( 'ss_after_render_export_log', $blog_id );
+		do_action( 'ss_after_render_export_log', $blog_id, $this->get_archive_creation_job() );
 
 		$static_pages_formatted = [];
 
@@ -419,14 +440,34 @@ class Plugin {
 	 * @return array The list of tasks to process.
 	 */
 	public function filter_task_list( $task_list, $delivery_method ): array {
-
-		$generate_404            = $this->options->get( 'generate_404' );
-		$scan_themes_plugins_dir = $this->options->get( 'scan_themes_plugins_dir' );
+		// 404-only export short-circuit
+		$only_404 = get_option( 'simply-static-404-only' );
+		if ( ! empty( $only_404 ) ) {
+			$task_list = [ 'setup' ];
+			// Always include the 404 generator for this mode.
+			$task_list[] = 'generate_404';
+			if ( 'zip' === $delivery_method ) {
+				$task_list[] = 'create_zip_archive';
+			} elseif ( 'local' === $delivery_method ) {
+				$task_list[] = 'transfer_files_locally';
+			} else {
+				// For other delivery methods in Pro, keep placeholder; Free doesn't handle them.
+			}
+			$task_list[] = 'wrapup';
+			return $task_list;
+		}
+		$generate_404 = $this->options->get( 'generate_404' );
 
 		$task_list[] = 'setup';
 
-		if ( $scan_themes_plugins_dir ) {
-			$task_list[] = 'scan_themes_plugins_dir';
+		if ( $this->options->get( 'smart_crawl' ) ) {
+			// Only include discover_urls on full exports (exclude update, single, and build exports).
+			$use_single  = get_option( 'simply-static-use-single' );
+			$use_build   = get_option( 'simply-static-use-build' );
+			$export_type = $this->options->get( 'generate_type' );
+			if ( empty( $use_single ) && empty( $use_build ) && 'update' !== $export_type ) {
+				$task_list[] = 'discover_urls';
+			}
 		}
 
 		$task_list[] = 'fetch_urls';

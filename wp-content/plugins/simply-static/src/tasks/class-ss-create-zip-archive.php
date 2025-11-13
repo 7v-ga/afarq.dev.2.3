@@ -38,7 +38,7 @@ class Create_Zip_Archive_Task extends Task {
 			if ( $this->is_wp_cli_running() ) {
 				$message .= $download_url;
 			} else {
-				$message .= ' <a download href="' . $download_url . '">' . __( 'Click here to download', 'simply-static' ) . '</a>';
+				$message .= ' <a href="' . $download_url . '">' . __( 'Click here to download', 'simply-static' ) . '</a>';
 			}
 
 			$this->save_status_message( $message );
@@ -80,9 +80,53 @@ class Create_Zip_Archive_Task extends Task {
 		// Now we are creating a new zip file.
 		$archive_dir  = $this->options->get_archive_dir();
 		$zip_filename = untrailingslashit( $archive_dir ) . '.zip';
-		$zip_archive  = new \PclZip( $zip_filename );
+		$zip_filename = apply_filters( 'ss_zip_filename', $zip_filename, $archive_dir, $this->options );
 
-		Util::debug_log( 'Fetching list of files to include in zip' );
+		// Ensure target directory exists in case a custom path points elsewhere
+		$zip_dir = dirname( $zip_filename );
+		if ( ! is_dir( $zip_dir ) ) {
+			wp_mkdir_p( $zip_dir );
+		}
+		// Prefer ZipArchive (ZIP64-capable) when available; fall back to PclZip for legacy environments.
+		if ( class_exists( '\\ZipArchive' ) ) {
+			Util::debug_log( 'Creating zip archive via ZipArchive (ZIP64 capable if libzip supports it)' );
+			$zip = new \ZipArchive();
+			$opened = $zip->open( $zip_filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE );
+			if ( true !== $opened ) {
+				return new \WP_Error( 'create_zip_failed', __( 'Unable to open ZIP archive for writing', 'simply-static' ) );
+			}
+
+			$base_path = untrailingslashit( $archive_dir );
+			$base_len  = strlen( $base_path ) + 1; // account for trailing slash in relative names
+
+			$iterator = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $archive_dir, \RecursiveDirectoryIterator::SKIP_DOTS ) );
+			$count    = 0;
+			foreach ( $iterator as $path => $file_info ) {
+				if ( $file_info->isDir() ) {
+					// ZipArchive will create directories implicitly when adding files; skip explicit dir add to match previous behavior.
+					continue;
+				}
+				$local_name = substr( $path, $base_len );
+				$zip->addFile( $path, $local_name );
+
+				// Periodic progress logging for very large exports.
+				if ( ( ++$count % 1000 ) === 0 ) {
+					Util::debug_log( 'Added ' . $count . ' files to zip so far...' );
+				}
+			}
+
+			$zip->close();
+
+			do_action( 'ss_zip_file_created', (object) array( 'zipname' => $zip_filename ) );
+
+			$download_url = Util::abs_path_to_url( $zip_filename );
+			return $download_url;
+		}
+
+		// Fallback to PclZip (no ZIP64 support) if ZipArchive is unavailable.
+		$zip_archive = new \PclZip( $zip_filename );
+
+		Util::debug_log( 'ZipArchive unavailable; falling back to PclZip (no ZIP64 support). Fetching list of files to include in zip' );
 
 		$files    = array();
 		$iterator = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $archive_dir, \RecursiveDirectoryIterator::SKIP_DOTS ) );
@@ -91,7 +135,7 @@ class Create_Zip_Archive_Task extends Task {
 			$files[] = realpath( $file_name );
 		}
 
-		Util::debug_log( 'Creating zip archive' );
+		Util::debug_log( 'Creating zip archive via PclZip' );
 
 		if ( $zip_archive->create( $files, PCLZIP_OPT_REMOVE_PATH, $archive_dir ) === 0 ) {
 			return new \WP_Error( 'create_zip_failed', __( 'Unable to create ZIP archive', 'simply-static' ) );

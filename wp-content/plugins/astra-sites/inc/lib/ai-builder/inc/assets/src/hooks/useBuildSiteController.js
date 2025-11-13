@@ -5,6 +5,7 @@ import { STORE_KEY } from '../store';
 import apiFetch from '@wordpress/api-fetch';
 import toast from 'react-hot-toast';
 import { toastBody } from '../helpers';
+import { setCookie } from '../utils/helpers';
 
 const useBuildSiteController = () => {
 	const { nextStep } = useNavigateSteps();
@@ -55,9 +56,14 @@ const useBuildSiteController = () => {
 		setPrevErrorAlertOpen = ( value ) =>
 			setPrevErrorAlert( { open: value } );
 	const selectedTemplateData = templateList?.find(
-			( item ) => item?.uuid === selectedTemplate
-		),
-		isEcommarceSite = selectedTemplateData?.features?.ecommerce === 'yes';
+		( item ) => item?.uuid === selectedTemplate
+	);
+
+	const hasEcommerceFeature =
+		selectedTemplateData?.features?.ecommerce === 'yes';
+
+	const hasDonationsFeature =
+		selectedTemplateData?.features?.donations === 'yes';
 
 	const handleClosePreBuildModal = ( value = false ) => {
 		setPreBuildModal( ( prev ) => {
@@ -185,6 +191,7 @@ const useBuildSiteController = () => {
 				importErrorResponse: [],
 				importError: false,
 			} );
+			setCookie( 'ai-show-start-over-warning', true, 2 * 24 * 60 * 60 ); // 2 days in seconds.
 			nextStep();
 		} else {
 			const error = response?.data?.data?.errors,
@@ -216,6 +223,7 @@ const useBuildSiteController = () => {
 			} else {
 				setApiErrorModal( {
 					open: true,
+					message,
 					error,
 				} );
 			}
@@ -238,15 +246,19 @@ const useBuildSiteController = () => {
 				return;
 			}
 
-			const enabledFeatures = skip
-				? []
-				: siteFeatures
-						.filter( ( feature ) => feature.enabled )
-						.map( ( feature ) => feature.id );
+			const enabledFeatures = siteFeatures
+				.filter( ( feature ) =>
+					skip ? feature.compulsory : feature.enabled
+				)
+				.map( ( feature ) => feature.id );
 
 			// Add ecommerce feature if selected template is ecommerce.
-			if ( isEcommarceSite ) {
+			if ( hasEcommerceFeature ) {
 				enabledFeatures.push( 'ecommerce' );
+			}
+
+			if ( hasDonationsFeature ) {
+				enabledFeatures.push( 'donations' );
 			}
 
 			const requestData = {

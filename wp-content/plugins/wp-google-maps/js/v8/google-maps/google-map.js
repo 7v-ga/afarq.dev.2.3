@@ -133,34 +133,19 @@ jQuery(function($) {
 		try{
 			json = JSON.parse(raw);	// Try to parse strict JSON
 		}catch(e) {
+			var str = raw;
+			
+			str = str.replace(/\\'/g, '\'');
+			str = str.replace(/\\"/g, '"');
+			str = str.replace(/\\0/g, '\0');
+			str = str.replace(/\\\\/g, '\\');
 			
 			try{
-				
-				json = eval(raw);	// Try to parse JS object
-				
+				json = JSON.parse(str);
 			}catch(e) {
-				
-				var str = raw;
-				
-				str = str.replace(/\\'/g, '\'');
-				str = str.replace(/\\"/g, '"');
-				str = str.replace(/\\0/g, '\0');
-				str = str.replace(/\\\\/g, '\\');
-				
-				try{
-					
-					json = eval(str);
-					
-				}catch(e) {
-					
-					console.warn("Couldn't parse theme data");
-				
+				console.warn("Couldn't parse theme data");
 				return [];
-					
-				}
-				
 			}
-			
 		}
 
 		/* As of 2023-04-28 Google Maps themes must contain array with each item being a defined object. This means older theme definitions
@@ -196,6 +181,8 @@ jQuery(function($) {
 	{
 		var self = this;
 		var options = this.settings.toGoogleMapsOptions();
+		
+		options = this.extendNativeConfig(options);
 		
 		this.googleMap = new google.maps.Map(this.engineElement, options);
 		
@@ -238,8 +225,7 @@ jQuery(function($) {
 				lng: parseFloat(clone.center.lng)
 			};
 		
-		if(this.settings.hide_point_of_interest)
-		{
+		if(this.settings.hide_point_of_interest){
 			var noPoi = {
 				featureType: "poi",
 				elementType: "labels",
@@ -254,6 +240,13 @@ jQuery(function($) {
 				clone.styles = [];
 			
 			clone.styles.push(noPoi);
+		}
+
+		if(WPGMZA.settings && WPGMZA.settings.googleMarkerMode && WPGMZA.settings.googleMarkerMode === WPGMZA.GoogleMarker.MARKER_MODE_ADVANCED){
+			/* Advanced Marker Module - Disable local styles */
+			if(clone.styles){
+				delete clone.styles;
+			}
 		}
 		
 		this.googleMap.setOptions(clone);

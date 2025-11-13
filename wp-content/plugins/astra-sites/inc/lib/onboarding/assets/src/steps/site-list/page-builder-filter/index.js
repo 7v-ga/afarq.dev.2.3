@@ -3,8 +3,14 @@ import { ToggleDropdown } from '@brainstormforce/starter-templates-components';
 import { __ } from '@wordpress/i18n';
 import { useStateValue } from '../../../store/store';
 import { initialState } from '../../../store/reducer';
-const { imageDir, isElementorDisabled, isBeaverBuilderDisabled } =
-	starterTemplates;
+const {
+	imageDir,
+	isElementorDisabled,
+	isBeaverBuilderDisabled,
+	showOtherBuilders = false,
+} = starterTemplates;
+
+const { showAiBuilder } = astraSitesVars;
 
 import Tippy from '@tippyjs/react/headless';
 import { motion } from 'framer-motion';
@@ -48,6 +54,11 @@ const PageBuilder = ( { placement = 'bottom-end', isDisabled } ) => {
 
 	if ( builder === 'fse' ) {
 		return null;
+	}
+
+	// Don't show page builder selection on page builder screen (i.e. ci=1) and if all builders are showing.
+	if ( ! showOtherBuilders && currentIndex === 1 ) {
+		return;
 	}
 
 	const isLimitReached =
@@ -104,6 +115,53 @@ const PageBuilder = ( { placement = 'bottom-end', isDisabled } ) => {
 		}
 	}
 
+	if ( ! showAiBuilder ) {
+		// Find the index of the Beaver builder in the array.
+		const indexToRemove = buildersList.findIndex(
+			( pageBuilder ) => pageBuilder.id === 'ai-builder'
+		);
+
+		// Remove the Beaver builder if it exists.
+		if ( indexToRemove !== -1 ) {
+			buildersList.splice( indexToRemove, 1 );
+		}
+	}
+
+	// Add `Show Other Builders` option when any of our builders are disabled via option meta.
+	if ( showOtherBuilders ) {
+		buildersList.push( {
+			id: 'show-other-builders',
+			title: __( 'Show Other Builders', 'astra-sites' ),
+			image: `${ imageDir }ellipsis.svg`,
+		} );
+	}
+
+	const handleShowOtherBuilders = () => {
+		const formData = new FormData();
+		formData.append( 'action', 'astra-sites-show-other-builders' );
+		formData.append( '_ajax_nonce', astraSitesVars?._ajax_nonce );
+
+		fetch( ajaxurl, {
+			method: 'POST',
+			body: formData,
+		} )
+			.then( ( response ) => response.json() )
+			.then( ( data ) => {
+				if ( data.success ) {
+					// Reload the window to reflect the builders options.
+					window.location.reload();
+				} else {
+					console.error(
+						'Failed to show other builders:',
+						data.error
+					);
+				}
+			} )
+			.catch( ( error ) => {
+				console.error( 'Error fetching data:', error );
+			} );
+	};
+
 	const handleBuildWithAIPress = () => {
 		if (
 			typeof aiSitesRemainingCount === 'number' &&
@@ -133,11 +191,6 @@ const PageBuilder = ( { placement = 'bottom-end', isDisabled } ) => {
 			astraSitesVars?.adminURL + 'themes.php?page=ai-builder';
 	};
 
-	// dont show page builder selection on page builder screen (i.e. ci=1)
-	if ( currentIndex === 1 ) {
-		return;
-	}
-
 	return (
 		<div className="relative">
 			<Tippy
@@ -145,7 +198,8 @@ const PageBuilder = ( { placement = 'bottom-end', isDisabled } ) => {
 				arrow={ false }
 				offset={ [ 60, 8 ] }
 				render={ ( attrs ) =>
-					currentIndex === getStepIndex( 'site-list' ) && (
+					currentIndex === getStepIndex( 'site-list' ) &&
+					showAiBuilder && (
 						<motion.div
 							className="flex flex-col items-start gap-5 min-w-[250px] sm:min-w-[304px] bg-white rounded-lg shadow-lg p-4 border border-button-disabled"
 							{ ...attrs }
@@ -205,6 +259,11 @@ const PageBuilder = ( { placement = 'bottom-end', isDisabled } ) => {
 						options={ buildersList }
 						className="st-page-builder-toggle"
 						onClick={ ( event, option ) => {
+							if ( option.id === 'show-other-builders' ) {
+								handleShowOtherBuilders();
+								return;
+							}
+
 							if ( 'ai-builder' === option.id ) {
 								if ( isLimitReached ) {
 									dispatch( {

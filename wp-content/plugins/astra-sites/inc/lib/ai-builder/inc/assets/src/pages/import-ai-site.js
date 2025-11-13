@@ -17,13 +17,13 @@ import {
 	saveTypography,
 	setSiteLanguage,
 	showErrorToast,
+	generateAnalyticsLead,
 } from '../utils/import-site/import-utils';
 const { migrateSvg, reportError } = aiBuilderVars;
-let sendReportFlag = reportError;
 const successMessageDelay = 8000; // 8 seconds delay for fully assets load.
 import { STORE_KEY } from '../store';
 import ErrorModel from '../components/error-model';
-import { TOTAL_STEPS, useNavigateSteps } from '../router';
+import { stepNextButtonClick, TOTAL_STEPS, useNavigateSteps } from '../router';
 import { SITE_CREATION_STATUS_CODES, getLocalStorageItem } from '../helpers';
 
 const RANDOM_FINAL_FINISHING_MESSAGES = [
@@ -175,34 +175,47 @@ const ImportAiSite = () => {
 		solution = '',
 		stack = ''
 	) => {
+		const error = JSON.stringify( {
+			primaryText: primary,
+			secondaryText: secondary,
+			errorCode: code,
+			errorText: text,
+			solutionText: solution,
+			tryAgain: true,
+			stack,
+			tryAgainCount,
+		} );
+
 		if ( tryAgainCount >= 2 ) {
-			// generateAnalyticsLead( tryAgainCount, false, templateId, builder );
+			generateAnalyticsLead( tryAgainCount, false, {
+				id: templateId,
+				page_builder: stepsData?.pageBuilder,
+				template_type: stepsData?.selectedTemplateIsPremium
+					? 'premium'
+					: 'free',
+				error,
+			} );
 		}
-		if ( ! sendReportFlag ) {
+		if ( ! reportError ) {
 			return;
 		}
 		const reportErr = new FormData();
 		reportErr.append( 'action', 'astra-sites-report_error' );
 		reportErr.append( '_ajax_nonce', aiBuilderVars._ajax_nonce );
+		reportErr.append( 'type', 'ai-builder' );
+		reportErr.append( 'page_builder', stepsData?.pageBuilder );
+		reportErr.append(
+			'template_type',
+			stepsData?.selectedTemplateIsPremium ? 'premium' : 'free'
+		);
+
 		reportErr.append(
 			'local_storage',
 			JSON.stringify(
 				getLocalStorageItem( 'ai-builder-onboarding-details' )
 			)
 		);
-		reportErr.append(
-			'error',
-			JSON.stringify( {
-				primaryText: primary,
-				secondaryText: secondary,
-				errorCode: code,
-				errorText: text,
-				solutionText: solution,
-				tryAgain: true,
-				stack,
-				tryAgainCount,
-			} )
-		);
+		reportErr.append( 'error', error );
 		reportErr.append( 'id', templateId );
 		reportErr.append( 'plugins', JSON.stringify( requiredPlugins ) );
 		fetch( ajaxurl, {
@@ -298,6 +311,14 @@ const ImportAiSite = () => {
 
 		if ( setSiteOptions ) {
 			await importSuccess();
+
+			generateAnalyticsLead( tryAgainCount, true, {
+				id: templateId,
+				page_builder: stepsData?.pageBuilder,
+				template_type: stepsData?.selectedTemplateIsPremium
+					? 'premium'
+					: 'free',
+			} );
 		}
 	};
 
@@ -1733,6 +1754,12 @@ const ImportAiSite = () => {
 					importPercent: 100,
 					importEnd: true,
 				} );
+
+				stepNextButtonClick( {
+					stepNumber: 8,
+					slug: 'building-website',
+				} );
+
 				setShowProgressBar( false );
 				return true;
 			} else if ( response?.data?.data === 'no' ) {
@@ -1860,7 +1887,6 @@ const ImportAiSite = () => {
 				themeStatus: true,
 			} );
 		}
-		sendReportFlag = false;
 	};
 
 	const tryAainCallback = () => {
@@ -2031,7 +2057,6 @@ const ImportAiSite = () => {
 	 */
 	useEffect( () => {
 		if ( requiredPluginsDone && themeStatus ) {
-			sendReportFlag = reportError;
 			importPart1();
 		}
 	}, [ requiredPluginsDone, themeStatus ] );

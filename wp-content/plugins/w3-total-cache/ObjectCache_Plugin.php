@@ -141,11 +141,18 @@ class ObjectCache_Plugin {
 	 * @return array Modified menu items.
 	 */
 	public function w3tc_admin_bar_menu( $menu_items ) {
+		$current_page = Util_Request::get_string( 'page', 'w3tc_dashboard' );
+
 		$menu_items['20410.objectcache'] = array(
 			'id'     => 'w3tc_flush_objectcache',
 			'parent' => 'w3tc_flush',
 			'title'  => __( 'Object Cache', 'w3-total-cache' ),
-			'href'   => wp_nonce_url( admin_url( 'admin.php?page=w3tc_dashboard&amp;w3tc_flush_objectcache' ), 'w3tc' ),
+			'href'   => wp_nonce_url(
+				admin_url(
+					'admin.php?page=' . $current_page . '&amp;w3tc_flush_objectcache'
+				),
+				'w3tc'
+			),
 		);
 
 		return $menu_items;
@@ -154,9 +161,8 @@ class ObjectCache_Plugin {
 	/**
 	 * Adds a footer comment related to object cache to the strings.
 	 *
-	 * @param string $strings Existing footer strings.
-	 *
-	 * @return string Modified footer strings.
+	 * @param  array $strings Existing footer strings.
+	 * @return array Modified footer strings.
 	 */
 	public function w3tc_footer_comment( $strings ) {
 		$o       = Dispatcher::component( 'ObjectCache_WpObjectCache_Regular' );

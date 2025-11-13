@@ -19,7 +19,7 @@
 				<div class="col wpgmza-flex-grid__item">
 					<input type="radio" name="wpgmza_maps_engine" value="google-maps" id='engine_select_google' class="wpgmza-hidden" />
 					<label class="wpgmza-col wpgmza-installer-engine-select" for='engine_select_google'>
-						<img class="installer-engine-tile" src="<?php echo WPGMZA_PLUGIN_DIR_URL; ?>images/Google_maps_logo.png" />
+						<img class="installer-engine-tile" src="<?php echo WPGMZA_PLUGIN_DIR_URL; ?>images/google_maps_logo.png" />
 					</label>
 				</div>
 				
@@ -154,7 +154,7 @@
 							<?php _e("If preferred, you can create an API key from the <a href='https://wpgmaps.com/google-maps-developer-console/' target='_BLANK'>Google Developers Console</a>.", "wp-google-maps"); ?>
 						</p>
 
-						<p><?php _e("Please review our <a href='https://docs.wpgmaps.com/creating-a-google-maps-api-key' target='_BLANK'>documentation</a> for a comprehensive guide on API key management.", "wp-google-maps"); ?></p>
+						<p><?php _e("Please review our <a href='https://www.wpgmaps.com/help/docs/creating-a-google-maps-api-key/' target='_BLANK'>documentation</a> for a comprehensive guide on API key management.", "wp-google-maps"); ?></p>
 						
 						
 					</div>

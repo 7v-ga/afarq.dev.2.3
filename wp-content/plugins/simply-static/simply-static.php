@@ -6,11 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Plugin Name:       Simply Static
- * Plugin URI:        https://patrickposner.dev
+ * Plugin URI:        https://simplystatic.com
  * Description:       A static site generator to create fast and secure static versions of your WordPress website.
- * Version:           3.2.8.1
+ * Version:           3.5.1.2
  * Author:            Patrick Posner
- * Author URI:        https://patrickposner.dev
+ * Author URI:        https://patrickposner.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       simply-static
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'SIMPLY_STATIC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SIMPLY_STATIC_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
-define( 'SIMPLY_STATIC_VERSION', '3.2.8.1' );
+define( 'SIMPLY_STATIC_VERSION', '3.5.1.2' );
 
 // Check PHP version.
 if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
@@ -28,9 +28,9 @@ if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 }
 
 // Check WordPress version.
-if ( version_compare( get_bloginfo( 'version' ), '6.5', '<' ) ) {
+if ( version_compare( get_bloginfo( 'version' ), '6.2', '<' ) ) {
 	deactivate_plugins( plugin_basename( __FILE__ ) );
-	wp_die( esc_html__( 'Simply Static requires WordPress 6.5 or higher.', 'simply-static' ), 'Plugin dependency check', array( 'back_link' => true ) );
+	wp_die( esc_html__( 'Simply Static requires WordPress 6.2 or higher.', 'simply-static' ), 'Plugin dependency check', array( 'back_link' => true ) );
 }
 
 // Run autoloader.
@@ -93,5 +93,41 @@ if ( ! function_exists( 'simply_static_run_plugin' ) ) {
 				);
 			}
 		}
+	}
+}
+
+register_deactivation_hook( __FILE__, 'simply_static_plugin_deactivate' );
+
+/**
+ * Clean up on deactivation.
+ */
+function simply_static_plugin_deactivate() {
+	// Ensure Util, Query, Model and Page classes are available.
+	if ( ! class_exists( 'Simply_Static\\Util' ) ) {
+		require_once SIMPLY_STATIC_PATH . 'src/class-ss-util.php';
+	}
+	if ( ! class_exists( 'Simply_Static\\Query' ) && file_exists( SIMPLY_STATIC_PATH . 'src/class-ss-query.php' ) ) {
+		require_once SIMPLY_STATIC_PATH . 'src/class-ss-query.php';
+	}
+	if ( ! class_exists( 'Simply_Static\\Model' ) && file_exists( SIMPLY_STATIC_PATH . 'src/models/class-ss-model.php' ) ) {
+		require_once SIMPLY_STATIC_PATH . 'src/models/class-ss-model.php';
+	}
+	// Load Page model to access its table
+	if ( ! class_exists( 'Simply_Static\\Page' ) && file_exists( SIMPLY_STATIC_PATH . 'src/models/class-ss-page.php' ) ) {
+		require_once SIMPLY_STATIC_PATH . 'src/models/class-ss-page.php';
+	}
+
+	// Clear temp dir.
+	$temp_dir = \Simply_Static\Util::get_temp_dir();
+	\Simply_Static\Util::delete_dir_contents( $temp_dir );
+
+	// Clear DB table.
+	\Simply_Static\Page::query()->delete_all();
+
+	// Remove debug log file.
+	$debug_file = \Simply_Static\Util::get_debug_log_filename();
+
+	if ( ( file_exists( $debug_file ) || is_link( $debug_file ) ) && is_writable( $debug_file ) ) {
+		unlink( $debug_file );
 	}
 }

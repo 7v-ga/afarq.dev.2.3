@@ -134,6 +134,38 @@ class Helper {
 	}
 
 	/**
+	 * Check whether WooCommerce plugin is installed and active.
+	 *
+	 * @since 1.2.43
+	 *
+	 * @return bool True if WooCommerce is active, false otherwise.
+	 */
+	public static function is_woocommerce_active() {
+		return class_exists( 'WooCommerce' ) || is_plugin_active( 'woocommerce/woocommerce.php' );
+	}
+
+	/**
+	 * Determine if a plugin requires WooCommerce to function.
+	 *
+	 * @since 1.2.43
+	 *
+	 * @param string $plugin Plugin slug or init file.
+	 * @return bool True if plugin depends on WooCommerce.
+	 */
+	public static function plugin_requires_woocommerce( $plugin ) {
+		$wc_plugins = array(
+			'woocommerce-payments',
+			'woocommerce-payments/woocommerce-payments.php',
+			'cartflows',
+			'cartflows/cartflows.php',
+			'woo-cart-abandonment-recovery',
+			'woo-cart-abandonment-recovery/woo-cart-abandonment-recovery.php',
+		);
+
+		return in_array( $plugin, $wc_plugins, true );
+	}
+
+	/**
 	 * Has Pro Version Support?
 	 * And
 	 * Is Pro Version Installed?
@@ -278,7 +310,16 @@ class Helper {
 			$feature_plugins = is_string( $_POST['feature_plugins'] ) ? json_decode( wp_unslash( $_POST['feature_plugins'] ), true ) : array();
 
 			if ( is_array( $feature_plugins ) && is_array( $required_plugins ) ) {
-				$required_plugins = array_merge( $required_plugins, $feature_plugins );
+				// Create a set of existing plugin slugs.
+				$existing_slugs = array_column( $required_plugins, 'slug' );
+
+				// Merge only the new feature plugins that aren't already in the required plugins.
+				foreach ( $feature_plugins as $feature_plugin ) {
+					if ( isset( $feature_plugin['slug'] ) && ! in_array( $feature_plugin['slug'], $existing_slugs, true ) ) {
+						$required_plugins[] = $feature_plugin;
+						$existing_slugs[]   = $feature_plugin['slug']; // Keep the slug list updated.
+					}
+				}
 			}
 		}
 
@@ -367,7 +408,7 @@ class Helper {
 					if ( is_plugin_active( $plugin_pro['init'] ) ) {
 						$response['active'][] = $plugin_pro;
 
-						self::after_plugin_activate( $plugin['init'] );
+						self::after_plugin_activate( $plugin['init'], array(), array(), $plugin['slug'], true );
 
 						// Pro - Inactive.
 					} else {
@@ -420,7 +461,7 @@ class Helper {
 					} else {
 						$response['active'][] = $plugin;
 
-						self::after_plugin_activate( $plugin['init'] );
+						self::after_plugin_activate( $plugin['init'], array(), array(), $plugin['slug'], true );
 					}
 				}
 			}
@@ -428,9 +469,23 @@ class Helper {
 
 		// Checking the `install_plugins` and `activate_plugins` capability for the current user.
 		// To perform plugin installation process.
+		$has_notinstalled = ! empty( $response['notinstalled'] );
+		$has_inactive     = ! empty( $response['inactive'] );
+		$can_install      = current_user_can( 'install_plugins' );
+		$can_activate     = current_user_can( 'activate_plugins' );
+
+		if ( is_multisite() ) {
+			// For multisite: Super admins can handle both, subsite admins need activation capability.
+			$is_error = $can_activate
+				? $has_notinstalled
+				: ( $has_notinstalled || $has_inactive );
+		} else {
+			// For single site: Check install and activate permissions separately.
+			$is_error = ( ! $can_install && $has_notinstalled ) || ( ! $can_activate && $has_inactive );
+		}
+
 		if (
-			( ! defined( 'WP_CLI' ) && wp_doing_ajax() ) &&
-			( ( ! current_user_can( 'install_plugins' ) && ! empty( $response['notinstalled'] ) ) || ( ! current_user_can( 'activate_plugins' ) && ! empty( $response['inactive'] ) ) ) ) {
+			( ! defined( 'WP_CLI' ) && wp_doing_ajax() ) && $is_error ) {
 			$message               = __( 'Insufficient Permission. Please contact your Super Admin to allow the install required plugin permissions.', 'astra-sites' );
 			$required_plugins_list = array_merge( $response['notinstalled'], $response['inactive'] );
 			$markup                = $message;
@@ -440,7 +495,14 @@ class Helper {
 			}
 			$markup .= '</ul>';
 
-			wp_send_json_error( $markup );
+			$data = array(
+				'markup'                       => $markup,
+				'required_plugins'             => $response,
+				'third_party_required_plugins' => $third_party_required_plugins,
+				'update_avilable_plugins'      => $update_avilable_plugins,
+				'incompatible_plugins'         => $incompatible_plugins,
+			);
+			wp_send_json_error( $data );
 		}
 
 		return array(
@@ -459,14 +521,16 @@ class Helper {
 	 * @param  string               $plugin_init        Plugin Init File.
 	 * @param  array<string, mixed> $options            Site Options.
 	 * @param  array<string, mixed> $enabled_extensions Enabled Extensions.
-	 * @param string               $plugin_slug Plugin slug.
+	 * @param  string               $plugin_slug        Plugin slug.
+	 * @param  bool                 $was_plugin_active  Flag indicating if the plugin was already active.
 	 * @return void
 	 */
-	public static function after_plugin_activate( $plugin_init = '', $options = array(), $enabled_extensions = array(), $plugin_slug = '' ) {
+	public static function after_plugin_activate( $plugin_init = '', $options = array(), $enabled_extensions = array(), $plugin_slug = '', $was_plugin_active = false ) {
 		$data = array(
 			'astra_site_options' => $options,
 			'enabled_extensions' => $enabled_extensions,
 			'plugin_slug'        => $plugin_slug,
+			'was_plugin_active'  => $was_plugin_active,
 		);
 
 		do_action( 'astra_sites_after_plugin_activation', $plugin_init, $data );
@@ -487,11 +551,11 @@ class Helper {
 		if ( ! defined( 'WP_CLI' ) && wp_doing_ajax() ) {
 			check_ajax_referer( 'astra-sites', '_ajax_nonce' );
 
-			if ( ! current_user_can( 'install_plugins' ) || ! isset( $_POST['init'] ) || ! sanitize_text_field( $_POST['init'] ) ) {
+			if ( ! current_user_can( 'activate_plugins' ) || ! isset( $_POST['init'] ) || ! sanitize_text_field( $_POST['init'] ) ) {
 				wp_send_json_error(
 					array(
 						'success' => false,
-						'message' => __( 'Error: You don\'t have the required permissions to install plugins.', 'astra-sites' ),
+						'message' => __( "Error: You don't have the required permissions to activate plugins.", 'astra-sites' ),
 					)
 				);
 			}
@@ -502,12 +566,41 @@ class Helper {
 		$plugin_init = isset( $_POST['init'] ) ? esc_attr( sanitize_text_field( $_POST['init'] ) ) : $init;
 		$plugin_slug = isset( $_POST['slug'] ) ? esc_attr( sanitize_text_field( $_POST['slug'] ) ) : '';
 
+		// Check if plugin requires WooCommerce but WooCommerce is not active.
+		if ( self::plugin_requires_woocommerce( $plugin_slug ) || self::plugin_requires_woocommerce( $plugin_init ) ) {
+			if ( ! self::is_woocommerce_active() ) {
+				$message = __( 'This plugin requires WooCommerce to be installed and activated first.', 'astra-sites' );
+
+				if ( defined( 'WP_CLI' ) ) {
+					\WP_CLI::error( $message );
+				} elseif ( wp_doing_ajax() ) {
+					// Send deprioritize response instead of error.
+					wp_send_json_success(
+						array(
+							'success'     => false,
+							'status'      => 'deprioritize',
+							'action'      => 'defer',
+							'message'     => $message,
+							'reason'      => 'missing_woocommerce',
+							'dependency'  => 'woocommerce',
+							'plugin_slug' => $plugin_slug,
+							'plugin_init' => $plugin_init,
+							'retry_after' => 'woocommerce_activation',
+						)
+					);
+				}
+				return;
+			}
+		}
+
 		/**
 		 * Disabled redirection to plugin page after activation.
 		 * Silecing the callback for WP Live Chat plugin.
 		 */
 		add_filter( 'wp_redirect', '__return_false' );
 		$silent = 'wp-live-chat-support/wp-live-chat-support.php' === $plugin_init ? true : false;
+
+		$was_plugin_active = is_plugin_active( $plugin_init );
 
 		$activate = activate_plugin( $plugin_init, '', false, $silent );
 
@@ -526,10 +619,13 @@ class Helper {
 			}
 		}
 
-		$options            = (array) astra_get_site_data( 'astra-site-options-data' );
-		$enabled_extensions = (array) astra_get_site_data( 'astra-enabled-extensions' );
+		$options            = astra_get_site_data( 'astra-site-options-data' );
+		$enabled_extensions = astra_get_site_data( 'astra-enabled-extensions' );
 
-		self::after_plugin_activate( $plugin_init, $options, $enabled_extensions, $plugin_slug );
+		$options            = is_array( $options ) ? $options : array();
+		$enabled_extensions = is_array( $enabled_extensions ) ? $enabled_extensions : array();
+
+		self::after_plugin_activate( $plugin_init, $options, $enabled_extensions, $plugin_slug, $was_plugin_active );
 
 		if ( defined( 'WP_CLI' ) ) {
 			\WP_CLI::line( 'Plugin Activated!' );
@@ -537,6 +633,7 @@ class Helper {
 			wp_send_json_success(
 				array(
 					'success' => true,
+					'status'  => 'activated',
 					'message' => __( 'Plugin Activated', 'astra-sites' ),
 				)
 			);
@@ -671,20 +768,40 @@ class Helper {
 			check_ajax_referer( 'astra-sites', '_ajax_nonce' );
 
 			if ( ! current_user_can( 'customize' ) ) {
-				wp_send_json_error( __( 'You are not allowed to perform this action', 'astra-sites' ) );
+				wp_send_json_error( __( "Permission denied: You don't have sufficient permissions to import. Please contact your site administrator.", 'astra-sites' ) );
 			}
 		}
 
 		if ( ! class_exists( 'STImporter\Importer\ST_Importer_File_System' ) ) {
-			wp_send_json_error( __( 'Required class not found.', 'astra-sites' ) );
+			wp_send_json_error( __( 'Import failed: ST_Importer_File_System class not found. Please ensure the importer is properly loaded.', 'astra-sites' ) );
 		}
 
-		$demo_data = ST_Importer_File_System::get_instance()->get_demo_content();
+		// Handle demo content retrieval with specific error handling.
+		try {
+			$demo_data = ST_Importer_File_System::get_instance()->get_demo_content();
+			if ( is_null( $demo_data ) ) {
+				$demo_data = array(); // Fallback to prevent null errors.
+			}
+		} catch ( \Exception $e ) {
+			astra_sites_error_log( 'Import End: Exception getting demo content - ' . $e->getMessage() );
+			// translators: %s: Error message.
+			wp_send_json_error( sprintf( __( 'Import failed: Unexpected error - %s', 'astra-sites' ), $e->getMessage() ) );
+		} catch ( \Error $e ) {
+			// translators: %s: Error message.
+			wp_send_json_error( sprintf( __( 'Import failed: Fatal error - %s', 'astra-sites' ), $e->getMessage() ) );
+		}
+
 		// Set permalink structure to use post name.
 		update_option( 'permalink_structure', '/%postname%/' );
 		update_option( 'astra-site-permalink-update-status', 'no' );
 
-		do_action( 'astra_sites_import_complete', $demo_data );
+		// Safely execute import complete action.
+		try {
+			do_action( 'astra_sites_import_complete', $demo_data );
+		} catch ( \Exception $e ) {
+			astra_sites_error_log( 'Import End: Exception in import_complete action - ' . $e->getMessage() );
+			// Continue execution - don't fail the entire import for hook issues.
+		}
 
 		if ( wp_doing_ajax() ) {
 			wp_send_json_success();
@@ -831,5 +948,95 @@ class Helper {
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Get the server's country code using its public IP.
+	 *
+	 * @param string $provider Optional. GeoIP provider: 'ipwhois', 'ipapi', or 'ipinfo'. Default 'ipwhois'.
+	 * @param string $token    Optional. API token (only needed for ipapi/ipinfo).
+	 *
+	 * @since 1.2.59
+	 * @return string Two-letter ISO country code (e.g., 'RU', 'US'), or 'unknown' on failure.
+	 */
+	public static function get_server_country_code( $provider = 'ipwhois', $token = '' ) {
+		// Step 1: Get server's public IP.
+		$response = wp_remote_get( 'https://api.ipify.org' );
+		if ( is_wp_error( $response ) ) {
+			return 'unknown';
+		}
+
+		$ip = wp_remote_retrieve_body( $response );
+		if ( empty( $ip ) ) {
+			return 'unknown';
+		}
+
+		// Step 2: Select provider endpoint.
+		switch ( strtolower( $provider ) ) {
+			case 'ipapi':
+				// Requires token for higher limits.
+				$url = "https://ipapi.co/{$ip}/country/";
+				if ( ! empty( $token ) ) {
+					$url = "https://ipapi.co/{$ip}/country/?key={$token}";
+				}
+				break;
+
+			case 'ipinfo':
+				$url = "https://ipinfo.io/{$ip}/country";
+				if ( ! empty( $token ) ) {
+					$url .= "?token={$token}";
+				}
+				break;
+
+			case 'ipwhois':
+			default:
+				// Default: ipwho.is (no token needed).
+				$url = "https://ipwho.is/{$ip}";
+				break;
+		}
+
+		// Step 3: Make request.
+		$response = wp_remote_get( $url );
+		if ( is_wp_error( $response ) ) {
+			return 'unknown';
+		}
+
+		$body = wp_remote_retrieve_body( $response );
+
+		// Step 4: Parse response based on provider.
+		if ( 'ipwhois' === $provider ) {
+			$data = json_decode( $body, true );
+			if ( is_array( $data ) && isset( $data['country_code'] ) && is_string( $data['country_code'] ) ) {
+				return $data['country_code'];
+			}
+			return 'unknown';
+		}
+
+		// ipapi and ipinfo return plain text country code.
+		$country = trim( $body );
+		return ! empty( $country ) ? $country : 'unknown';
+	}
+
+	/**
+	 * Get Images Engine
+	 *
+	 * @since 1.2.59
+	 * @return string Image Engine.
+	 */
+	public static function get_images_engine() {
+		$country_code = get_transient( 'zipwp_images_server_country_code' );
+
+		if ( false === $country_code ) {
+			$country_code = self::get_server_country_code();
+			set_transient( 'zipwp_images_server_country_code', $country_code, MONTH_IN_SECONDS );
+		}
+
+		// Use Unsplash for Russia as Pexels is blocked there.
+		if ( 'RU' === $country_code ) {
+			return 'unsplash';
+		}
+
+		// Default to Pexels.
+		return 'pexels';
 	}
 }

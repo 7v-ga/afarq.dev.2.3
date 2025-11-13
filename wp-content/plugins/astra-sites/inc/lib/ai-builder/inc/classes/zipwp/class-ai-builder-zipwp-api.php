@@ -58,15 +58,30 @@ class Ai_Builder_ZipWP_Api {
 	/**
 	 * Get API headers
 	 *
+	 * @param bool $locale Check for locale.
 	 * @since 4.0.0
 	 * @return array<string, string>
 	 */
-	public function get_api_headers() {
-		return array(
+	public function get_api_headers( $locale = false ) {
+		$headers = array(
 			'Content-Type'  => 'application/json',
 			'Accept'        => 'application/json',
 			'Authorization' => 'Bearer ' . Ai_Builder_ZipWP_Integration::get_token(),
 		);
+
+		if ( $locale ) {
+			$locale = get_locale();
+			if ( 'en_US' !== $locale ) {
+				// Getting translation codes.
+				$iso_locale = $locale;
+				if ( strpos( $iso_locale, '_' ) !== false ) {
+					$iso_locale = strstr( $locale, '_', true );
+				}
+				$headers['X-Zip-Locale'] = $iso_locale ? $iso_locale : 'en';
+			}
+		}
+
+		return $headers;
 	}
 
 	/**
@@ -188,6 +203,35 @@ class Ai_Builder_ZipWP_Api {
 					),
 				),
 			)
+		);
+
+		register_rest_route(
+			$namespace,
+			'/record-step/',
+			[
+				[
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => [ $this, 'record_step' ],
+					'permission_callback' => [ $this, 'get_item_permissions_check' ],
+					'args'                => [
+						'action'            => [
+							'type'              => 'string',
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_text_field',
+						],
+						'current_step'      => [
+							'type'              => 'integer',
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						],
+						'current_step_name' => [
+							'type'              => 'string',
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_text_field',
+						],
+					],
+				],
+			]
 		);
 
 		register_rest_route(
@@ -714,7 +758,8 @@ class Ai_Builder_ZipWP_Api {
 		if ( is_wp_error( $response ) ) {
 			// There was an error in the request.
 			return array(
-				'data'   => 'Failed ' . $response->get_error_message(),
+				/* translators: %s is the error message */
+				'data'   => sprintf( __( 'Failed %s', 'astra-sites' ), $response->get_error_message() ),
 				'status' => false,
 			);
 		}
@@ -1692,7 +1737,7 @@ class Ai_Builder_ZipWP_Api {
 
 		$api_endpoint = $this->get_api_domain() . '/sites/features/';
 		$request_args = array(
-			'headers' => $this->get_api_headers(),
+			'headers' => $this->get_api_headers( true ),
 			'timeout' => 100,
 		);
 		$response     = wp_safe_remote_get( $api_endpoint, $request_args );
@@ -1986,23 +2031,8 @@ class Ai_Builder_ZipWP_Api {
 
 		$keyword      = $request['keyword'];
 		$api_endpoint = $this->get_api_domain() . '/sites/business/search?q=' . $keyword;
-
-		$headers = $this->get_api_headers();
-
-		$locale = get_locale();
-
-		if ( 'en_US' !== $locale ) {
-
-			// Getting translation codes.
-			$iso_locale = $locale;
-			if ( strpos( $iso_locale, '_' ) !== false ) {
-				$iso_locale = strstr( $locale, '_', true );
-			}
-			$headers['X-Zip-Locale'] = $iso_locale ? $iso_locale : 'en';
-		}
-
 		$request_args = array(
-			'headers' => $headers,
+			'headers' => $this->get_api_headers( true ),
 			'timeout' => 100,
 		);
 		$response     = wp_safe_remote_get( $api_endpoint, $request_args );
@@ -2055,7 +2085,71 @@ class Ai_Builder_ZipWP_Api {
 		);
 		return is_array( $token_details ) && isset( $token_details['email'] ) ? $token_details['email'] : '';
 	}
+	/**
+	 * Record step.
+	 *
+	 * @param \WP_REST_Request $request Full details about the request.
+	 * @return mixed
+	 */
+	public function record_step( $request ) {
+		$nonce = (string) $request->get_header( 'X-WP-Nonce' );
+		// Verify the nonce.
+		if ( ! wp_verify_nonce( sanitize_text_field( $nonce ), 'wp_rest' ) ) {
+			wp_send_json_error(
+				[
+					'data'   => __( 'Nonce verification failed.', 'astra-sites' ),
+					'status' => false,
+				]
+			);
+		}
 
+		$api_endpoint = $this->get_api_domain() . '/sites/ai/step';
+
+		$post_data = [
+			'action'            => isset( $request['action'] ) ? sanitize_text_field( $request['action'] ) : '',
+			'current_step'      => isset( $request['current_step'] ) ? absint( $request['current_step'] ) : 0,
+			'current_step_name' => isset( $request['current_step_name'] ) ? sanitize_text_field( $request['current_step_name'] ) : '',
+			'email'             => $this->get_zip_user_email(),
+		];
+
+		$body = wp_json_encode( $post_data );
+
+		$request_args = [
+			'body'    => is_string( $body ) ? $body : '',
+			'headers' => $this->get_api_headers(),
+			'timeout' => 100,
+		];
+		$response     = wp_safe_remote_post( $api_endpoint, $request_args );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error(
+				[
+					'data'   => 'Failed ' . $response->get_error_message(),
+					'status' => false,
+				]
+			);
+		}
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_body = wp_remote_retrieve_body( $response );
+
+		if ( 200 === $response_code || 201 === $response_code ) {
+			$response_data = json_decode( $response_body, true );
+			wp_send_json_success(
+				[
+					'data'   => $response_data,
+					'status' => true,
+				]
+			);
+		} else {
+			wp_send_json_error(
+				[
+					'data'   => 'Failed - ' . $response_body,
+					'status' => false,
+				]
+			);
+		}
+	}
 }
 
 Ai_Builder_ZipWP_Api::Instance();

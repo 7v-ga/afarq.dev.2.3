@@ -46,6 +46,7 @@ export const defaultOnboardingAIState = {
 		activeColorPalette: null,
 		activeTypography: null,
 		defaultColorPalette: null,
+		pageBuilder: '',
 	},
 	websiteInfo: aiStepValues?.websiteInfo || {},
 	websiteVersionList: [],
@@ -56,6 +57,9 @@ export const defaultOnboardingAIState = {
 		open: false,
 	},
 	continueProgressModal: {
+		open: false,
+	},
+	confirmationStartOverModal: {
 		open: false,
 	},
 	signupLoginModal: {
@@ -206,6 +210,11 @@ const reducer = ( state = initialState, action ) => {
 			return {
 				...state,
 				continueProgressModal: action.payload,
+			};
+		case actionTypes.SET_CONFIRMATION_START_OVER_MODAL:
+			return {
+				...state,
+				confirmationStartOverModal: action.payload,
 			};
 		case actionTypes.SET_SIGNUP_LOGIN_MODAL:
 			return {
@@ -394,9 +403,9 @@ const reducer = ( state = initialState, action ) => {
 								templateData?.features?.[ feature.id ] ===
 								'yes';
 							return {
-								...feature,
 								enabled: defaultValue,
 								compulsory: defaultValue,
+								...feature,
 							};
 						} )
 					),
@@ -491,6 +500,14 @@ const reducer = ( state = initialState, action ) => {
 			return {
 				...state,
 				stepData: { ...action.payload.stepData },
+			};
+		case actionTypes.SET_SELECTED_PAGE_BUILDER:
+			return {
+				...state,
+				stepData: {
+					...state.stepData,
+					pageBuilder: action.payload,
+				},
 			};
 		default:
 			return state;

@@ -206,6 +206,111 @@ export const checkRequiredPlugins = async ( dispatch ) => {
 		} );
 };
 
+export const getFeaturePluginList = (
+	features,
+	selectedEcommercePlugin,
+	siteFeatures
+) => {
+	const requiredPlugins = [];
+
+	features?.forEach( ( feature ) => {
+		switch ( feature ) {
+			case 'ecommerce':
+				if ( selectedEcommercePlugin === 'surecart' ) {
+					requiredPlugins.push( {
+						name: 'SureCart',
+						slug: 'surecart',
+						compulsory: siteFeatures?.find(
+							( f ) => f.id === 'ecommerce'
+						)?.compulsory,
+					} );
+				} else if ( selectedEcommercePlugin === 'woocommerce' ) {
+					requiredPlugins.push( {
+						name: 'WooCommerce',
+						slug: 'woocommerce',
+						compulsory: siteFeatures?.find(
+							( f ) => f.id === 'ecommerce'
+						)?.compulsory,
+					} );
+				}
+				break;
+			case 'donations':
+				requiredPlugins.push( {
+					name: 'SureCart',
+					slug: 'surecart',
+					compulsory: siteFeatures?.find(
+						( f ) => f.id === 'ecommerce'
+					)?.compulsory,
+				} );
+				break;
+			case 'automation-integrations':
+				requiredPlugins.push( {
+					name: 'OttoKit',
+					slug: 'suretriggers',
+					compulsory: siteFeatures?.find(
+						( f ) => f.id === 'automation-integrations'
+					)?.compulsory,
+				} );
+				break;
+			case 'smtp':
+				requiredPlugins.push( {
+					name: 'Suremail',
+					slug: 'suremails',
+					compulsory: siteFeatures?.find( ( f ) => f.id === 'smtp' )
+						?.compulsory,
+				} );
+				break;
+			case 'sure-rank':
+				requiredPlugins.push( {
+					name: 'SureRank',
+					slug: 'surerank',
+					compulsory: siteFeatures?.find(
+						( f ) => f.id === 'sure-rank'
+					)?.compulsory,
+				} );
+				break;
+			case 'sales-funnels':
+				requiredPlugins.push( {
+					name: 'CartFlows',
+					slug: 'cartflows',
+				} );
+				requiredPlugins.push( {
+					name: 'Woocommerce Cart Abandonment Recovery',
+					slug: 'woo-cart-abandonment-recovery',
+				} );
+				break;
+			case 'video-player':
+				requiredPlugins.push( {
+					name: 'Preso Player',
+					slug: 'presto-player',
+				} );
+				break;
+			case 'appointment-bookings':
+				requiredPlugins.push( {
+					name: 'Latepoint',
+					slug: 'latepoint',
+					compulsory: siteFeatures?.find(
+						( f ) => f.id === 'appointment-bookings'
+					)?.compulsory,
+				} );
+				break;
+			case 'live-chat':
+				requiredPlugins.push( {
+					name: '3CX',
+					slug: 'wp-live-chat-support',
+					compulsory: siteFeatures?.find(
+						( f ) => f.id === 'live-chat'
+					)?.compulsory,
+				} );
+				break;
+			default:
+				break;
+		}
+	} );
+
+	return requiredPlugins;
+};
+
 export const activateAstra = ( dispatch ) => {
 	const data = new FormData();
 	data.append( 'action', 'astra-sites-activate_theme' );
@@ -432,4 +537,23 @@ export const setSiteLanguage = async ( siteLanguage = 'en_US' ) => {
 	} ).catch( ( e ) =>
 		showErrorToast( __( 'Failed to save Site Language', 'ai-builder' ), e )
 	);
+};
+
+export const generateAnalyticsLead = async ( tryAgainCount, status, data ) => {
+	const importContent = new FormData();
+	importContent.append( 'action', 'astra-sites-generate-analytics-lead' );
+	importContent.append( 'status', status );
+	importContent.append( 'try-again-count', tryAgainCount );
+	importContent.append( 'type', 'ai_builder' );
+	importContent.append( '_ajax_nonce', aiBuilderVars._ajax_nonce );
+
+	// Append extra data.
+	Object.entries( data ).forEach( ( [ key, value ] ) =>
+		importContent.append( key, value )
+	);
+
+	await fetch( ajaxurl, {
+		method: 'post',
+		body: importContent,
+	} );
 };

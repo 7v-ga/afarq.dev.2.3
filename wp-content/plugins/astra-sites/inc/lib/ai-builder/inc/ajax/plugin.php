@@ -143,7 +143,7 @@ class Plugin extends AjaxBase {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
-					'data'   => 'You do not have permission to do this action.',
+					'data'   => __( 'You do not have permission to do this action.', 'astra-sites' ),
 					'status' => false,
 
 				)
@@ -156,7 +156,7 @@ class Plugin extends AjaxBase {
 		if ( empty( $images ) || ! is_array( $images ) ) {
 			wp_send_json_success(
 				array(
-					'data'   => 'No images selected to download!',
+					'data'   => __( 'No images selected to download!', 'astra-sites' ),
 					'status' => true,
 				)
 			);
@@ -167,7 +167,7 @@ class Plugin extends AjaxBase {
 		if ( empty( $image ) || ! is_array( $image ) ) {
 			wp_send_json_success(
 				array(
-					'data'   => 'No image to download!',
+					'data'   => __( 'No image to download!', 'astra-sites' ),
 					'status' => true,
 				)
 			);
@@ -183,7 +183,7 @@ class Plugin extends AjaxBase {
 
 		wp_send_json_success(
 			array(
-				'data'   => 'Image downloaded successfully!',
+				'data'   => __( 'Image downloaded successfully!', 'astra-sites' ),
 				'status' => true,
 			)
 		);
@@ -202,7 +202,7 @@ class Plugin extends AjaxBase {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
 				array(
-					'data'   => 'You do not have permission to do this action.',
+					'data'   => __( 'You do not have permission to do this action.', 'astra-sites' ),
 					'status' => false,
 
 				)
@@ -243,14 +243,14 @@ class Plugin extends AjaxBase {
 			'timeout'  => 3,
 			'blocking' => true,
 			'body'     => array(
-				'url'        => esc_url( site_url() ),
-				'err'        => stripslashes( $_POST['error'] ),
-				'id'         => $_POST['id'],
-				'logfile'    => $this->get_log_file_path(),
-				'version'    => AI_BUILDER_VER,
-				'abspath'    => ABSPATH,
-				'user_agent' => $user_agent_string,
-				'server'     => array(
+				'url'           => esc_url( site_url() ),
+				'err'           => stripslashes( $_POST['error'] ),
+				'id'            => $_POST['id'],
+				'logfile'       => $this->get_log_file_path(),
+				'version'       => AI_BUILDER_VER,
+				'abspath'       => ABSPATH,
+				'user_agent'    => $user_agent_string,
+				'server'        => array(
 					'php_version'            => Helper::get_php_version(),
 					'php_post_max_size'      => ini_get( 'post_max_size' ),
 					'php_max_execution_time' => ini_get( 'max_execution_time' ),
@@ -258,6 +258,9 @@ class Plugin extends AjaxBase {
 					'php_memory_limit'       => ini_get( 'memory_limit' ),
 					'php_max_input_vars'     => ini_get( 'max_input_vars' ), // phpcs:ignore:PHPCompatibility.IniDirectives.NewIniDirectives.max_input_varsFound
 				),
+				'builder_type'  => isset( $_POST['type'] ) ? sanitize_text_field( $_POST['type'] ) : '',
+				'page_builder'  => isset( $_POST['page_builder'] ) ? sanitize_text_field( $_POST['page_builder'] ) : '',
+				'template_type' => isset( $_POST['template_type'] ) ? sanitize_text_field( $_POST['template_type'] ) : '',
 			),
 		);
 
@@ -281,7 +284,7 @@ class Plugin extends AjaxBase {
 			$failed_sites
 		);
 
-		if ( is_array( $last_import_site ) && ! in_array( $last_import_site['uuid'], $uuids, true ) ) {
+		if ( is_array( $last_import_site ) && isset( $last_import_site['uuid'] ) && ! in_array( $last_import_site['uuid'], $uuids, true ) ) {
 			$last_import_site['template_id']   = $id;
 			$last_import_site['local_storage'] = $local_storage;
 			$failed_sites[]                    = $last_import_site;
