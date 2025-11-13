@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the Themes - Neve FSE package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-09-06 15:26:48+0000\n"
+"PO-Revision-Date: 2025-10-31 20:08:23+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/4.0.1\n"
+"X-Generator: GlotPress/4.0.3\n"
 "Language: es\n"
 "Project-Id-Version: Themes - Neve FSE\n"
 
@@ -22,6 +22,12 @@ msgstr "Neve FSE es un tema hermano experimental de Neve, para los que están li
 #, gp-priority: high
 msgid "Neve FSE"
 msgstr "Neve FSE"
+
+#. translators: %1$s - plugin namce, %2$s - HTML tag, %3$s - discount, %4$s -
+#. HTML tag, %5$s - company name.
+#: inc/Admin.php:577
+msgid "Enhance %1$s with %2$s– up to %3$s OFF in our biggest sale of the year. Limited time only."
+msgstr "Mejora %1$s con %2$s- hasta %3$s de DESCUENTO en nuestra mayor oferta del año. Solo por tiempo limitado."
 
 #: inc/patterns/layout/map-section.php:20
 msgid "Map Section"
@@ -88,21 +94,21 @@ msgid "Archive Cover"
 msgstr "Portada de archivo"
 
 #. translators: %s: FSE Design Pack:
-#: inc/Admin.php:101
+#: inc/Admin.php:102
 msgid "%s Access a collection of 40+ layout patterns ready to import to your website"
 msgstr "%s Accede a una colección de más de 40 patrones de diseño listos para importar a tu sitio web"
 
-#: inc/Admin.php:97
+#: inc/Admin.php:98
 msgid "Neve FSE recommends"
 msgstr "Neve FSE recomienda"
 
-#: inc/Admin.php:96
+#: inc/Admin.php:97
 msgid "Dismiss"
 msgstr "Descartar"
 
-#: styles/s1-crayola.json styles/s2-majorelle-blue.json styles/s3-zomp.json
-#: styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
-#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json theme.json
+#: theme.json styles/s1-crayola.json styles/s2-majorelle-blue.json
+#: styles/s3-zomp.json styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
+#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json
 msgctxt "Color name"
 msgid "Accent Secondary"
 msgstr "Acento secundario"
@@ -187,44 +193,44 @@ msgctxt "Template part name"
 msgid "Header"
 msgstr "Cabecera"
 
-#: styles/s1-crayola.json styles/s2-majorelle-blue.json styles/s3-zomp.json
-#: styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
-#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json theme.json
+#: theme.json styles/s1-crayola.json styles/s2-majorelle-blue.json
+#: styles/s3-zomp.json styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
+#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json
 msgctxt "Color name"
 msgid "Accent"
 msgstr "Acento"
 
-#: styles/s1-crayola.json styles/s2-majorelle-blue.json styles/s3-zomp.json
-#: styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
-#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json theme.json
+#: theme.json styles/s1-crayola.json styles/s2-majorelle-blue.json
+#: styles/s3-zomp.json styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
+#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json
 msgctxt "Color name"
 msgid "Foreground Alt"
 msgstr "Alt del primer plano"
 
-#: styles/s1-crayola.json styles/s2-majorelle-blue.json styles/s3-zomp.json
-#: styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
-#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json theme.json
+#: theme.json styles/s1-crayola.json styles/s2-majorelle-blue.json
+#: styles/s3-zomp.json styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
+#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json
 msgctxt "Color name"
 msgid "Background Dark"
 msgstr "Fondo Oscuro"
 
-#: styles/s1-crayola.json styles/s2-majorelle-blue.json styles/s3-zomp.json
-#: styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
-#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json theme.json
+#: theme.json styles/s1-crayola.json styles/s2-majorelle-blue.json
+#: styles/s3-zomp.json styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
+#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json
 msgctxt "Color name"
 msgid "Background Alt"
 msgstr "Alt de la imagen de fondo"
 
-#: styles/s1-crayola.json styles/s2-majorelle-blue.json styles/s3-zomp.json
-#: styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
-#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json theme.json
+#: theme.json styles/s1-crayola.json styles/s2-majorelle-blue.json
+#: styles/s3-zomp.json styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
+#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json
 msgctxt "Color name"
 msgid "Foreground"
 msgstr "Primer plano"
 
-#: styles/s1-crayola.json styles/s2-majorelle-blue.json styles/s3-zomp.json
-#: styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
-#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json theme.json
+#: theme.json styles/s1-crayola.json styles/s2-majorelle-blue.json
+#: styles/s3-zomp.json styles/s4-dark-pastel-red.json styles/s5-aztec-gold.json
+#: styles/s6-vivid-red-tangelo.json styles/s7-greenlight.json
 msgctxt "Color name"
 msgid "Background"
 msgstr "Fondo"
@@ -468,67 +474,67 @@ msgstr "Patrones para varias secciones y componentes"
 msgid "Neve FSE Patterns"
 msgstr "Patrones de Neve FSE"
 
-#: inc/Admin.php:98 inc/Admin.php:326
+#: inc/Admin.php:99 inc/Admin.php:327
 msgid "Learn More"
 msgstr "Más información"
 
 #. translators: %s: Otter Blocks
-#: inc/Admin.php:321
+#: inc/Admin.php:322
 msgid "Install & Activate %s"
 msgstr "Instalar y activar %s"
 
 #. translators: %s: Otter Blocks
-#: inc/Admin.php:319
+#: inc/Admin.php:320
 msgid "Activate %s"
 msgstr "Activar %s"
 
-#: inc/Admin.php:309
+#: inc/Admin.php:310
 msgid "Otter is a Gutenberg Blocks page builder plugin that adds extra functionality to the WordPress Block Editor (also known as Gutenberg) for a better page building experience without the need for traditional page builders."
 msgstr "Otter es un plugin de construcción de páginas de bloques de Gutenberg que añade funcionalidad adicional al editor de bloques de WordPress (también conocido como Gutenberg) para una mejor experiencia de construcción de páginas sin necesidad de los constructores de páginas tradicionales."
 
 #. translators: %s: Otter Blocks
-#: inc/Admin.php:305
+#: inc/Admin.php:306
 msgid "Power up your website building experience with %s!"
 msgstr "¡Potencia tu experiencia en la creación de tus webs con %s!"
 
-#: inc/Admin.php:299
+#: inc/Admin.php:300
 msgid "Otter Blocks preview"
 msgstr "Vista previa de los bloques de Otter"
 
-#: inc/Admin.php:291
+#: inc/Admin.php:292
 msgid "Done"
 msgstr "Hecho"
 
-#: inc/Admin.php:290
+#: inc/Admin.php:291
 msgid "Installing"
 msgstr "Instalando"
 
-#: inc/Admin.php:289
+#: inc/Admin.php:290
 msgid "Activating"
 msgstr "Activando"
 
-#: inc/Admin.php:237
+#: inc/Admin.php:238
 msgid "Maybe later"
 msgstr "Quizá más tarde"
 
-#: inc/Admin.php:233
+#: inc/Admin.php:234
 msgid "Take the survey"
 msgstr "Realiza nuestra encuesta"
 
-#: inc/Admin.php:228
+#: inc/Admin.php:229
 msgid "Thank you for trying Neve FSE. We would love to hear your thoughts on how we can enhance and improve the theme even further. Would you mind taking a moment to share your insights through a quick survey?"
 msgstr "Gracias por probar Neve FSE. Nos encantaría conocer tu opinión sobre cómo podemos mejorar aún más el tema. ¿Te importaría dedicar un momento a compartir tus opiniones a través de una rápida encuesta?"
 
-#: inc/Admin.php:226
+#: inc/Admin.php:227
 msgid "We value your feedback"
 msgstr "Valoramos tu opinión"
 
-#: inc/Admin.php:224
+#: inc/Admin.php:225
 msgid "Neve FSE Logo"
 msgstr "Logotipo de Neve FSE"
 
 #. translators: %s: commands to run the theme
-#: functions.php:105
+#: functions.php:106
 msgid "You appear to be running the Neve FSE theme from source code. Please finish installation by running %s."
 msgstr "Parece que estás ejecutando el tema Neve FSE desde el código fuente. Finaliza la instalación ejecutando %s."
 

@@ -1,17 +1,17 @@
-# Translation of Plugins - Simply Static &#8211; The WordPress Static Site Generator - Stable (latest release) in Spanish (Spain)
-# This file is distributed under the same license as the Plugins - Simply Static &#8211; The WordPress Static Site Generator - Stable (latest release) package.
+# Translation of Plugins - Simply Static &#8211; The Static Site Generator - Stable (latest release) in Spanish (Spain)
+# This file is distributed under the same license as the Plugins - Simply Static &#8211; The Static Site Generator - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-01-31 13:16:51+0000\n"
+"PO-Revision-Date: 2025-10-17 18:42:14+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/4.0.1\n"
+"X-Generator: GlotPress/4.0.3\n"
 "Language: es\n"
-"Project-Id-Version: Plugins - Simply Static &#8211; The WordPress Static Site Generator - Stable (latest release)\n"
+"Project-Id-Version: Plugins - Simply Static &#8211; The Static Site Generator - Stable (latest release)\n"
 
-#: simply-static.php:73
+#: simply-static.php:79
 msgid "You need to update Simply Static Pro to version 1.6.3.2 before continuing to use Simply Static, as we made significant changes requiring an upgrade."
 msgstr "Necesitas actualizar Simply Static Pro a la versión 1.6.3.2 antes de continuar usando Simply Static, ya que hemos realizado cambios significativos que requieren una actualización."
 
@@ -23,15 +23,15 @@ msgstr "Entornos (Núcleo)"
 msgid "Admin Bar (Core)"
 msgstr "Barra de administración (Núcleo)"
 
-#: src/class-ss-diagnostic.php:543
+#: src/class-ss-diagnostic.php:544
 msgid "Basic Auth is enabled, and username and password are set in Simply Static -> Settings -> Debug -> Basic Auth"
 msgstr "La identificación básica está activada, y el nombre de usuario y la contraseña están establecidos en «Simply Static -> Ajustes -> Depuración -> Identificación básica»."
 
-#: src/class-ss-diagnostic.php:541
+#: src/class-ss-diagnostic.php:542
 msgid "Basic Auth is enabled, but no username or password is set in Simply Static -> Settings -> Debug -> Basic Auth"
 msgstr "La identificación básica está activada, pero no se ha establecido un nombre de usuario ni una contraseña en «Simply Static -> Ajustes -> Depuración -> Identificación básica»."
 
-#: src/class-ss-diagnostic.php:510
+#: src/class-ss-diagnostic.php:511
 msgid "Basic Auth is not enabled."
 msgstr "La identificación básica no está activada."
 
@@ -71,11 +71,11 @@ msgstr "Integra el banner de cookies de Complianz para funcionar en el sitio est
 msgid "Complianz | GDPR/CCPA Cookie Consent"
 msgstr "Complianz | GDPR/CCPA Cookie Consent"
 
-#: src/integrations/class-yoast-integration.php:69
+#: src/integrations/class-yoast-integration.php:70
 msgid "Yoast Redirection URL"
 msgstr "URL de redirección de Yoast"
 
-#: src/integrations/class-rank-math-integration.php:99
+#: src/integrations/class-rank-math-integration.php:262
 msgid "RankMath Redirection URL"
 msgstr "URL de redirección de RankMath"
 
@@ -132,22 +132,6 @@ msgstr "SEOPress"
 msgid "Rank Math"
 msgstr "Rank Math"
 
-#: src/integrations/class-jetpack-integration.php:15
-msgid "Adds scripts for carousels and sliders to the static site."
-msgstr "Añade scripts para carruseles y controles deslizantes al sitio estático."
-
-#: src/integrations/class-jetpack-integration.php:14
-msgid "Jetpack"
-msgstr "Jetpack"
-
-#: src/integrations/class-elementor-pro-integration.php:17
-msgid "Exports assets required for Elementor Pro widgets and prepares data used by them."
-msgstr "Exporta los activos necesarios para los widgets de Elementor Pro y prepara los datos utilizados por ellos."
-
-#: src/integrations/class-elementor-pro-integration.php:16
-msgid "Elementor Pro"
-msgstr "Elementor Pro"
-
 #: src/integrations/class-elementor-integration.php:22
 msgid "Exports assets required for Elementor widgets and prepares data used by them."
 msgstr "Exporta los activos necesarios para los widgets de Elementor y prepara los datos utilizados por ellos."
@@ -156,11 +140,11 @@ msgstr "Exporta los activos necesarios para los widgets de Elementor y prepara l
 msgid "Elementor"
 msgstr "Elementor"
 
-#: src/integrations/class-cookie-yes-integration.php:18
+#: src/integrations/class-cookie-yes-integration.php:19
 msgid "Fixes scripts given by CookieYes to work on exported pages."
 msgstr "Corrige los scripts proporcionados por CookieYes para que funcionen en las páginas exportadas."
 
-#: src/integrations/class-cookie-yes-integration.php:17
+#: src/integrations/class-cookie-yes-integration.php:18
 msgid "CookieYes | GDPR Cookie Consent"
 msgstr "CookieYes | Consentimiento de cookies y RGPD"
 
@@ -173,44 +157,27 @@ msgstr "Añade mapas del sitio a los archivos estáticos generados."
 msgid "All in One SEO"
 msgstr "All in One SEO"
 
-#: src/class-ss-plugin.php:446
+#: src/class-ss-plugin.php:528
 msgid "Docs"
 msgstr "Docs"
 
-#: src/integrations/class-jetpack-integration.php:43
-msgid "Jetpack Integration"
-msgstr "Integración de Jetpack"
-
-#: src/integrations/class-ss-adminbar-integration.php:68
-msgid "Error"
-msgstr "Error"
-
-#: src/integrations/class-ss-adminbar-integration.php:67
+#: src/admin/inc/class-ss-admin-settings.php:1442
+#: src/integrations/class-ss-adminbar-integration.php:58
+#: src/integrations/class-ss-adminbar-integration.php:170
 msgid "Idle"
 msgstr "Inactivo"
 
-#: src/integrations/class-ss-adminbar-integration.php:66
-msgid "Running.."
-msgstr "Ejecutando..."
-
-#: src/integrations/class-ss-adminbar-integration.php:65
-msgid "Static Generation:"
-msgstr "Generación estática:"
-
-#: src/integrations/class-ss-adminbar-integration.php:39
-#: src/integrations/class-ss-adminbar-integration.php:43
-msgid "Static Generation: Waiting.."
-msgstr "Generación estática: esperando..."
-
-#: src/tasks/traits/trait-can-process-pages.php:136
+#: src/tasks/traits/trait-can-process-pages.php:149
 msgid "Uploaded %d of %d files"
 msgstr "Subidos %d de %d archivos"
 
-#: src/tasks/class-ss-transfer-files-locally-task.php:103
+#: src/tasks/class-ss-transfer-files-locally-task.php:74
+#: src/tasks/class-ss-transfer-files-locally-task.php:114
+#: src/tasks/traits/trait-can-process-pages.php:91
 msgid "Transferred %d of %d files"
 msgstr "Transferidos %d de %d archivos"
 
-#: src/tasks/class-ss-transfer-files-locally-task.php:100
+#: src/tasks/class-ss-transfer-files-locally-task.php:111
 msgid "No new/updated pages to transfer"
 msgstr "No hay páginas nuevas/actualizadas que transferir"
 
@@ -218,44 +185,43 @@ msgstr "No hay páginas nuevas/actualizadas que transferir"
 msgid "Cannot create archive directory %s"
 msgstr "No se puede crear el directorio de archivo %s"
 
-#: src/tasks/class-ss-generate-404-task.php:96
+#: src/tasks/class-ss-generate-404-task.php:79
+#: src/tasks/class-ss-generate-404-task.php:128
 msgid "404 Page generated"
 msgstr "Página 404 generada"
 
-#: src/tasks/class-ss-generate-404-task.php:53
+#: src/tasks/class-ss-generate-404-task.php:48
 msgid "Generating 404 Page."
 msgstr "Generando página 404."
 
-#: src/integrations/class-elementor-pro-integration.php:202
+#: src/integrations/class-elementor-integration.php:482
 msgid "Elementor Pro Lottie"
 msgstr "Elementor Pro Lottie"
 
-#: src/integrations/class-elementor-pro-integration.php:69
-msgid "Elementor Pro Asset"
-msgstr "Recurso de Elementor Pro"
-
-#: src/integrations/class-elementor-integration.php:223
+#: src/integrations/class-elementor-integration.php:384
 msgid "Elementor Asset"
 msgstr "Recurso de Elementor"
 
-#: src/integrations/class-aio-seo-integration.php:83
-#: src/integrations/class-rank-math-integration.php:123
-#: src/integrations/class-seopress-integration.php:57
-#: src/integrations/class-yoast-integration.php:95
+#: src/integrations/class-aio-seo-integration.php:88
+#: src/integrations/class-rank-math-integration.php:290
+#: src/integrations/class-rank-math-integration.php:435
+#: src/integrations/class-seopress-integration.php:62
+#: src/integrations/class-yoast-integration.php:97
+#: src/integrations/class-yoast-integration.php:243
 msgid "Sitemap URL"
 msgstr "URL del mapa del sitio"
 
 #. translators: 1. separator, 2. blogname
-#: src/handlers/class-ss-rank-math-sitemap-handler.php:127
+#: src/handlers/class-ss-rank-math-sitemap-handler.php:155
 msgid "Locations Sitemap %1$s %2$s"
 msgstr "Ubicaciones del mapa del sitio %1$s %2$s"
 
 #. translators: 1. separator, 2. blogname
-#: src/handlers/class-ss-rank-math-sitemap-handler.php:124
+#: src/handlers/class-ss-rank-math-sitemap-handler.php:152
 msgid "XML Sitemap %1$s %2$s"
 msgstr "Mapa del sitio XML %1$s %2$s"
 
-#: src/class-ss-plugin.php:245
+#: src/class-ss-plugin.php:264
 msgid "Missing Basic Auth credentials - you need to configure the Basic Auth credentials in Simply Static -> Settings -> Misc -> Basic Auth to continue the export."
 msgstr "Faltan las credenciales de Basic Auth: debes configurar las credenciales de Basic Auth en Simply Static -> Ajustes -> Misc -> Basic Auth para continuar con la exportación."
 
@@ -276,128 +242,128 @@ msgstr "Visitar el sitio"
 msgid "Site link of %s"
 msgstr "Enlace del sitio de %s"
 
-#: src/class-ss-diagnostic.php:504
+#: src/class-ss-diagnostic.php:505
 msgid "cURL version < %s"
 msgstr "versión de cURL < %s"
 
-#: src/class-ss-diagnostic.php:503
+#: src/class-ss-diagnostic.php:504
 msgid "cURL is available"
 msgstr "cURL está disponible"
 
-#: src/class-ss-diagnostic.php:489
+#: src/class-ss-diagnostic.php:490
 msgid "php-xml is not available"
 msgstr "php-xml no está disponible"
 
-#: src/class-ss-diagnostic.php:488
+#: src/class-ss-diagnostic.php:489
 msgid "php-xml is available"
 msgstr "php-xml está disponible"
 
-#: src/class-ss-diagnostic.php:481
+#: src/class-ss-diagnostic.php:482
 msgid "PHP version < %s"
 msgstr "Versión de PHP < %s"
 
-#: src/class-ss-diagnostic.php:480
+#: src/class-ss-diagnostic.php:481
 msgid "PHP version is >= %s"
 msgstr "La versión de PHP es >= %s"
 
-#: src/class-ss-diagnostic.php:473
+#: src/class-ss-diagnostic.php:474
 msgid "MySQL user has no DROP privilege"
 msgstr "El usuario de MySQL no tiene privilegios de DROP."
 
-#: src/class-ss-diagnostic.php:472
+#: src/class-ss-diagnostic.php:473
 msgid "MySQL user has DROP privilege"
 msgstr "El usuario de MySQL tiene privilegio de DROP"
 
-#: src/class-ss-diagnostic.php:465
+#: src/class-ss-diagnostic.php:466
 msgid "MySQL user has no ALTER privilege"
 msgstr "El usuario de MySQL no tiene privilegios de ALTER"
 
-#: src/class-ss-diagnostic.php:464
+#: src/class-ss-diagnostic.php:465
 msgid "MySQL user has ALTER privilege"
 msgstr "El usuario de MySQL tiene privilegio de ALTER"
 
-#: src/class-ss-diagnostic.php:457
+#: src/class-ss-diagnostic.php:458
 msgid "MySQL user has no CREATE privilege"
 msgstr "El usuario de MySQL no tiene privilegios de CREAR"
 
-#: src/class-ss-diagnostic.php:456
+#: src/class-ss-diagnostic.php:457
 msgid "MySQL user has CREATE privilege"
 msgstr "El usuario de MySQL tiene privilegio de CREATE"
 
-#: src/class-ss-diagnostic.php:449
+#: src/class-ss-diagnostic.php:450
 msgid "MySQL user has no SELECT privilege"
 msgstr "El usuario de MySQL no tiene privilegios de SELECT."
 
-#: src/class-ss-diagnostic.php:448
+#: src/class-ss-diagnostic.php:449
 msgid "MySQL user has SELECT privilege"
 msgstr "El usuario de MySQL tiene privilegio de SELECT"
 
-#: src/class-ss-diagnostic.php:441
+#: src/class-ss-diagnostic.php:442
 msgid "MySQL user has no INSERT privilege"
 msgstr "El usuario de MySQL no tiene privilegios de INSERT"
 
-#: src/class-ss-diagnostic.php:440
+#: src/class-ss-diagnostic.php:441
 msgid "MySQL user has INSERT privilege"
 msgstr "El usuario de MySQL tiene privilegio de INSERT"
 
-#: src/class-ss-diagnostic.php:433
+#: src/class-ss-diagnostic.php:434
 msgid "MySQL user has no DELETE privilege"
 msgstr "El usuario de MySQL no tiene privilegios de DELETE"
 
-#: src/class-ss-diagnostic.php:432
+#: src/class-ss-diagnostic.php:433
 msgid "MySQL user has DELETE privilege"
 msgstr "El usuario de MySQL tiene privilegio de DELETE"
 
-#: src/class-ss-diagnostic.php:425
+#: src/class-ss-diagnostic.php:426
 msgid "Web server can not write to Local Directory: %s"
 msgstr "El servidor web no puede escribir en el directorio local: %s"
 
-#: src/class-ss-diagnostic.php:424
+#: src/class-ss-diagnostic.php:425
 msgid "Web server can write to Local Directory: %s"
 msgstr "El servidor web puede escribir en el directorio local: %s"
 
-#: src/class-ss-diagnostic.php:415
+#: src/class-ss-diagnostic.php:416
 msgid "Web server can't write to Temp Files Directory: %s"
 msgstr "El servidor web no puede escribir en el directorio de archivos temporales: %s"
 
-#: src/class-ss-diagnostic.php:414
+#: src/class-ss-diagnostic.php:415
 msgid "Web server can write to Temp Files Directory: %s"
 msgstr "El servidor web puede escribir en el directorio de archivos temporales: %s"
 
-#: src/class-ss-diagnostic.php:405
+#: src/class-ss-diagnostic.php:406
 msgid "Web server can't read from Temp Files Directory: %s"
 msgstr "El servidor web no puede leer desde el directorio de archivos temporales: %s"
 
-#: src/class-ss-diagnostic.php:404
+#: src/class-ss-diagnostic.php:405
 msgid "Web server can read from Temp Files Directory: %s"
 msgstr "El servidor web puede leer desde el directorio de archivos temporales: %s"
 
-#: src/class-ss-diagnostic.php:395
+#: src/class-ss-diagnostic.php:396
 msgid "%s is not compatible with Simply Static."
 msgstr "%s no es compatible con Simply Static."
 
-#: src/class-ss-diagnostic.php:241 src/class-ss-diagnostic.php:247
-#: src/class-ss-diagnostic.php:253 src/class-ss-diagnostic.php:259
-#: src/class-ss-diagnostic.php:265 src/class-ss-diagnostic.php:271
-#: src/class-ss-diagnostic.php:277 src/class-ss-diagnostic.php:283
-#: src/class-ss-diagnostic.php:289 src/class-ss-diagnostic.php:295
-#: src/class-ss-diagnostic.php:301 src/class-ss-diagnostic.php:307
+#: src/class-ss-diagnostic.php:243 src/class-ss-diagnostic.php:249
+#: src/class-ss-diagnostic.php:255 src/class-ss-diagnostic.php:261
+#: src/class-ss-diagnostic.php:267 src/class-ss-diagnostic.php:273
+#: src/class-ss-diagnostic.php:279 src/class-ss-diagnostic.php:285
+#: src/class-ss-diagnostic.php:291 src/class-ss-diagnostic.php:297
+#: src/class-ss-diagnostic.php:303 src/class-ss-diagnostic.php:309
 msgid "Please disable caching (%s) before running a static export."
 msgstr "Por favor, desactiva el almacenamiento en caché (%s) antes de ejecutar una exportación estática."
 
-#: src/class-ss-diagnostic.php:235
+#: src/class-ss-diagnostic.php:237
 msgid "Please disable caching before running a static export"
 msgstr "Desactiva la caché antes de ejecutar una exportación estática"
 
-#: src/class-ss-diagnostic.php:234
+#: src/class-ss-diagnostic.php:236
 msgid "Caching is disabled, great!"
 msgstr "La caché está desactivada, ¡genial!"
 
-#: src/class-ss-diagnostic.php:225
+#: src/class-ss-diagnostic.php:227
 msgid "WordPress cron is not available and not running"
 msgstr "El cron de WordPress no está disponible y no se está ejecutando."
 
-#: src/class-ss-diagnostic.php:224
+#: src/class-ss-diagnostic.php:226
 msgid "WordPress cron is available and running"
 msgstr "El cron de WordPress está disponible y en funcionamiento"
 
@@ -493,11 +459,11 @@ msgstr "cURL:"
 msgid "php-xml"
 msgstr "php-xml"
 
-#: simply-static.php:84
+#: simply-static.php:90
 msgid "You need to update Simply Static Pro to version  1.6.3.2 before continuing to use Simply Static, as we made significant changes requiring an upgrade."
 msgstr "Necesitas actualizar Simply Static Pro a la versión 1.6.3.2 antes de continuar usando Simply Static, ya que hemos realizado cambios significativos que requieren una actualización."
 
-#: src/class-ss-diagnostic.php:564
+#: src/class-ss-diagnostic.php:565
 msgid "Not a valid url."
 msgstr "No es una url válida."
 
@@ -515,57 +481,65 @@ msgstr "Patrick Posner"
 msgid "A static site generator to create fast and secure static versions of your WordPress website."
 msgstr "Un generador de sitios estáticos para crear versiones estáticas rápidas y seguras de tu web WordPress."
 
-#. Plugin URI of the plugin
 #. Author URI of the plugin
 #: simply-static.php
-msgid "https://patrickposner.dev"
-msgstr "https://patrickposner.dev"
+msgid "https://patrickposner.com"
+msgstr "https://patrickposner.com"
+
+#. Plugin URI of the plugin
+#: simply-static.php
+msgid "https://simplystatic.com"
+msgstr "https://simplystatic.com"
 
 #: src/class-ss-diagnostic.php:55
 msgid "Basic Auth"
 msgstr "Identificación básica"
 
-#: src/class-ss-diagnostic.php:576
+#: src/class-ss-diagnostic.php:577
 msgid "Received a %s response."
 msgstr "Recibida una respuesta %s."
 
-#: src/class-ss-diagnostic.php:573
+#: src/class-ss-diagnostic.php:574
 msgid "Received a %s response. This might indicate a problem."
 msgstr "Recibida una respuesta %s. Esto podría indicar un problema."
 
-#: src/tasks/class-ss-setup-task.php:162
+#: src/tasks/class-ss-setup-task.php:225
 msgid "Additional Dir"
 msgstr "Directorio adicional"
 
-#: src/tasks/class-ss-setup-task.php:149
+#: src/tasks/class-ss-setup-task.php:206
 msgid "Additional File"
 msgstr "Archivo adicional"
 
-#: src/class-ss-plugin.php:331
+#: src/class-ss-plugin.php:385
 msgid "Found on %s"
 msgstr "Encontrado en %s"
 
-#: src/tasks/class-ss-setup-task.php:84
+#: src/tasks/class-ss-setup-task.php:95
 msgid "Additional URL"
 msgstr "URL adicional"
 
-#: src/tasks/class-ss-fetch-urls-task.php:179
-#: src/tasks/class-ss-fetch-urls-task.php:262
+#: src/tasks/class-ss-fetch-urls-task.php:202
+#: src/tasks/class-ss-fetch-urls-task.php:298
 msgid "Do not save"
 msgstr "No guardar"
 
-#: src/tasks/class-ss-fetch-urls-task.php:161
-#: src/tasks/class-ss-fetch-urls-task.php:231
+#: src/tasks/class-ss-fetch-urls-task.php:184
+#: src/tasks/class-ss-fetch-urls-task.php:267
 msgid "Do not follow"
 msgstr "No seguir"
 
-#: src/tasks/class-ss-fetch-urls-task.php:88
+#: src/tasks/class-ss-fetch-urls-task.php:100
 msgid "Do not save or follow"
 msgstr "No guardar o seguir"
 
 #: src/tasks/class-ss-cancel-task.php:22
 msgid "Cancelling job"
 msgstr "Cancelando el trabajo"
+
+#: src/background/class-ss-background-process.php:877
+msgid "Every %d Minutes"
+msgstr "Cada %d minutos"
 
 #: src/class-ss-url-fetcher.php:85
 msgid "Attempted to fetch a remote URL"
@@ -587,8 +561,9 @@ msgstr "Estás siendo redirigido a %s"
 msgid "Redirecting..."
 msgstr "Redirigiendo..."
 
-#: src/admin/inc/class-ss-admin-settings.php:96
-#: src/admin/inc/class-ss-admin-settings.php:97
+#: src/admin/inc/class-ss-admin-settings.php:137
+#: src/admin/inc/class-ss-admin-settings.php:138
+#: src/integrations/class-ss-adminbar-integration.php:85
 msgid "Diagnostics"
 msgstr "Diagnósticos"
 
@@ -600,32 +575,32 @@ msgstr "No se puede leer"
 msgid "Not a valid path"
 msgstr "No es una ruta válida"
 
-#: src/class-ss-archive-creation-job.php:430
+#: src/class-ss-archive-creation-job.php:488
 msgid "Error: %s"
 msgstr "Error: %s"
 
-#: src/class-ss-archive-creation-job.php:401 src/class-ss-url-fetcher.php:85
-#: src/class-ss-url-fetcher.php:109
+#: src/class-ss-archive-creation-job.php:459 src/class-ss-url-fetcher.php:85
+#: src/class-ss-url-fetcher.php:199
 msgid "An error occurred: %s"
 msgstr "Ha ocurrido un error: %s"
 
-#: src/class-ss-archive-creation-job.php:384
+#: src/class-ss-archive-creation-job.php:441
 msgid "An exception occurred: %s"
 msgstr "Ha ocurrido una excepción: %s"
 
-#: src/class-ss-archive-creation-job.php:255
+#: src/class-ss-archive-creation-job.php:298
 msgid "Done! Finished in %s"
 msgstr "¡Hecho! Ha finalizado en %s"
 
-#: src/tasks/class-ss-wrapup-task.php:23
+#: src/tasks/class-ss-wrapup-task.php:40
 msgid "Wrapping up"
 msgstr "Terminando"
 
-#: src/tasks/class-ss-transfer-files-locally-task.php:62
+#: src/tasks/class-ss-transfer-files-locally-task.php:65
 msgid "Destination URL:"
 msgstr "URL de destino:"
 
-#: src/tasks/class-ss-fetch-urls-task.php:125
+#: src/tasks/class-ss-fetch-urls-task.php:148
 msgid "Fetched %d of %d pages/files"
 msgstr "Obtenidos %d de %d páginas o archivos"
 
@@ -633,28 +608,32 @@ msgstr "Obtenidos %d de %d páginas o archivos"
 msgid "Setting up"
 msgstr "Configurar"
 
-#: src/tasks/class-ss-create-zip-archive.php:34
+#: src/tasks/class-ss-create-zip-archive.php:41
 msgid "Click here to download"
 msgstr "Haz clic aquí para descargar"
 
-#: src/tasks/class-ss-create-zip-archive.php:30
+#: src/tasks/class-ss-create-zip-archive.php:37
 msgid "ZIP archive created: "
 msgstr "Archivo ZIP creado:"
 
-#: src/admin/inc/class-ss-admin-settings.php:82
-#: src/admin/inc/class-ss-admin-settings.php:83 src/class-ss-plugin.php:445
+#: src/admin/inc/class-ss-admin-settings.php:122
+#: src/admin/inc/class-ss-admin-settings.php:123 src/class-ss-plugin.php:527
+#: src/integrations/class-ss-adminbar-integration.php:97
 msgid "Settings"
 msgstr "Ajustes"
 
-#: src/admin/inc/class-ss-admin-settings.php:69
-#: src/admin/inc/class-ss-admin-settings.php:70
+#: src/admin/inc/class-ss-admin-settings.php:109
+#: src/admin/inc/class-ss-admin-settings.php:110
 msgid "Generate"
 msgstr "Generar"
 
 #. Plugin Name of the plugin
 #: simply-static.php src/admin/inc/class-ss-admin-meta.php:51
-#: src/admin/inc/class-ss-admin-settings.php:59
-#: src/admin/inc/class-ss-admin-settings.php:60
+#: src/admin/inc/class-ss-admin-settings.php:98
+#: src/admin/inc/class-ss-admin-settings.php:99
+#: src/integrations/class-elementor-integration.php:399
+#: src/integrations/class-ss-adminbar-integration.php:46
+#: src/integrations/class-ss-adminbar-integration.php:50
 msgid "Simply Static"
 msgstr "Simply Static"
 
@@ -666,6 +645,6 @@ msgstr "No se ha podido encontrar el diseño de la vista: %s"
 msgid "Can't find view template: %s"
 msgstr "No se ha podido encontrar la plantilla de la vista: %s"
 
-#: src/tasks/class-ss-create-zip-archive.php:90
+#: src/tasks/class-ss-create-zip-archive.php:141
 msgid "Unable to create ZIP archive"
 msgstr "No ha sido posible crear el archivo ZIP"
