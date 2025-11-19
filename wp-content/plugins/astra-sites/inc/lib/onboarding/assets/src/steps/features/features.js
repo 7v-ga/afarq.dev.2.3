@@ -20,7 +20,7 @@ import {
 	CalendarIcon,
 	ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline';
-import { classNames } from '../../utils/functions';
+import { classNames, trackOnboardingStep } from '../../utils/functions';
 import {
 	checkRequiredPlugins,
 	getFeaturePluginList,
@@ -246,6 +246,11 @@ const ClassicFeatures = () => {
 		selectedEcommercePlugin,
 		templateRequiredPluginsList,
 	] );
+
+	useEffect( () => {
+		// Track features step when component mounts
+		trackOnboardingStep( 'features' );
+	}, [] );
 
 	const handleToggleFeature = ( featureId ) => () => {
 		const updatedFeatures = siteFeatures.map( ( feature ) => {

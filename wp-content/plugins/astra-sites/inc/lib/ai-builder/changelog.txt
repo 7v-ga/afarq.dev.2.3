@@ -1,3 +1,8 @@
+v1.2.61 - 13th November 2025
+- Improvement: Sunsetting the Checkout Plugins - Stripe for Woocommerce plugin compatibility.
+- Fix: Prevented potential fatal errors when updating the site options if an exception occurs from Elementor.
+- Fix: Resolved an issue where the ai-builder route was incorrectly replaced with the text domain of the integrated product, causing access errors on certain devices.
+
 v1.2.60 - 31th October 2025
 - Improvement: Image service updated to detect client browsers located in Russia and serve images via Unsplash to avoid blocked requests.
 

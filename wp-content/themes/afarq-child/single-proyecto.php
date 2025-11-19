@@ -32,7 +32,7 @@ get_header(); ?>
                   <li><strong>Arquitectura:</strong> <?php echo esc_html($arquitectura); ?></li>
                 <?php endif; ?>
                 <?php if ($superficie = get_field('superficie')) : ?>
-                  <li><strong>Superficie:</strong> <?php echo esc_html($superficie); ?></li>
+                  <li><strong>Superficie:</strong> <?php echo esc_html($superficie); ?> m<sup>2</sup></li>
                 <?php endif; ?>
                 <?php if ($construccion = get_field('construccion')) : ?>
                   <li><strong>Construcción:</strong> <?php echo esc_html($construccion); ?></li>

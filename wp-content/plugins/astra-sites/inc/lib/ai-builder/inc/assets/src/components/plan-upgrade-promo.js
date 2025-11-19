@@ -151,7 +151,7 @@ const PlanUpgradePromoModal = () => {
 					</div>
 					<div className="pt-2">
 						<a
-							href="https://app.zipwp.com/pricing"
+							href={ `https://app.zipwp.com/st-pricing?source=${ wpApiSettings?.zipwp_auth?.source }` }
 							target="_blank"
 							rel="noreferrer"
 						>

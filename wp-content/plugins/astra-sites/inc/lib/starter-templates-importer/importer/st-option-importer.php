@@ -169,7 +169,7 @@ class ST_Option_Importer {
 
 				$term = get_term_by( 'slug', $value, 'nav_menu' );
 
-				if ( is_object( $term ) && isset( $term->term_id ) ) {
+				if ( is_object( $term ) && property_exists( $term, 'term_id' ) ) {
 					$menu_locations[ $menu ] = $term->term_id;
 				}
 			}

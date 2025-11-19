@@ -5,7 +5,7 @@ Tags: Elementor,Templates,Gutenberg,Block Editor,Astra Starter Sites
 Requires at least: 6.6
 Requires PHP: 7.4
 Tested up to: 6.8.1
-Stable tag: 4.4.41
+Stable tag: 4.4.42
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -245,6 +245,15 @@ You can report the issue through our [Bug Bounty Program](https://brainstormforc
 6. Use the power of AI with a single click to write copy, proofread, translate content into different languages. Adjust content length and tone seamlessly for maximum appeal.
 
 == Changelog ==
+v4.4.42 - 14-November-2025
+- Fix:
+    - Gracefully handled exceptions that occur during Elementor template imports, preventing potential fatal errors during site option updates.
+    - AI Builder: Resolved an issue where the `ai-builder` route was incorrectly replaced with the `astra-sites`, causing access errors on page refresh.
+- Security Fix:
+    - Addressed a security bug. Props to WordFence for reporting it.
+- Misc:
+    - Sunsetting the discontinued `Checkout Plugins - Stripe for Woocommerce` plugin compatibility.
+
 v4.4.41 - 04-November-2025
 - Improvement:
     - Added a toggle on the templates listing page to switch between Spectra legacy v2 and beta v3 templates.

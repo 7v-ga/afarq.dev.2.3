@@ -89,4 +89,22 @@ document.addEventListener("DOMContentLoaded", function () {
   setTimeout(() => {
     aplicarZoom(swiper);
   }, 100);
+  
+  // Indicador hacia abajo
+  var indicator = document.querySelector('.slider-down-indicator');
+  if (!indicator) return;
+  function updateIndicatorVisibility() {
+      var rect = indicator.getBoundingClientRect();
+      var distanceFromBottom = window.innerHeight - rect.top;
+      // Si está más de 150px por encima del borde inferior, ocultar
+      if (distanceFromBottom > 220) {
+          indicator.classList.add('is-hidden');
+      } else {
+          indicator.classList.remove('is-hidden');
+      }
+  }
+  // Ejecutar al cargar, al hacer scroll y al cambiar tamaño de la ventana
+  window.addEventListener('scroll', updateIndicatorVisibility);
+  window.addEventListener('resize', updateIndicatorVisibility);
+  updateIndicatorVisibility();
 });

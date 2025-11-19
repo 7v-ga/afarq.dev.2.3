@@ -5,6 +5,7 @@ import PreviousStepLink from '../../components/util/previous-step-link/index';
 import DefaultStep from '../../components/default-step/index';
 import ImportLoader from '../../components/import-steps/import-loader';
 import ErrorScreen from '../../components/error/index';
+import { trackOnboardingStep } from '../../utils/functions';
 import { useStateValue } from '../../store/store';
 import lottieJson from '../../../images/website-building.json';
 import ICONS from '../../../icons';
@@ -1936,6 +1937,11 @@ const ImportSite = () => {
 			return event;
 		}
 	};
+
+	useEffect( () => {
+		// Track template preview step when component mounts
+		trackOnboardingStep( 'import' );
+	}, [] );
 
 	useEffect( () => {
 		window.addEventListener( 'beforeunload', preventRefresh ); // eslint-disable-line

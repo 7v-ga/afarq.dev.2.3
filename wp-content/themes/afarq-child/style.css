@@ -129,6 +129,9 @@ header.main-header-bar-wrap {
 }
 .site-description {
   margin-bottom: -2px;
+  font-weight: 100;
+  letter-spacing: 4px;
+  font-size: 18px;
 }
 .ast-site-identity .main-menu {
   margin-left: auto;

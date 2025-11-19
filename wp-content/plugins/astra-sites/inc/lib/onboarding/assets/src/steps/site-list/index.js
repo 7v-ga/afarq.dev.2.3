@@ -20,6 +20,7 @@ import {
 	whiteLabelEnabled,
 	storeCurrentState,
 	getAllSites,
+	trackOnboardingStep,
 } from '../../utils/functions';
 import { setURLParmsValue } from '../../utils/url-params';
 import SiteListSkeleton from './site-list-skeleton';
@@ -157,6 +158,11 @@ const SiteList = () => {
 			sites: allFilteredSites,
 		} );
 	}, [ builder, siteType, spectraBlocksVersion, siteOrder, allSitesData ] );
+
+	useEffect( () => {
+		// Track template listing step when component mounts
+		trackOnboardingStep( 'template-listing' );
+	}, [] );
 
 	storeCurrentState( storedState );
 

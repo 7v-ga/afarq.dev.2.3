@@ -15,6 +15,7 @@ import {
 	getStepIndex,
 	removeLocalStorageItem,
 	saveGutenbergAsDefaultBuilder,
+	trackOnboardingStep,
 } from '../../utils/functions';
 const { showClassicTemplates, showAiBuilder } = astraSitesVars;
 const { isBeaverBuilderDisabled, isElementorDisabled } = starterTemplates;
@@ -37,7 +38,10 @@ const SiteType = () => {
 			localStorage.removeItem( 'st-import-start' );
 			localStorage.removeItem( 'st-import-end' );
 		}
-	} );
+
+		// Track welcome step when component mounts
+		trackOnboardingStep( 'welcome' );
+	}, [] );
 
 	useEffect( () => {
 		async function setBuilder() {

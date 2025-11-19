@@ -60,7 +60,7 @@ class ST_Resetter {
 		$file_system  = self::get_filesystem();
 		// If file system fails? Then take a backup in site option.
 		if ( method_exists( $file_system, 'put_contents' ) && false === $file_system->put_contents( $log_file, wp_json_encode( $old_settings ), FS_CHMOD_FILE ) ) {
-			update_option( 'astra_sites_' . $file_name, $old_settings, 'no' );
+			update_option( 'astra_sites_' . $file_name, $old_settings, false );
 		}
 
 		return $log_file;

@@ -430,7 +430,7 @@ const SitePreview = ( { handleClickStartBuilding, isInProgress } ) => {
 										</div>
 										<p className="text-brand-secondary-200 text-white text-sm">
 											{ __(
-												"You've chosen a Premium Design. Access this design and all others with our paid plans",
+												"You've chosen a Premium Design. Access this design and all others with our paid plans.",
 												'ai-builder'
 											) }
 										</p>

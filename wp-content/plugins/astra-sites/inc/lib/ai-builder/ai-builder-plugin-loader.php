@@ -461,7 +461,7 @@ class Ai_Builder_Plugin_Loader {
 						$team_name,
 					),
 					'upgrade_text'      => __( 'Unlock Full Power', 'astra-sites' ),
-					'upgrade_url'       => 'https://app.zipwp.com/founders-deal?source=starter-templates',
+					'upgrade_url'       => 'https://app.zipwp.com/st-pricing?source=starter-templates',
 					'contact_url'       => $support_link,
 					'contact_text'      => __( 'Contact Support', 'astra-sites' ),
 				)

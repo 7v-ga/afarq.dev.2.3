@@ -636,9 +636,14 @@ class Importer extends AjaxBase {
 		switch ( $param ) {
 
 			case 'site-title':
-					$business_name = isset( $_POST['business-name'] ) ? sanitize_text_field( stripslashes( $_POST['business-name'] ) ) : '';
+				$business_name = isset( $_POST['business-name'] ) ? sanitize_text_field( stripslashes( $_POST['business-name'] ) ) : '';
 				if ( ! empty( $business_name ) ) {
-					update_option( 'blogname', $business_name );
+					try {
+						update_option( 'blogname', $business_name );
+					} catch ( \Exception $e ) {
+						// Failed silently: sometimes Elementor throws exception as it hooks into `update_option_blogname`.
+						astra_sites_error_log( 'Handled exception while updating blogname: ' . $e->getMessage() );
+					}
 				}
 
 				if ( isset( $_POST['show-site-title'] ) ) {

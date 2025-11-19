@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { trackOnboardingStep } from '../../utils/functions';
 import { __ } from '@wordpress/i18n';
+
 const SurveyForm = ( { formDetails, updateFormDetails } ) => {
 	const [ selectedIndex, setSelectedIndex ] = useState( {
 		option1: formDetails.wp_user_type
@@ -9,6 +11,11 @@ const SurveyForm = ( { formDetails, updateFormDetails } ) => {
 			? parseInt( formDetails.build_website_for )
 			: 0,
 	} );
+
+	useEffect( () => {
+		// Track survey step when component mounts
+		trackOnboardingStep( 'survey' );
+	}, [] );
 	return (
 		<>
 			<p className="label-text row-label !mb-2">

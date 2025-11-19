@@ -101,4 +101,8 @@
             ?>
         </div>
     </div>
+    <!-- Indicador hacia abajo -->
+    <div class="slider-down-indicator">
+        <span class="slider-down-arrow objblink"></span>
+    </div>
 </div>

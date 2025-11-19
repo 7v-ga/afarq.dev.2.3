@@ -64,7 +64,7 @@ class ST_Importer {
 		}
 
 		if ( ! empty( $uuid ) ) {
-			update_option( 'astra_sites_ai_import_started', 'yes', 'no' );
+			update_option( 'astra_sites_ai_import_started', 'yes', false );
 		}
 		do_action( 'st_before_start_import_process' );
 		update_option( 'astra_sites_import_started', 'yes' );
@@ -213,7 +213,7 @@ class ST_Importer {
 			);
 		}
 
-		update_option( '_astra_sites_old_customizer_data', $customizer_data, 'no' );
+		update_option( '_astra_sites_old_customizer_data', $customizer_data, false );
 
 		// Update Astra Theme customizer settings.
 		if ( isset( $customizer_data['astra-settings'] ) ) {
@@ -282,7 +282,7 @@ class ST_Importer {
 					'error'  => __( 'There was an error downloading the XML file.', 'astra-sites' ),
 				);
 			} else {
-				update_option( 'astra_sites_imported_wxr_id', $post_id, 'no' );
+				update_option( 'astra_sites_imported_wxr_id', $post_id, false );
 				$attachment_metadata = wp_generate_attachment_metadata( $post_id, $xml_path['data']['file'] );
 				wp_update_attachment_metadata( $post_id, $attachment_metadata );
 				$data        = ST_WXR_Importer::get_xml_data( $xml_path['data']['file'], $post_id );
@@ -357,7 +357,7 @@ class ST_Importer {
 
 			// Set meta for tracking the post.
 		if ( is_array( $options ) ) {
-			update_option( '_astra_sites_old_site_options', $options, 'no' );
+			update_option( '_astra_sites_old_site_options', $options, false );
 		}
 
 		try {
@@ -382,7 +382,12 @@ class ST_Importer {
 							break;
 
 						case 'site_title':
-							update_option( 'blogname', $option_value );
+							try {
+								update_option( 'blogname', $option_value );
+							} catch ( \Exception $e ) {
+								// Failed silently: sometimes Elementor throws exception as it hooks into `update_option_blogname`.
+								astra_sites_error_log( 'Handled exception while updating blogname: ' . $e->getMessage() );
+							}
 							break;
 
 						case 'elementor_active_kit':
@@ -441,7 +446,7 @@ class ST_Importer {
 
 		ST_Widget_Importer::import_widgets_data( $widgets_data );
 		$sidebars_widgets = get_option( 'sidebars_widgets', array() );
-		update_option( '_astra_sites_old_widgets_data', $sidebars_widgets, 'no' );
+		update_option( '_astra_sites_old_widgets_data', $sidebars_widgets, false );
 		return array(
 			'status'  => true,
 			'message' => __( 'Widgets imported successfully.', 'astra-sites' ),

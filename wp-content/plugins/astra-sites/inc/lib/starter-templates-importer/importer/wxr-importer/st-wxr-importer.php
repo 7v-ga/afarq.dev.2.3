@@ -152,8 +152,8 @@ class ST_WXR_Importer {
 			header( 'Connection: keep-alive' );
 			// Turn off PHP output compression.
 			$previous = error_reporting( error_reporting() ^ E_WARNING ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions, WordPress.PHP.DiscouragedPHPFunctions -- 3rd party library.
-			ini_set( 'output_buffering', 'off' ); //phpcs:ignore WordPress.PHP.IniSet.Risky -- 3rd party library.
-			ini_set( 'zlib.output_compression', false ); //phpcs:ignore WordPress.PHP.IniSet.Risky -- 3rd party library.
+			ini_set( 'output_buffering', 'off' ); //phpcs:ignore WordPress.PHP.IniSet.Risky, Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- 3rd party library.
+			ini_set( 'zlib.output_compression', false ); //phpcs:ignore WordPress.PHP.IniSet.Risky, Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- 3rd party library.
 			error_reporting( $previous ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions, WordPress.PHP.DiscouragedPHPFunctions -- 3rd party library.
 
 			if ( $GLOBALS['is_nginx'] ) {
@@ -213,7 +213,7 @@ class ST_WXR_Importer {
 		}
 
 		// Time to run the import!
-		set_time_limit( 0 );
+		set_time_limit( 0 ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- Required for long-running import process.
 
 		// Ensure we're not buffered.
 		wp_ob_end_flush_all();
@@ -517,19 +517,40 @@ class ST_WXR_Importer {
 	 */
 	public function real_mimes( $defaults, $filename, $file ) {
 
+		// Validate file extension using WordPress core function to prevent double extension attacks.
+		$filetype = wp_check_filetype(
+			$filename,
+			array(
+				'xml'  => 'text/xml',
+				'json' => 'application/json',
+				'svg'  => 'image/svg+xml',
+				'svgz' => 'image/svg+xml',
+			)
+		);
+
+		// Get actual file extension.
+		$file_extension = pathinfo( $filename, PATHINFO_EXTENSION );
+
+		// Reject files with no valid extension or mismatched extensions.
+		if ( false === $filetype['type'] || empty( $file_extension ) ) {
+			return $defaults;
+		}
+
 		// Set EXT and real MIME type only for the file name `wxr.xml`.
-		if ( strpos( $filename, 'wxr' ) !== false ) {
+		// Ensure the actual extension is 'xml' to prevent double extension attacks like 'test.wxr.php'.
+		if ( 'xml' === $file_extension && strpos( $filename, 'wxr' ) !== false ) {
 			$defaults['ext']  = 'xml';
 			$defaults['type'] = 'text/xml';
 		}
 
-		// Set EXT and real MIME type only for the file name `wpforms.json` or `wpforms-{page-id}.json`.
-		if ( ( strpos( $filename, 'wpforms' ) !== false ) || ( strpos( $filename, 'cartflows' ) !== false ) || ( strpos( $filename, 'spectra' ) !== false ) ) {
+		// Set EXT and real MIME type only for the file name `wpforms.json`, `cartflows.json`, or `spectra.json`.
+		// Ensure the actual extension is 'json' to prevent double extension attacks.
+		if ( 'json' === $file_extension && ( strpos( $filename, 'wpforms' ) !== false || strpos( $filename, 'cartflows' ) !== false || strpos( $filename, 'spectra' ) !== false ) ) {
 			$defaults['ext']  = 'json';
 			$defaults['type'] = 'text/plain';
 		}
 
-		if ( 'svg' === pathinfo( $filename, PATHINFO_EXTENSION ) ) {
+		if ( 'svg' === $file_extension ) {
 			// Perform SVG sanitization using the sanitize_svg function.
 			$svg_content           = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$sanitized_svg_content = $this->sanitize_svg( $svg_content );
@@ -542,7 +563,7 @@ class ST_WXR_Importer {
 			$defaults['ext']  = 'svg';
 		}
 
-		if ( 'svgz' === pathinfo( $filename, PATHINFO_EXTENSION ) ) {
+		if ( 'svgz' === $file_extension ) {
 			// Perform SVG sanitization using the sanitize_svg function.
 			$svg_content     = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$decoded_content = gzdecode( $svg_content );
@@ -567,6 +588,7 @@ class ST_WXR_Importer {
 
 		return $defaults;
 	}
+
 	/**
 	 * Different MIME type of different PHP version
 	 *
@@ -748,24 +770,24 @@ class ST_WXR_Importer {
 		// phpcs:enable WordPress.PHP.YodaConditions.NotYoda
 
 		// Strip php tags.
-		$content = preg_replace( '/<\?(=|php)(.+?)\?>/i', '', $original_content );
-		$content = preg_replace( '/<\?(.*)\?>/Us', '', $content );
-		$content = preg_replace( '/<\%(.*)\%>/Us', '', $content );
+		$content = preg_replace( '/<\?(=|php)(.+?)\?>/i', '', $original_content ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- -- 3rd party library.
+		$content = preg_replace( '/<\?(.*)\?>/Us', '', $content ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- -- 3rd party library.
+		$content = preg_replace( '/<\%(.*)\%>/Us', '', $content ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- -- 3rd party library.
 
 		if ( ( false !== strpos( $content, '<?' ) ) || ( false !== strpos( $content, '<%' ) ) ) {
 			return '';
 		}
 
 		// Strip comments.
-		$content = preg_replace( '/<!--(.*)-->/Us', '', $content );
-		$content = preg_replace( '/\/\*(.*)\*\//Us', '', $content );
+		$content = preg_replace( '/<!--(.*)-->/Us', '', $content ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- -- 3rd party library.
+		$content = preg_replace( '/\/\*(.*)\*\//Us', '', $content ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- -- 3rd party library.
 
 		if ( ( false !== strpos( $content, '<!--' ) ) || ( false !== strpos( $content, '/*' ) ) ) {
 			return '';
 		}
 
 		// Strip line breaks.
-		$content = preg_replace( '/\r|\n/', '', $content );
+		$content = preg_replace( '/\r|\n/', '', $content ); // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- -- 3rd party library.
 
 		// Find the start and end tags so we can cut out miscellaneous garbage.
 		$start = strpos( $content, '<svg' );

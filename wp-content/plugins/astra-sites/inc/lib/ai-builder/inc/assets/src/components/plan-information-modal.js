@@ -47,7 +47,7 @@ const PlanInformationModal = ( { onOpenChange } ) => {
 	const handleManageUpgrade = () => {
 		if ( active_plan.name === 'Free' ) {
 			window.open(
-				`https://app.zipwp.com/pricing?source=${ wpApiSettings?.zipwp_auth?.source }`,
+				`https://app.zipwp.com/st-pricing?source=${ wpApiSettings?.zipwp_auth?.source }`,
 				'_blank'
 			);
 		} else {
