@@ -21,11 +21,7 @@ get_header(); ?>
 
         <div class="proyecto-content-wrapper">
                 
-          <!-- Tabs -->
-          <div class="proyecto-tabs">
-                
-            <div class="tab-content active" id="detalles">
-
+            <div class="" id="detalles">
               <?php echo '<h1 class="inside_h1">'.get_the_title().'</h1><br>'; ?>
               <ul class="detalle-lista">
                 <?php if ($arquitectura = get_field('arquitectura')) : ?>
@@ -45,7 +41,23 @@ get_header(); ?>
                 <?php endif; ?>
               </ul>
             </div>
-          </div>
+                
+          <!-- Tabs -->
+          <?php if (get_the_content()) : ?>
+            <div class="proyecto-tabs">
+          
+              <div class="tab-buttons">
+                <button class="proyecto-tab-btn" data-tab="descripcion">INFO</button>
+              </div>
+          
+              <div class="proyecto-tab-content" id="descripcion">
+                <div class="descripcion-extracto">
+                  <?php echo get_the_content(); ?>
+                </div>
+              </div>
+          
+            </div>
+          <?php endif; ?>
               
         </div>
           <div class="proyecto-galería">

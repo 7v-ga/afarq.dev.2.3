@@ -23,6 +23,7 @@ function my_theme_enqueue_assets() {
     if (is_singular('proyecto')) {
         wp_enqueue_style('single-proyecto', get_stylesheet_directory_uri() . '/assets/css/single-proyecto.css', array(), time());
         wp_enqueue_script('lightbox-js', get_stylesheet_directory_uri() . '/assets/js/lightbox.js', array(), time(), true);
+        wp_enqueue_script('proyecto-tabs-js', get_stylesheet_directory_uri() . '/assets/js/proyecto-tabs.js', array(), time(), true);
     }
 
     global $post;
@@ -49,7 +50,7 @@ function my_theme_setup() {
 }
 add_action('after_setup_theme', 'my_theme_setup');
 
-// Meta box para métricas
+/* Meta box para métricas
 function add_custom_metrics_meta_box() {
     global $post;
     if ($post->post_type == 'page' && $post->post_name == 'inicio') {
@@ -63,7 +64,7 @@ function add_custom_metrics_meta_box() {
         );
     }
 }
-add_action('add_meta_boxes', 'add_custom_metrics_meta_box');
+add_action('add_meta_boxes', 'add_custom_metrics_meta_box'); */
 
 function render_custom_metrics_meta_box($post) {
     $projects_completed = get_post_meta($post->ID, 'projects_completed', true);
@@ -261,11 +262,25 @@ function outstanding_projects_shortcode() {
 }
 add_shortcode('outstanding_projects', 'outstanding_projects_shortcode');
 
-// Fade-up del contenido con clase fade-up
+// Animación al hacer scroll
 function afarq_enqueue_scroll_anim() {
+  // Fade-up del contenido con clase fade-up
   wp_enqueue_script(
     'afarq-fade-scroll',
-    get_stylesheet_directory_uri() . '/assets/js/fadeup.js', array(), time(), true);
+    get_stylesheet_directory_uri() . '/assets/js/fadeup.js',
+    array(),
+    time(),
+    true
+  );
+
+  // Animación de imágenes con scroll para bloques con clase "scroll-zoom"
+  wp_enqueue_script(
+    'afarq-scroll-zoom',
+    get_stylesheet_directory_uri() . '/assets/js/scroll-zoom.js',
+    array(),
+    time(),
+    true
+  );
 }
 add_action('wp_enqueue_scripts', 'afarq_enqueue_scroll_anim');
 

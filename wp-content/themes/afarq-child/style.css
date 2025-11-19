@@ -209,7 +209,7 @@ header.main-header-bar-wrap {
 }
 .bar {
   height: 1px;
-  width: 22px;
+  width: 38px;
   background-color: var(--ast-global-color-8);
   margin: 3px 0;
   transition: all 0.3s ease;
@@ -398,6 +398,11 @@ form.init input:not([type="submit"]) {
   margin-bottom: 0;
 }
 
+.wp-block-columns.is-layout-flex,
+.is-layout-flex.wp-block-group-is-layout-flex {
+  gap: 12px;
+}
+
 /* Forms */
 .wpcf7 form.wpcf7-form > div,
 .wpcf7 form.wpcf7-form > div p {
@@ -413,6 +418,21 @@ form.init input:not([type="submit"]) {
 .parallax-container img {
   display: block;
 }
+
+/* Bloques que tendrán animación de entrada con scroll */
+.scroll-zoom img {
+  opacity: 0;
+  transform: scale(0.98);
+  transition:
+    opacity 1.8s ease-out,
+    transform 0.8s ease-out;
+}
+
+.scroll-zoom.visible img {
+  opacity: 1;
+  transform: scale(1);
+}
+
 
 /* Responsive: 4 por fila en escritorio */
 @media (min-width: 1024px) {

@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (target < 1000) {
             count++;
           } else {
-            count = count + 10;
+            count = count + 16;
           }
           element.innerText = count
             .toString()

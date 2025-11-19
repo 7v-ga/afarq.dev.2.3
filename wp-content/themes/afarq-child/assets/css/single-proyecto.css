@@ -86,6 +86,59 @@ h1.inside_h1 {
 }
 
 /* -----------------------------
+  Tabs específicos de single-proyecto
+----------------------------- */
+.proyecto-tab-btn {
+  position: relative;
+  background: none;
+  padding: 6px 14px 6px 0;
+  cursor: pointer;
+  font-size: 0.95rem;
+  box-shadow: none;
+  color: var(--ast-global-color-3);
+  margin-right: 30px;
+  border-radius: 0;
+}
+
+.proyecto-tab-btn::after {
+    content: "";
+    position: absolute;
+    top: 55%;
+    right: 0px;
+    width: 0;
+    height: 0;
+
+    /* Triángulo ▼ */
+    border-left: 3.6px solid transparent;
+    border-right: 3.6px solid transparent;
+    border-top: 3.6px solid var(--ast-global-color-3);
+
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform 0.36s ease;
+    opacity: 0.6;
+}
+
+.proyecto-tab-btn.active::after {
+    transform: translateY(-50%) rotate(-180deg);
+    opacity: 1;
+}
+
+.proyecto-tab-btn:focus,
+.proyecto-tab-btn:hover {
+  background-color: transparent !important;
+  color: var(--ast-global-color-3);
+}
+
+.proyecto-tab-content {
+  display: none;
+}
+
+.proyecto-tab-content.active {
+  display: block;
+}
+
+
+/* -----------------------------
   Detalles del proyecto
 ----------------------------- */
 .detalle-lista {
