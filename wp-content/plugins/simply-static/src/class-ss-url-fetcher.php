@@ -124,7 +124,7 @@ class Url_Fetcher {
 							'code' => 200
 						),
 						'headers'  => array(
-							'content-type' => mime_content_type( $file_path )
+							'content-type' => $this->detect_mime_type( $file_path, $original_url )
 						)
 					);
 				} else {
@@ -258,6 +258,92 @@ class Url_Fetcher {
 	}
 
 	/**
+	 * Detect MIME type for a given local file path with multiple fallbacks.
+	 *
+	 * Priority:
+	 * 1) finfo_file (fileinfo extension)
+	 * 2) WordPress wp_check_filetype by extension
+	 * 3) Manual extension map
+	 *
+	 * @param string $file_path Absolute path to the local file
+	 * @param string $url Original URL (used to determine extension when needed)
+	 *
+	 * @return string MIME type
+	 */
+	protected function detect_mime_type( $file_path, $url ) {
+		// 1) Try PHP's fileinfo if available
+		if ( function_exists( '\\finfo_open' ) && function_exists( '\\finfo_file' ) && is_readable( $file_path ) ) {
+			$fi = \finfo_open( FILEINFO_MIME_TYPE );
+
+			if ( $fi ) {
+				$type = \finfo_file( $fi, $file_path );
+				\finfo_close( $fi );
+				if ( is_string( $type ) && $type !== '' ) {
+					return $type;
+				}
+			}
+		}
+
+		// Determine extension from URL or file path
+		$ext       = '';
+		$path_info = Util::url_path_info( $url );
+
+		if ( isset( $path_info['extension'] ) && $path_info['extension'] ) {
+			$ext = strtolower( $path_info['extension'] );
+		} else {
+			$ext = strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) );
+		}
+
+		// 2) Try WordPress helper (by extension)
+		if ( function_exists( 'wp_check_filetype' ) ) {
+			$checked = wp_check_filetype( 'dummy.' . $ext );
+			if ( ! empty( $checked['type'] ) ) {
+				return $checked['type'];
+			}
+		}
+
+		// 3) Default manual map. This can be extended via the `ss_mime_type_map` filter.
+		$map = array(
+			'js'    => 'application/javascript',
+			'css'   => 'text/css',
+			'json'  => 'application/json',
+			'html'  => 'text/html',
+			'htm'   => 'text/html',
+			'xml'   => 'application/xml',
+			'svg'   => 'image/svg+xml',
+			'png'   => 'image/png',
+			'jpg'   => 'image/jpeg',
+			'jpeg'  => 'image/jpeg',
+			'gif'   => 'image/gif',
+			'webp'  => 'image/webp',
+			'avif'  => 'image/avif',
+			'heic'  => 'image/heic',
+			'tif'   => 'image/tiff',
+			'tiff'  => 'image/tiff',
+			'bmp'   => 'image/bmp',
+			'ico'   => 'image/x-icon',
+			'pdf'   => 'application/pdf',
+			'zip'   => 'application/zip',
+			'gz'    => 'application/gzip',
+			'rar'   => 'application/vnd.rar',
+			'7z'    => 'application/x-7z-compressed',
+			'woff'  => 'font/woff',
+			'woff2' => 'font/woff2',
+			'ttf'   => 'font/ttf',
+			'otf'   => 'font/otf',
+			'eot'   => 'application/vnd.ms-fontobject',
+		);
+
+		$map = apply_filters( 'ss_mime_type_map', $map, $ext, $file_path, $url );
+
+		if ( $ext && isset( $map[ $ext ] ) ) {
+			return $map[ $ext ];
+		}
+
+		return 'application/octet-stream';
+	}
+
+	/**
 	 * @param Page $static_page
 	 *
 	 * @return boolean
@@ -336,8 +422,8 @@ class Url_Fetcher {
 			 *
 			 * Returning false writes query-string URLs directly under `__qs/` without the hash subdirectory.
 			 *
-			 * @param bool              $use_hash_dir Whether to use the hash directory. Default true (except for native search URLs).
-			 * @param array<string,mixed> $qs_args     Parsed query-string arguments.
+			 * @param bool $use_hash_dir Whether to use the hash directory. Default true (except for native search URLs).
+			 * @param array<string,mixed> $qs_args Parsed query-string arguments.
 			 * @param \Simply_Static\Page $static_page The current static page.
 			 */
 			$use_hash_dir = apply_filters( 'simply_static_use_qs_hash_dir', $use_hash_dir, $qs_args, $static_page );

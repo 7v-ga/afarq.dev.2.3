@@ -24,7 +24,7 @@ foreach ($distribucion as $fila => $cantidad_por_fila) {
     break;
   }
 
-  echo '<div class="image-row">';
+  echo '<div class="image-row fade-up-once">';
 
   $ratios = [];
   $imagenes_fila = [];

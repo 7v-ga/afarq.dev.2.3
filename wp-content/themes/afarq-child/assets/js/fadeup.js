@@ -1,18 +1,33 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const elements = document.querySelectorAll(".fade-up");
+document.addEventListener("DOMContentLoaded", function () {
+  const multiElems = document.querySelectorAll(".fade-up");
+  const onceElems = document.querySelectorAll(".fade-up-once");
+
+  if (!multiElems.length && !onceElems.length) return;
 
   const observer = new IntersectionObserver(
-    (entries) => {
+    (entries, obs) => {
       entries.forEach((entry) => {
+        const el = entry.target;
+        const isOnce = el.classList.contains("fade-up-once");
+
         if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
+          el.classList.add("visible");
+
+          // Si es versión "una sola vez", dejamos de observar este elemento
+          if (isOnce) {
+            obs.unobserve(el);
+          }
+        } else {
+          // Solo quitamos .visible en la versión “normal”
+          if (!isOnce) {
+            el.classList.remove("visible");
+          }
         }
       });
     },
-    {
-      threshold: 0.1,
-    }
+    { threshold: 0.15 }
   );
 
-  elements.forEach((el) => observer.observe(el));
+  multiElems.forEach((el) => observer.observe(el));
+  onceElems.forEach((el) => observer.observe(el));
 });

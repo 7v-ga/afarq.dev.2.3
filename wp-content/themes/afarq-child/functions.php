@@ -12,14 +12,55 @@ function my_theme_enqueue_assets() {
     wp_enqueue_script('header-js', get_stylesheet_directory_uri() . '/assets/js/header.js', array(), time(), true);
     wp_enqueue_script('menu-hamburger', get_stylesheet_directory_uri() . '/assets/js/menu-hamburger.js', array('jquery'), time(), true);
 
+    // Scripts y estilos para la página de inicio
     if (is_front_page()) {
-        wp_enqueue_style('swiper-css', 'https://unpkg.com/swiper/swiper-bundle.min.css');
-        wp_enqueue_script('swiper-js', 'https://unpkg.com/swiper/swiper-bundle.min.js', array('jquery'), null, true);
-        wp_enqueue_style('single-proyecto', get_stylesheet_directory_uri() . '/assets/css/slider-portada.css', array(), time());
-        wp_enqueue_script('custom-swiper-js', get_stylesheet_directory_uri() . '/assets/js/slider-portada.js', array('swiper-js'), time(), true);
-        wp_enqueue_script('metrics-js', get_stylesheet_directory_uri() . '/assets/js/metrics.js', array(), time(), true);
+        wp_enqueue_style(
+            'swiper-css',
+            'https://unpkg.com/swiper/swiper-bundle.min.css'
+        );
+        wp_enqueue_script(
+            'swiper-js',
+            'https://unpkg.com/swiper/swiper-bundle.min.js',
+            array('jquery'),
+            null,
+            true
+        );
+        wp_enqueue_style(
+            'slider-portada',
+            get_stylesheet_directory_uri() . '/assets/css/slider-portada.css',
+            array(),
+            time()
+        );
+        wp_enqueue_script(
+            'custom-swiper-js',
+            get_stylesheet_directory_uri() . '/assets/js/slider-portada.js',
+            array('swiper-js'),
+            time(),
+            true
+        );
+        wp_enqueue_script(
+            'metrics-js',
+            get_stylesheet_directory_uri() . '/assets/js/metrics.js',
+            array(),
+            time(),
+            true
+        );
+        wp_enqueue_style(
+            'oficinas-gallery',
+            get_stylesheet_directory_uri() . '/assets/css/single-proyecto.css', 
+            array(),
+            time()
+        );
+        wp_enqueue_script(
+            'lightbox-js',
+            get_stylesheet_directory_uri() . '/assets/js/lightbox.js',
+            array(),
+            time(),
+            true
+        );
     }
 
+    // Scripts y estilos para single proyecto
     if (is_singular('proyecto')) {
         wp_enqueue_style('single-proyecto', get_stylesheet_directory_uri() . '/assets/css/single-proyecto.css', array(), time());
         wp_enqueue_script('lightbox-js', get_stylesheet_directory_uri() . '/assets/js/lightbox.js', array(), time(), true);
@@ -296,75 +337,89 @@ add_action('wp_enqueue_scripts', 'afarq_enqueue_parallax');
 function shortcode_galeria_proyectos($atts) {
     ob_start();
 
-    $post_id = get_the_ID(); // usa el ID de la página actual
-    $proyectos = get_field('galeria_proyectos', $post_id);
-    $distribucion_raw = get_field('galeria_distribucion', $post_id);
-    $bloques = !empty($distribucion_raw) ? explode(',', $distribucion_raw) : ['3x300'];
+    $post_id    = get_the_ID();
+    $proyectos  = get_field('galeria_proyectos', $post_id);
+    $raw_dist   = get_field('galeria_distribucion', $post_id);
 
     if (empty($proyectos)) {
         echo '<p>No hay proyectos para mostrar.</p>';
         return ob_get_clean();
     }
 
+    // galeria_distribucion ahora es solo una lista de cantidades: "2,3,3,3"
+    $bloques = !empty($raw_dist) ? explode(',', $raw_dist) : ['3'];
+
     $distribucion = [];
     foreach ($bloques as $bloque) {
-        if (preg_match('/(\d+)x(\d+)/', trim($bloque), $matches)) {
-            $distribucion[] = [
-                'cantidad' => (int)$matches[1],
-                'altura' => (int)$matches[2]
-            ];
+        $cantidad = (int) trim($bloque);
+        if ($cantidad > 0) {
+            $distribucion[] = $cantidad;
         }
     }
 
-    $index = 0;
+    if (empty($distribucion)) {
+        $distribucion = [3]; // fallback
+    }
+
+    $index        = 0;
     $proyecto_idx = 0;
-    $total = count($proyectos);
+    $total        = count($proyectos);
 
     echo '<div class="proyectos-galeria">';
-    while ($proyecto_idx < $total) {
-        $conf = $distribucion[$index % count($distribucion)];
-        $fotos_en_fila = $conf['cantidad'];
-        $fila_height = $conf['altura'];
 
+    while ($proyecto_idx < $total) {
+        $fotos_en_fila = $distribucion[$index % count($distribucion)];
         $fila_proyectos = array_slice($proyectos, $proyecto_idx, $fotos_en_fila);
 
-        echo '<div class="fila-proyectos fade-up" data-altura-base="' . $fila_height . '">';
+        // Sin altura, sin data-altura-base
+        echo '<div class="fila-proyectos fade-up-once">';
 
         foreach ($fila_proyectos as $proyecto) {
-            $thumb = get_field('imagen_grid', $proyecto->ID);
+            $thumb  = get_field('imagen_grid', $proyecto->ID);
             $titulo = get_the_title($proyecto->ID);
-            $link = get_permalink($proyecto->ID);
+            $link   = get_permalink($proyecto->ID);
 
             $thumb_url = '';
-            $ratio = null;
+            $ratio     = null;
 
             if ($thumb && is_numeric($thumb)) {
                 $thumb_url = wp_get_attachment_image_url($thumb, 'large');
-                $meta = wp_get_attachment_metadata($thumb);
-                $width = $meta['width'] ?? 0;
-                $height = $meta['height'] ?? 0;
+                $meta      = wp_get_attachment_metadata($thumb);
+                $width     = $meta['width']  ?? 0;
+                $height    = $meta['height'] ?? 0;
                 if ($width > 0 && $height > 0) {
                     $ratio = $width / $height;
                 }
             } else {
-                $thumb_url = is_string($thumb) ? esc_url($thumb) : get_stylesheet_directory_uri() . '/assets/img/placeholder.jpg';
+                $thumb_url = is_string($thumb)
+                    ? esc_url($thumb)
+                    : get_stylesheet_directory_uri() . '/assets/img/placeholder.jpg';
             }
 
             $ratio_attr = $ratio ? ' data-ratio="' . round($ratio, 4) . '"' : '';
 
             echo '<a href="' . esc_url($link) . '" class="proyecto-item"' . $ratio_attr . '>';
-            echo '<div class="proyecto-thumb"><img src="' . $thumb_url . '" alt="' . esc_attr($titulo) . '"></div>';
-            echo '<div class="proyecto-info"><h3>' . esc_html($titulo) . '</h3></div>';
+            echo '  <div class="proyecto-thumb"><img src="' . $thumb_url . '" alt="' . esc_attr($titulo) . '"></div>';
+            echo '  <div class="proyecto-info"><h3>' . esc_html($titulo) . '</h3></div>';
             echo '</a>';
         }
 
-        echo '</div>';
+        echo '</div>'; // .fila-proyectos
 
         $proyecto_idx += $fotos_en_fila;
         $index++;
     }
-    echo '</div>';
+
+    echo '</div>'; // .proyectos-galeria
 
     return ob_get_clean();
 }
 add_shortcode('galeria_proyectos', 'shortcode_galeria_proyectos');
+
+// Galería de Oficinas (Inicio)
+function shortcode_galeria_oficinas($atts) {
+    ob_start();
+    get_template_part('template-parts/oficinas-gallery');
+    return ob_get_clean();
+}
+add_shortcode('galeria_oficinas', 'shortcode_galeria_oficinas');

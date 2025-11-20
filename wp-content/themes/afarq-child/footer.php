@@ -30,6 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div><!-- #page -->
 <?php
 	astra_body_bottom();
+  get_template_part('template-parts/lightbox-overlay');
 	wp_footer();
   if (get_post_type() =="proyecto") {
 ?>
@@ -63,11 +64,6 @@ if ( ! defined( 'ABSPATH' ) ) {
         }
       });
     </script>
-    <div class="lightbox-overlay" id="lightbox-overlay">
-      <?php get_template_part('template-parts/lightbox-controls'); ?>
-      <img id="lightbox-image" alt="Imagen ampliada" />
-    </div>  
-
     <?php }?>
 	</body>
 </html>

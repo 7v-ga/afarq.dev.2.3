@@ -186,36 +186,21 @@ h1.inside_h1 {
   object-fit: cover;
   cursor: pointer;
   box-shadow: none;
-  transition:
-    opacity 1.8s ease-out,
-    transform 0.8s ease-out;
-  opacity: 0;
-  transform: scale(0.98);
-}
-
-.image-wrapper img.visible,
-.image-row img.visible {
-  opacity: 1;
-  transform: scale(1);
+  /* SIN opacity 0 ni transform aquí */
 }
 
 /* -----------------------------
   Lightbox
 ----------------------------- */
 .lightbox-img {
-  opacity: 0;
-  transition: opacity 1.8s ease-out;
-}
-
-.lightbox-img.visible {
   opacity: 1;
-  transform: scale(1);
+  transition: none;
 }
 
 .lightbox-overlay {
   position: fixed;
   inset: 0;
-  background-color: var(--ast-global-color-4);
+  background-color: var(--ast-global-color-7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -230,26 +215,23 @@ h1.inside_h1 {
   visibility: visible;
 }
 
+/* Imagen grande del lightbox */
 #lightbox-image {
   max-width: 90vw;
   max-height: 90vh;
   object-fit: contain;
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease;
-  opacity: 0;
+  opacity: 0;       /* oculta por defecto */
+  transition: none; /* SIN animación propia de opacidad */
 }
 
 #lightbox-image.loaded {
-  opacity: 1 !important;
-  transform: scale(1);
+  opacity: 1; 
 }
 
 .lightbox-overlay img {
   max-width: 90vw;
   max-height: 90vh;
   object-fit: contain;
-  transition: transform 0.3s ease;
 }
 
 /* Botón cerrar */
@@ -262,45 +244,204 @@ h1.inside_h1 {
   padding: 0;
   cursor: pointer;
   z-index: 10000;
-  box-shadow: none;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  display: inline-flex;         /* evita que se comporte como bloque raro */
+  align-items: center;
+  justify-content: center;
+  color: var(--ast-global-color-3);
 }
 
 .lightbox-close svg {
   stroke: var(--ast-global-color-3);
+  fill: none;                   /* evita relleno negro */
   width: 18px;
   height: 18px;
 }
 
-.lightbox-close:hover {
-  background-color: transparent !important;
+.lightbox-close:hover svg {
+  transform: scale(1.04);
 }
 
-/* Navegación en lightbox */
+/* Contenedor de imagen y texto */
+.lightbox-media {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* La imagen dentro del contenedor */
+.lightbox-media img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Texto sobre la imagen */
+.lightbox-text {
+  position: absolute;
+  left: 50%;
+  bottom: 50px;           /* SIEMPRE a 50px del borde de la imagen */
+  transform: translateX(-50%);
+  max-width: 80%;
+  color: white;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  text-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+.lightbox-text.visible {
+  opacity: 1;
+}
+
+
+/* ----------------------------------------
+   FLECHAS DE NAVEGACIÓN LIGHTBOX
+---------------------------------------- */
+
+/* Ocultamos cualquier SVG existente */
+.lightbox-nav svg {
+  display: none !important;
+}
+
+/* Contenedor del botón */
 .lightbox-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: transparent;
-  border: none;
+  width: 45px;
+  height: 45px;
   padding: 0;
-  z-index: 10000;
-  transition: transform 0.2s ease;
+  border: none;
+  background: none;
   cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Flecha en pseudo-elemento */
+.lightbox-nav::before {
+  content: "";
+  display: block;
+  width: 26px;
+  height: 26px;
+  border-top: 2px solid white;
+  border-right: 2px solid white;
+  transform: rotate(45deg);
+  transition: transform 0.25s ease;
+}
+
+/* Flecha izquierda */
+.lightbox-nav.prev::before {
+  transform: rotate(-135deg);
+}
+
+/* Hover */
+.lightbox-nav:hover::before {
+  transform: scale(1.15) rotate(45deg);
+}
+
+.lightbox-nav.prev:hover::before {
+  transform: scale(1.15) rotate(-135deg);
+}
+
+/* Posición dentro de la imagen */
+.lightbox-nav.prev {
+  left: calc(5vw + 40px);
   box-shadow: none;
 }
 
-.lightbox-nav:focus,
-.lightbox-nav:hover {
-  transform: translateY(-50%) scale(1.12);
+.lightbox-nav.next {
+  right: calc(5vw + 40px);
+  box-shadow: none;
+}
+
+.lightbox-nav.prev:hover,
+.lightbox-nav.next:hover {
   background-color: transparent !important;
 }
 
+/* ----------------------------------------
+   FLECHAS DE NAVEGACIÓN LIGHTBOX
+---------------------------------------- */
+
+/* Ocultamos cualquier SVG existente */
+.lightbox-nav svg {
+  display: none !important;
+}
+
+/* Contenedor del botón */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 45px;
+  height: 45px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Flecha en pseudo-elemento */
+.lightbox-nav::before {
+  content: "";
+  display: block;
+  width: 26px;
+  height: 26px;
+
+  /* Flecha → borde inclinado tipo “>” */
+  border-top: 2px solid white;
+  border-right: 2px solid white;
+
+  /* Por defecto, apunta a la derecha → 45° */
+  transform: rotate(45deg);
+  transition: transform 0.25s ease;
+}
+
+/* Flecha izquierda */
+.lightbox-nav.prev::before {
+  transform: rotate(-135deg);
+}
+
+/* Hover */
+.lightbox-nav:hover::before {
+  transform: scale(1.15) rotate(45deg);
+}
+
+.lightbox-nav.prev:hover::before {
+  transform: scale(1.15) rotate(-135deg);
+}
+
+/* Posición dentro de la imagen */
 .lightbox-nav.prev {
-  left: 22px;
+  left: calc(5vw + 40px);
+  box-shadow: none
 }
 
 .lightbox-nav.next {
-  right: 22px;
+  right: calc(5vw + 40px);
+  box-shadow: none
+}
+
+.lightbox-nav.prev:hover,
+.lightbox-nav.next:hover {
+  background-color: transparent !important;
 }
 
 polyline,

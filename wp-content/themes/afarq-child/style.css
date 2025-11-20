@@ -381,15 +381,17 @@ form.init input:not([type="submit"]) {
   justify-content: flex-end;
 }
 
-.fade-up {
+.fade-up,
+.fade-up-once {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(16px);
   transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
+    opacity 0.8s ease-out,
+    transform 0.8s ease-out;
 }
 
-.fade-up.visible {
+.fade-up.visible,
+.fade-up-once.visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -420,17 +422,19 @@ form.init input:not([type="submit"]) {
 }
 
 /* Bloques que tendrán animación de entrada con scroll */
-.scroll-zoom img {
+.scroll-zoom,
+.scroll-zoom-once {
   opacity: 0;
-  transform: scale(0.98);
+  transform: translateY(12px) scale(0.98);
   transition:
-    opacity 1.8s ease-out,
+    opacity 0.8s ease-out,
     transform 0.8s ease-out;
 }
 
-.scroll-zoom.visible img {
+.scroll-zoom.visible,
+.scroll-zoom-once.visible {
   opacity: 1;
-  transform: scale(1);
+  transform: translateY(0) scale(1);
 }
 
 

@@ -25,7 +25,7 @@ function afarq_render_clean_gallery_from_wysiwyg($wysiwyg_html) {
     }
 
     $altura = rand(1, 3);
-    $output .= '<div class="image-row h-row-' . $altura . '">';
+    $output .= '<div class="image-row fade-up-once h-row-' . $altura . '">';
 
     for ($j = 0; $j < $grupo; $j++) {
       $img_html = $imagenes[$i + $j];

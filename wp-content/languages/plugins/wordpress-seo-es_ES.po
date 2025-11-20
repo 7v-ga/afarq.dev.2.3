@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Yoast SEO &#8211; Advanced SEO with real-time guidance and built-in AI - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-11-04 09:54:26+0000\n"
+"PO-Revision-Date: 2025-11-18 09:32:20+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -598,14 +598,6 @@ msgstr "El valor de 'batch-size' debe ser un número entero positivo mayor que o
 msgid "The value for 'interval' must be a positive integer."
 msgstr "El valor de 'interval' debe ser un número entero positivo."
 
-#: src/presenters/admin/indexing-notification-presenter.php:90
-msgid "We need to re-analyze some of your SEO data because of a change in the visibility of your taxonomies. Please help us do that by running the SEO data optimization."
-msgstr "Necesitamos volver a analizar algunos de tus datos SEO debido a un cambio en la visibilidad de tus taxonomías. Por favor, ayúdanos a hacerlo ejecutando la optimización de datos SEO."
-
-#: src/presenters/admin/indexing-notification-presenter.php:87
-msgid "We need to re-analyze some of your SEO data because of a change in the visibility of your post types. Please help us do that by running the SEO data optimization."
-msgstr "Necesitamos volver a analizar algunos de tus datos SEO debido a un cambio en la visibilidad de tus tipos de contenido. Por favor, ayúdanos a hacerlo ejecutando la optimización de datos SEO."
-
 #. translators: %s: expands to the term id
 #: src/exceptions/indexable/term-not-built-exception.php:20
 msgid "The term %s could not be built because it's not indexable."
@@ -620,6 +612,14 @@ msgstr "La publicación %s no se pudo indexar debido a que su tipo de contenido 
 #: src/exceptions/indexable/post-not-built-exception.php:20
 msgid "The post %s could not be indexed because it does not meet indexing requirements."
 msgstr "La entrada %s no se pudo indexar debido a que no reúne los requisitos de indexado."
+
+#: src/presenters/admin/indexing-notification-presenter.php:90
+msgid "We need to re-analyze some of your SEO data because of a change in the visibility of your taxonomies. Please help us do that by running the SEO data optimization."
+msgstr "Necesitamos volver a analizar algunos de tus datos SEO debido a un cambio en la visibilidad de tus taxonomías. Por favor, ayúdanos a hacerlo ejecutando la optimización de datos SEO."
+
+#: src/presenters/admin/indexing-notification-presenter.php:87
+msgid "We need to re-analyze some of your SEO data because of a change in the visibility of your post types. Please help us do that by running the SEO data optimization."
+msgstr "Necesitamos volver a analizar algunos de tus datos SEO debido a un cambio en la visibilidad de tus tipos de contenido. Por favor, ayúdanos a hacerlo ejecutando la optimización de datos SEO."
 
 #: src/presenters/admin/sidebar-presenter.php:21 js/dist/block-editor.js:227
 #: js/dist/classic-editor.js:210 js/dist/editor-modules.js:111
@@ -698,7 +698,7 @@ msgstr "Descubre por qué el lenguaje inclusivo es importante para el SEO."
 #: js/dist/classic-editor.js:459 js/dist/editor-modules.js:365
 #: js/dist/elementor.js:5 js/dist/externals-components.js:376
 #: js/dist/externals/aiFrontend.js:229 js/dist/general-page.js:27
-#: js/dist/general-page.js:48 js/dist/new-settings.js:17
+#: js/dist/general-page.js:65 js/dist/new-settings.js:17
 #: js/dist/new-settings.js:40
 msgid "Dismiss"
 msgstr "Descartar"
@@ -867,8 +867,8 @@ msgstr "Feeds de comentarios de las entradas"
 msgid "Crawl settings"
 msgstr "Ajustes de rastreo"
 
-#: src/integrations/admin/first-time-configuration-integration.php:128
-#: js/dist/general-page.js:45
+#: src/integrations/admin/first-time-configuration-integration.php:139
+#: js/dist/general-page.js:61 js/dist/general-page.js:62
 msgid "First-time configuration"
 msgstr "Configuración inicial"
 
@@ -1154,7 +1154,7 @@ msgid "Link suggestions"
 msgstr "Sugerencias de enlaces"
 
 #: admin/views/class-yoast-feature-toggles.php:116 js/dist/block-editor.js:227
-#: js/dist/block-editor.js:485 js/dist/classic-editor.js:210
+#: js/dist/block-editor.js:489 js/dist/classic-editor.js:210
 #: js/dist/elementor.js:32 js/dist/new-settings.js:29
 #: js/dist/new-settings.js:323
 msgid "Insights"
@@ -1250,7 +1250,7 @@ msgstr "El término no se considera válido. WordPress ha dado la siguiente raz�
 msgid "The post could not be found."
 msgstr "No se ha podido encontrar la entrada."
 
-#: admin/class-yoast-form.php:1068 js/dist/general-page.js:42
+#: admin/class-yoast-form.php:1068 js/dist/general-page.js:52
 msgid "This feature has been disabled since subsites never send tracking data."
 msgstr "Esta característica ha sido desactivada, ya que los subsitios nunca envían datos de seguimiento."
 
@@ -1331,18 +1331,18 @@ msgstr "Aprende más sobre los beneficios de los datos SEO optimizados."
 msgid "All permalinks were successfully reset"
 msgstr "Todos los enlaces permanentes se han restablecido correctamente"
 
-#: src/presenters/admin/indexing-notification-presenter.php:96
-msgid "You can speed up your site and get insight into your internal linking structure by letting us perform a few optimizations to the way SEO data is stored."
-msgstr "Puedes acelerar tu sitio y obtener mejoras en la estructura de enlazado interno permitiéndonos realizar unas pocas optimizaciones en el modo en el que se almacenan los datos SEO."
-
 #: src/presenters/admin/indexing-notification-presenter.php:59
-#: js/dist/general-page.js:38 js/dist/indexation.js:8
+#: js/dist/general-page.js:37 js/dist/indexation.js:8
 msgid "Start SEO data optimization"
 msgstr "Empezar la optimización de datos de SEO"
 
 #: src/presenters/admin/indexing-list-item-presenter.php:40
 msgid "You can speed up your site and get insight into your internal linking structure by letting us perform a few optimizations to the way SEO data is stored. If you have a lot of content it might take a while, but trust us, it's worth it."
 msgstr "Puedes acelerar tu sitio y obtener mejoras en la estructura de enlazado interno permitiéndonos realizar unas pocas optimizaciones en el modo en el que se almacenan los datos SEO. Si tienes mucho contenido, puede que tarde un rato, pero fíate de nosotros, merece la pena."
+
+#: src/presenters/admin/indexing-notification-presenter.php:96
+msgid "You can speed up your site and get insight into your internal linking structure by letting us perform a few optimizations to the way SEO data is stored."
+msgstr "Puedes acelerar tu sitio y obtener mejoras en la estructura de enlazado interno permitiéndonos realizar unas pocas optimizaciones en el modo en el que se almacenan los datos SEO."
 
 #: src/presenters/admin/indexing-list-item-presenter.php:37
 msgid "Optimize SEO Data"
@@ -1529,14 +1529,6 @@ msgstr "Hemos escrito un artículo sobre cómo %1$susar la puntuación de SEO y 
 msgid "%1$s adds several columns to this page."
 msgstr "%1$s añade varias columnas a esta página."
 
-#: src/presenters/admin/indexing-notification-presenter.php:117
-msgid " We estimate this will take less than a minute."
-msgstr " Estimamos que esto llevará menos de un minuto."
-
-#: src/presenters/admin/indexing-notification-presenter.php:121
-msgid " We estimate this will take a couple of minutes."
-msgstr " Estimamos que esto llevará un par de minutos."
-
 #: src/presenters/admin/migration-error-presenter.php:64
 msgid "Show debug information"
 msgstr "Mostrar información de depuración"
@@ -1561,15 +1553,23 @@ msgstr "No quiero que este sitio se muestre en los resultados de búsqueda."
 msgid "If you want search engines to show this site in their results, you must %1$sgo to your Reading Settings%2$s and uncheck the box for Search Engine Visibility."
 msgstr "Si quieres que los motores de búsqueda muestren este sitio en sus resultados debes %1$sir a tus ajustes de lectura%2$s y desmarcar la casilla de visibilidad en los motores de búsqueda."
 
-#: src/presenters/admin/indexing-notification-presenter.php:124
-msgid " We estimate this could take a long time, due to the size of your site. As an alternative to waiting, you could:"
-msgstr " Estimamos que esto llevará mucho tiempo, debido al tamaño de tu sitio. Como alternativa a esperar podrías:"
+#: src/presenters/admin/indexing-notification-presenter.php:117
+msgid " We estimate this will take less than a minute."
+msgstr " Estimamos que esto llevará menos de un minuto."
+
+#: src/presenters/admin/indexing-notification-presenter.php:121
+msgid " We estimate this will take a couple of minutes."
+msgstr " Estimamos que esto llevará un par de minutos."
 
 #. translators: 1: Link to article about indexation command, 2: Anchor closing
 #. tag, 3: Link to WP CLI.
 #: src/presenters/admin/indexing-notification-presenter.php:136
 msgid "%1$sRun the indexation process on your server%2$s using %3$sWP CLI%2$s."
 msgstr "%1$sEjecuta el proceso de indexación en tu servidor%2$s usando %3$sWP CLI%2$s."
+
+#: src/presenters/admin/indexing-notification-presenter.php:124
+msgid " We estimate this could take a long time, due to the size of your site. As an alternative to waiting, you could:"
+msgstr " Estimamos que esto llevará mucho tiempo, debido al tamaño de tu sitio. Como alternativa a esperar podrías:"
 
 #. translators: %1$s: link to help article about solving table issue. %2$s: is
 #. anchor closing.
@@ -1714,7 +1714,7 @@ msgstr "¿Quieres aprender SEO del equipo Yoast? ¡Consulta nuestros %1$s!"
 msgid "Learn SEO"
 msgstr "Aprender SEO"
 
-#: admin/metabox/class-metabox.php:424 js/dist/block-editor.js:510
+#: admin/metabox/class-metabox.php:424 js/dist/block-editor.js:514
 #: js/dist/elementor.js:473 js/dist/new-settings.js:24
 #: js/dist/new-settings.js:31 js/dist/new-settings.js:35
 #: js/dist/new-settings.js:65 js/dist/new-settings.js:265
@@ -1793,8 +1793,8 @@ msgstr "%1$sVisita Google Search Console%2$s para ver tus errores de indexación
 msgid "Google has discontinued its Crawl Errors API. Therefore, any possible crawl errors you might have cannot be displayed here anymore. %1$sRead our statement on this for further information%2$s."
 msgstr "Google ha eliminado la API de errores de rastreo, así que ya no es posible mostrar aquí tus posibles errores de rastreo. %1$sLee nuestro comunicado para más información%2$s."
 
-#: src/integrations/admin/first-time-configuration-integration.php:480
-#: src/integrations/admin/first-time-configuration-integration.php:493
+#: src/integrations/admin/first-time-configuration-integration.php:497
+#: src/integrations/admin/first-time-configuration-integration.php:510
 #: js/dist/new-settings.js:335
 msgid "Organization"
 msgstr "Organización"
@@ -1978,7 +1978,7 @@ msgstr "Esta pestaña te permite desactivar selectivamente características de %
 msgid "%s is a required feature toggle argument."
 msgstr "%s es un argumento obligatorio de activación de la característica."
 
-#: admin/class-yoast-form.php:1064 js/dist/general-page.js:42
+#: admin/class-yoast-form.php:1064 js/dist/general-page.js:52
 msgid "This feature has been disabled by the network admin."
 msgstr "Esta característica la ha desactivado el administrador de la red."
 
@@ -2575,16 +2575,19 @@ msgstr "Marca la %1$s más importante como 'contenido esencial' para mejorar la 
 #: js/dist/externals/relatedKeyphraseSuggestions.js:3
 #: js/dist/externals/relatedKeyphraseSuggestions.js:7 js/dist/general-page.js:4
 #: js/dist/general-page.js:5 js/dist/general-page.js:13
-#: js/dist/general-page.js:26 js/dist/installation-success.js:5
-#: js/dist/integrations-page.js:3 js/dist/integrations-page.js:4
-#: js/dist/integrations-page.js:5 js/dist/integrations-page.js:6
-#: js/dist/integrations-page.js:7 js/dist/integrations-page.js:8
-#: js/dist/integrations-page.js:13 js/dist/integrations-page.js:18
-#: js/dist/integrations-page.js:19 js/dist/integrations-page.js:20
-#: js/dist/integrations-page.js:28 js/dist/introductions.js:3
-#: js/dist/introductions.js:7 js/dist/new-settings.js:4
-#: js/dist/new-settings.js:5 js/dist/new-settings.js:13 js/dist/plans.js:2
-#: js/dist/redirects.js:6 js/dist/support.js:4 js/dist/support.js:8
+#: js/dist/general-page.js:26 js/dist/general-page.js:40
+#: js/dist/general-page.js:46 js/dist/general-page.js:49
+#: js/dist/general-page.js:57 js/dist/general-page.js:61
+#: js/dist/installation-success.js:5 js/dist/integrations-page.js:3
+#: js/dist/integrations-page.js:4 js/dist/integrations-page.js:5
+#: js/dist/integrations-page.js:6 js/dist/integrations-page.js:7
+#: js/dist/integrations-page.js:8 js/dist/integrations-page.js:13
+#: js/dist/integrations-page.js:18 js/dist/integrations-page.js:19
+#: js/dist/integrations-page.js:20 js/dist/integrations-page.js:28
+#: js/dist/introductions.js:3 js/dist/introductions.js:7
+#: js/dist/new-settings.js:4 js/dist/new-settings.js:5
+#: js/dist/new-settings.js:13 js/dist/plans.js:2 js/dist/redirects.js:6
+#: js/dist/support.js:4 js/dist/support.js:8
 msgid "(Opens in a new browser tab)"
 msgstr "(Se abre en una nueva pestaña del navegador)"
 
@@ -2662,7 +2665,7 @@ msgid "The plugin %2$s changes your site's output and in doing that differentiat
 msgstr "El plugin %2$s cambia el código de tu sitio haciendo diferencias entre los motores de búsqueda y los usuarios normales, un proceso llamado cloaking. Recomendamos encarecidamente que lo desactives."
 
 #: admin/class-yoast-form.php:149 admin/class-yoast-form.php:154
-#: js/dist/general-page.js:38 js/dist/new-settings.js:13
+#: js/dist/general-page.js:37 js/dist/new-settings.js:13
 msgid "Save changes"
 msgstr "Guardar cambios"
 
@@ -2700,7 +2703,7 @@ msgstr "Guardar"
 msgid "%1$s, Author at %2$s"
 msgstr "%1$s, autor en %2$s"
 
-#: inc/class-wpseo-replace-vars.php:1518 js/dist/general-page.js:38
+#: inc/class-wpseo-replace-vars.php:1518 js/dist/general-page.js:40
 msgid "Name"
 msgstr "Nombre"
 
@@ -2871,7 +2874,7 @@ msgstr "Quita la pestaña de frase clave de la caja meta y desactiva todas las s
 
 #. translators: Hidden accessibility text; %s: number of notifications.
 #: admin/menu/class-admin-menu.php:118 inc/class-wpseo-admin-bar-menu.php:873
-#: js/dist/general-page.js:46
+#: js/dist/general-page.js:63
 msgid "%s notification"
 msgid_plural "%s notifications"
 msgstr[0] "%s aviso"
@@ -2950,7 +2953,7 @@ msgstr "No se ha definido la meta description."
 msgid "Filter by SEO Score"
 msgstr "Filtrar por puntuación SEO"
 
-#: admin/menu/class-admin-menu.php:56 js/dist/general-page.js:45
+#: admin/menu/class-admin-menu.php:56 js/dist/general-page.js:62
 msgid "Dashboard"
 msgstr "Escritorio"
 
@@ -3099,7 +3102,7 @@ msgstr "La primera verdadera solución SEO todo en uno para WordPress, incluyend
 
 #. Plugin Name of the plugin
 #: wp-seo.php admin/capabilities/class-capability-manager-integration.php:74
-#: src/presenters/meta-description-presenter.php:36 js/dist/block-editor.js:546
+#: src/presenters/meta-description-presenter.php:36 js/dist/block-editor.js:550
 msgid "Yoast SEO"
 msgstr "Yoast SEO"
 
@@ -3481,7 +3484,7 @@ msgstr "ID de sitio"
 msgid "Creating redirects is a %s feature"
 msgstr "La creación de redirecciones es una característica de %s"
 
-#: src/integrations/admin/first-time-configuration-integration.php:485
+#: src/integrations/admin/first-time-configuration-integration.php:502
 #: js/dist/new-settings.js:335
 msgid "Person"
 msgstr "Persona"
@@ -3741,8 +3744,8 @@ msgid "View"
 msgstr "Ver"
 
 #: admin/class-bulk-editor-list-table.php:844
-#: js/dist/externals/dashboardFrontend.js:4 js/dist/general-page.js:37
-#: js/dist/general-page.js:45
+#: js/dist/externals/dashboardFrontend.js:4 js/dist/general-page.js:36
+#: js/dist/general-page.js:61
 msgid "Edit"
 msgstr "Editar"
 
