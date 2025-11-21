@@ -134,7 +134,7 @@ if ($lista && is_array($lista)) {
     </a>
   <?php endif; ?>
 
-  <a class="nav-arrow view-all" href="<?php echo esc_url(site_url('/nuestros-proyectos')); ?>" aria-label="Ver todos los proyectos">
+  <a class="nav-arrow view-all" href="<?php echo esc_url(site_url('/#proyectos-destacados')); ?>" aria-label="Ver todos los proyectos">
     <span class="label">Ver todos</span>
     <img src="<?php echo get_stylesheet_directory_uri(); ?>/assets/img/view-all.svg" alt="Ver todos" />
   </a>
