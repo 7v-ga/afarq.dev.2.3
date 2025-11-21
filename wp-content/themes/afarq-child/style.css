@@ -29,6 +29,29 @@ h6 {
   font-style: normal;
 }
 
+h3 + h4 {
+  margin-top: 0 !important;
+}
+
+.entry-content h1,
+h1,
+.entry-content h2,
+h2,
+.entry-content h3,
+h3 {
+  font-weight: 500;
+}
+
+h3,
+.entry-content h4,
+h4,
+.entry-content h5,
+h5,
+.entry-content h6,
+h6 {
+  text-transform: none !important;
+}
+
 .entry-content h1,
 h1,
 .entry-content h2,
@@ -41,6 +64,22 @@ h4,
 h5,
 .entry-content h6,
 h6 {
+}
+
+/* Altura aproximada del header fijo (ajusta este valor) */
+:root {
+  --afarq-header-offset: 120px; /* ajusta según el alto real del header */
+}
+
+/* Aplica a secciones que sirven de ancla */
+[id] {
+  scroll-margin-top: var(--afarq-header-offset);
+}
+
+
+/* Cualquier sección con esta clase respetará el espacio del header */
+.anchor-offset {
+  scroll-margin-top: var(--afarq-header-offset);
 }
 
 .site-primary-footer-wrap[data-section="section-primary-footer-builder"] {
@@ -192,6 +231,14 @@ header.main-header-bar-wrap {
   text-align: left;
 }
 
+/* Navegadores */
+.wp-block-navigation-item__content {
+  text-decoration: none !important;
+}
+
+.wp-block-navigation-item__label {
+  text-transform: uppercase;
+}
 /* Menú hamburguesa */
 .menu-toggle {
   display: flex;

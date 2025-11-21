@@ -73,6 +73,15 @@ function my_theme_enqueue_assets() {
         wp_enqueue_script('proyectos-script', get_stylesheet_directory_uri() . '/assets/js/masonry-proyectos.js', [], time(), true);
     }
 
+    // Corrección de scroll para anchors (header fijo)
+    wp_enqueue_script(
+        'afarq-anchor-offset',
+        get_stylesheet_directory_uri() . '/assets/js/anchor-offset.js',
+        array('jquery'),
+        time(),
+        true
+    );
+
 }
 add_action('wp_enqueue_scripts', 'my_theme_enqueue_assets');
 

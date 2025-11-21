@@ -20,3 +20,19 @@ document.getElementById("mobile-menu").addEventListener("click", function () {
     }, 500); // Tiempo debe coincidir con la duración de la transición
   }
 });
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  const offset = 120; // mismo valor que en CSS
+
+  function scrollConOffset(hash) {
+    const target = document.querySelector(hash);
+    if (!target) return;
+    const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({ top, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
+
+  if (window.location.hash) {
+    scrollConOffset(window.location.hash);
+  }
+});
